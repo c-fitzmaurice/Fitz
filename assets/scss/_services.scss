@@ -1,0 +1,47 @@
+#services {
+  padding: 130px 0 50px !important;
+
+  .infobox {
+    position: relative;
+    padding-left: 80px;
+    margin-bottom: 70px;
+
+    header * {
+      margin-bottom: 0;
+      @include transition();
+    }
+
+    header {
+      margin-bottom: 40px;
+    }
+
+    i {
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-size: 32px;
+      @include transition();
+    }
+
+    .divider-9 {
+      height: 1px;
+      background-color: #FFF;
+      width: 100px;
+    }
+
+    &:hover {
+      i {
+          color: $slate;
+          font-size: 36px;
+      }
+
+      header * {
+          color: $slate;
+      }
+      .divider-9 {
+          width: 240px;
+          background-color: $slate;
+      }
+    }
+  }
+}

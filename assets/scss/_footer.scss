@@ -1,0 +1,13 @@
+#footer {
+  padding: 20px 0;
+  font-size: 13px;
+  background: $slate;
+  color: #FFF;
+  a {
+  	color: #fff;
+  	&:hover {
+  		border-bottom: 1px solid #fff;
+  		color: #fff;
+  	}
+  }
+}
