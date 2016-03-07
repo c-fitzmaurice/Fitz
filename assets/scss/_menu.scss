@@ -1,3 +1,11 @@
+/*****************************************************************
+ * SVG LOGO
+ ****************************************************************/
+svg .shadow {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+}
+
+
 #main-menu {
   height: 70px;
   border-bottom: 1px solid #eee;
@@ -6,14 +14,14 @@
   background-color: #fff;
   position: relative;
   @include transition();
-  @include box-shadow(); 
+  @include box-shadow();
 }
 
 #logo {
   height: 130px;
   float: left;
   //margin-top: -130px;
-  
+
   img {
     max-height: 130px;
   }
@@ -131,7 +139,7 @@
 
     ul > li {
       position: relative;
-      
+
       i {
         position: absolute;
         right: 0;
