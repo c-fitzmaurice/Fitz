@@ -119,12 +119,12 @@
 		"fileType": 32768,
 		"ignore": 0,
 		"ignoreWasSetByUser": 0,
-		"initialSize": 2283,
+		"initialSize": 5811,
 		"inputAbbreviatedPath": "\/assets\/img\/favicon.png",
 		"outputAbbreviatedPath": "\/assets\/img\/favicon.png",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
-		"processed": 1
+		"processed": 0
 		},
 	"\/assets\/img\/FITZ.png": {
 		"fileType": 32768,
