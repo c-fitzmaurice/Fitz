@@ -1,6 +1,8 @@
 var elixir = require('laravel-elixir');
-var theme = 'redwood';
+var theme = 'fitz';
+
 elixir.config.assetsPath = './';
+elixir.config.publicPath = './';
 
 /*
  |--------------------------------------------------------------------------
@@ -16,9 +18,5 @@ elixir.config.assetsPath = './';
 elixir(function(mix) {
     mix.sass(theme + '.scss', 'css/' + theme + '.css');
 
-    mix.scripts([
-        'vendor/collage-plus.js',
-        'vendor/zoom.js',
-        'jabbascripts.js'
-    ], './js/redwood.js');
+    // mix.version('css/' + theme + '.css');
 });

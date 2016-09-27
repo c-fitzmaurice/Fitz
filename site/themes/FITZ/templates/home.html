@@ -1,18 +1,6 @@
-<section class="regular">
+<div class="container">
+    <h1>{{ title }}</h1>
+    <hr/>
+    {{ content }}
+</div>
 
-    <h1 class="special centered">
-        <small>The Statamic</small>
-        Redwood Theme
-    </h1>
-
-	<article class="list">
-		{{ collection:blog limit="3" }}
-			{{ partial:block }}
-		{{ /collection:blog }}
-	</article>
-
-    <div class="read-more">
-        <a href="{{ link to='blog' }}">Read the rest of the blog</a>
-    </div>
-
-</section>
