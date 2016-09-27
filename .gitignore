@@ -1,0 +1,13 @@
+.DS_Store
+.env
+.idea/
+node_modules/
+bower_components/
+local/cache/*
+local/storage/*
+local/temp/*
+installer.php
+
+# Theme NPM Modules
+ site/themes/redwood/node_modules/
+ site/themes/FITZ/node_modules/
