@@ -1,0 +1,179 @@
+/*****************************************************************
+ * SVG LOGO
+ ****************************************************************/
+svg .shadow {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+}
+
+
+#main-menu {
+  height: 70px;
+  border-bottom: 1px solid #eee;
+  width: 100%;
+  z-index: 9999998 !important;
+  background-color: #fff;
+  position: relative;
+  @include transition();
+  @include box-shadow();
+}
+
+#logo {
+  height: 130px;
+  float: left;
+  //margin-top: -130px;
+
+  img {
+    max-height: 130px;
+  }
+}
+
+#main-menu.effect-on {
+  position: fixed;
+  top: -70px;
+  left: 0;
+
+  #logo {
+    @include transition();
+  }
+}
+
+.menu-visible {
+  top: 0 !important;
+
+  #logo {
+    margin-top: 0 !important;
+    @include transition();
+  }
+}
+
+#main-menu .desktop-menu > .menu-container {
+  float: right;
+  height: 70px;
+
+  > ul > li {
+    display: inline-block;
+    margin: 0 0 0 60px;
+    position: relative;
+  }
+
+  > ul > li:last-child {
+    margin-right: 0 !important;
+  }
+
+  > ul > li > a {
+    height: 70px;
+    //padding: 0 0 0 0px;
+    line-height: 70px;
+    display: block;
+    font-size: 11px;
+    font-weight: 300;
+    color: $slate;
+    text-decoration: none;
+    //@include transition();
+  }
+
+  > ul > li.active > a  {
+    font-weight: bold;
+  }
+
+  > ul > li .sub-menu {
+      display: none;
+      font-size: 11px;
+  }
+
+  .sub-menu {
+    background-color: #222;
+    position: absolute;
+    top: 70px;
+
+    li {
+      position: relative;
+
+      a {
+        width: 175px;
+        padding: 10px 20px;
+        display: block;
+        color: #787878;
+        text-decoration: none;
+
+        &:hover {
+        	color: #fff;
+        }
+      }
+    }
+
+    .sub-menu {
+      left: 175px;
+      top: 0 !important;
+    }
+  }
+}
+
+
+
+/*****************************************************************
+ * MOBILE MENU
+ ****************************************************************/
+#mobile-button {
+  width: 70px;
+  height: 70px;
+  line-height: 70px;
+  position: absolute;
+  right: 15px;
+  top: 0;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 10;
+  color: $slate;
+  text-align: right;
+}
+
+#mobile-menu {
+  .menu-container {
+    position: absolute;
+    top: 70px;
+    width: 100%;
+    left: 0;
+    display: none;
+    background-color: #FFF;
+
+    ul > li {
+      position: relative;
+
+      i {
+        position: absolute;
+        right: 0;
+        top: 20px;
+      }
+    }
+
+    ul > li a {
+      display: block;
+      height: 50px;
+      line-height: 50px;
+      font-size: 11px;
+      text-decoration: none;
+      border-top: 1px solid #f1f0f0;
+    }
+
+    ul > li:first-child a {
+      border-top: none !important;
+    }
+
+    .col-md-12 > ul > li:first-child > a {
+      border-top: none !important;
+    }
+
+    .sub-menu {
+      display: none;
+    }
+
+    .sub-menu a {
+      padding-left: 20px;
+    }
+
+    ul > li a:hover {
+      color: $slate;
+    }
+  }
+}

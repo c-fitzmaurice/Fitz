@@ -1,0 +1,1 @@
+{"version":3,"sources":["fitz.scss"],"names":[],"mappings":"AAEA;EACI,0BAHiB;EAIjB,aAAa;EACb,YAAY,EACf","file":"fitz.css","sourcesContent":["$color__fitz: #465058;\n\nhtml {\n    border: 4px solid $color__fitz;\n    height: 100%;\n    width: 100%;\n}"],"sourceRoot":"/source/"}
