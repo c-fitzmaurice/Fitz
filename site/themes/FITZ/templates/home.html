@@ -1,6 +1,33 @@
-<div class="container">
-    <h1>{{ title }}</h1>
-    <hr/>
-    {{ content }}
-</div>
+<header>
+    <div class="row">
+        <div class="col-md-6 col-sm-6 col-xs-6">
+            LOGO HERE
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-6">
+            <ul>
+                {{ nav from="/" include_home="true" scope="tag" }}
+                <li{{ if is_current or is_parent }} class="active"{{ /if }}>
+                <a href="{{ url }}">{{ tag:nav_title or title }}</a>
+                </li>
+                {{ /nav }}
+            </ul>
+        </div>
+    </div>
+</header>
 
+<section>
+    <div class="row">
+        <div class="col-md-12">
+            {{ content }}
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="row">
+        <div class="col-md-6 push-md-6 text-md-right text-xs-center">
+            These are going to be social icons
+        </div>
+        <div class="col-md-6 pull-md-6 text-md-left text-xs-center">&copy; Fitz Creative, LLC. {{ current_date format='Y' }}</div>
+    </div>
+</footer>
