@@ -1,8 +1,20 @@
+@import 'https://fonts.googleapis.com/css?family=Lato';
+
 $color__fitz: #465058;
 $color__gray: #EEEEEE;
 
 html {
-    border: 4px solid $color__fitz;
+    border: 6px solid $color__fitz;
     height: 100%;
     width: 100%;
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+}
+
+.footer-icon {
+    height: 30px;
+    width: 30px;
+    fill: $color__fitz;
 }

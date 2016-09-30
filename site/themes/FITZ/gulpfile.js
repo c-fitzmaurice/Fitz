@@ -1,4 +1,7 @@
 var elixir = require('laravel-elixir');
+require('laravel-elixir-svg-symbols');
+// require('laravel-elixir-remove');
+
 var theme = 'fitz';
 
 elixir.config.assetsPath = './';
@@ -9,7 +12,9 @@ elixir(function(mix) {
 
     .sass(theme + '.scss', 'css/' + theme + '.css')
 
-    .scripts(theme + '.js', 'js/' + theme + '.js');
+    .scripts(theme + '.js', 'js/' + theme + '.js')
+
+    .svgSprite('./svg','./svg');
 
     // mix.version('css/' + theme + '.css');
 });
