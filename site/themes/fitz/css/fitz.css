@@ -5,11 +5,44 @@ html {
   width: 100%; }
 
 body {
-  font-family: 'Lato', sans-serif; }
+  font-family: 'Lato', sans-serif;
+  height: 100%; }
 
-.footer-icon {
-  height: 30px;
-  width: 30px;
-  fill: #465058; }
+.sticky-page {
+  height: 100%; }
+
+.sticky-wrap {
+  min-height: 100%;
+  margin-bottom: -40px; }
+  .sticky-wrap:after {
+    content: "";
+    display: block;
+    height: 40px; }
+
+#logo {
+  width: 100%;
+  padding-top: 15px; }
+
+footer.site-footer {
+  height: 40px;
+  line-height: 40px;
+  color: #465058; }
+  footer.site-footer ul {
+    margin: 0; }
+    footer.site-footer ul li {
+      display: inline;
+      list-style-type: none; }
+      footer.site-footer ul li a {
+        height: 30px;
+        text-decoration: none; }
+        footer.site-footer ul li a svg.footer-icon {
+          height: 30px;
+          width: 30px;
+          fill: #465058; }
+        footer.site-footer ul li a:hover {
+          text-decoration: none;
+          background: #465058; }
+          footer.site-footer ul li a:hover svg.footer-icon {
+            fill: #EEEEEE; }
 
 /*# sourceMappingURL=fitz.css.map */

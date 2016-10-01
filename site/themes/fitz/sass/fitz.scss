@@ -11,10 +11,51 @@ html {
 
 body {
     font-family: 'Lato', sans-serif;
+    height: 100%;
 }
+.sticky-page {
+    height: 100%;
+}
+.sticky-wrap {
+    min-height: 100%;
+    margin-bottom: -40px; // equal to footer height
+    &:after {
+        content: "";
+        display: block;
+        height: 40px;
+    }
+}
+#logo {
+    width: 100%;
+    padding-top: 15px;
+}
+footer.site-footer {
+    height: 40px;
+    line-height: 40px;
+    color: $color__fitz;
 
-.footer-icon {
-    height: 30px;
-    width: 30px;
-    fill: $color__fitz;
+    ul {
+        margin: 0;
+        li {
+            display: inline;
+            list-style-type: none;
+            a {
+                height: 30px;
+                text-decoration: none;
+                svg.footer-icon {
+                    height: 30px;
+                    width: 30px;
+                    fill: $color__fitz;
+                }
+                &:hover {
+                    text-decoration: none;
+                    background: $color__fitz;
+                    svg.footer-icon {
+                        fill: $color__gray;
+                    }
+                }
+            }
+        }
+    }
+
 }
