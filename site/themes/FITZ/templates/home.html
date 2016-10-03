@@ -11,25 +11,34 @@
                 </svg>
             </div>
             <div class="col-md-6 col-md-offset-2 col-sm-6 col-xs-6">
-                <ul>
-                    {{ nav from="/" include_home="true" scope="tag" }}
-                    <li{{ if is_current or is_parent }} class="active"{{ /if }}>
-                    <a href="{{ url }}">{{ tag:nav_title or title }}</a>
-                    </li>
-                    {{ /nav }}
-                </ul>
+                <a id="menulink" href="#">
+                    <div class="hamburger-wrapper">
+                        <div class="hamburger"></div>
+                        <div class="hamburger"></div>
+                        <div class="hamburger"></div>
+                    </div>
+                </a>
+                <div class="navigation-wrapper">
+                    <ul class="navigation">
+                        {{ nav from="/" include_home="true" scope="tag" }}
+                        <li{{ if is_current or is_parent }} class="active"{{ /if }}>
+                        <a href="{{ url }}">{{ tag:nav_title or title }}</a>
+                        </li>
+                        {{ /nav }}
+                    </ul>
+                </div>
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <section>
-        <div class="row">
-            <div class="col-md-12">
-                {{ content }}
-            </div>
-        </div>
-    </section>
+    <!--<section>-->
+        <!--<div class="row">-->
+            <!--<div class="col-md-9 hero-text">-->
+                <!--{{ content }}-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</section>-->
 
 </div>
 
@@ -38,42 +47,42 @@
         <div class="col-md-6 push-md-6 text-md-right text-xs-center">
             <ul>
                 <li>
-                    <a href="">
+                    <a href="https://twitter.com/C_FitzMaurice" target="_blank">
                         <svg class="footer-icon">
                             <use xlink:href="/site/themes/fitz/svg/sprite.svg#twitter"></use>
                         </svg>
                     </a>
                 </li>
                 <li>
-                    <a href="">
+                    <a href="https://www.linkedin.com/in/colinfitzmaurice" target="_blank">
                         <svg class="footer-icon">
                             <use xlink:href="/site/themes/fitz/svg/sprite.svg#linkedin"></use>
                         </svg>
                     </a>
                 </li>
                 <li>
-                    <a href="">
+                    <a href="https://github.com/c-fitzmaurice" target="_blank">
                         <svg class="footer-icon">
                             <use xlink:href="/site/themes/fitz/svg/sprite.svg#github"></use>
                         </svg>
                     </a>
                 </li>
                 <li>
-                    <a href="">
+                    <a href="https://codepen.io/c_fitzmaurice/" target="_blank">
                         <svg class="footer-icon">
                             <use xlink:href="/site/themes/fitz/svg/sprite.svg#codepen"></use>
                         </svg>
                     </a>
                 </li>
                 <li>
-                    <a href="">
+                    <a href="https://dribbble.com/C_FitzMaurice" target="_blank">
                         <svg class="footer-icon">
                             <use xlink:href="/site/themes/fitz/svg/sprite.svg#dribbble"></use>
                         </svg>
                     </a>
                 </li>
                 <li>
-                    <a href="">
+                    <a href="https://www.instagram.com/c_fitzmaurice/" target="_blank">
                         <svg class="footer-icon">
                             <use xlink:href="/site/themes/fitz/svg/sprite.svg#instagram"></use>
                         </svg>

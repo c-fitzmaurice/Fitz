@@ -13,29 +13,47 @@ body {
     font-family: 'Lato', sans-serif;
     height: 100%;
 }
+
+a {
+    color: $color__fitz;
+    font-weight: bold;
+    &:hover, &:active, &:focus {
+        color: $color__fitz;
+        text-decoration: none;
+    }
+}
+
+.hero-text p {
+    margin-top: 1em;
+    font-size: 2em;
+}
+
 .sticky-page {
     height: 100%;
 }
+
 .sticky-wrap {
     min-height: 100%;
-    margin-bottom: -40px; // equal to footer height
+    margin-bottom: -40px;
     &:after {
         content: "";
         display: block;
         height: 40px;
     }
 }
+
 #logo {
     width: 100%;
     padding-top: 15px;
 }
+
 footer.site-footer {
     height: 40px;
     line-height: 40px;
     color: $color__fitz;
-
     ul {
         margin: 0;
+        padding: 0;
         li {
             display: inline;
             list-style-type: none;
@@ -57,5 +75,103 @@ footer.site-footer {
             }
         }
     }
-
 }
+
+
+// ---------------------------------------
+.hamburger-wrapper {
+    padding: 0;
+    position: fixed;
+    top: 20px;
+    right: 25px;
+    width: 25px;
+    z-index: 999;
+    .hamburger {
+        height: 3px;
+        margin: 4px auto;
+        background: $color__fitz;
+        border-radius: 2px;
+    }
+}
+// ----------------------------------------
+.navigation-wrapper {
+    padding: 40px 0 0 0;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 900;
+    display: none;
+}
+
+.navigation {
+    padding: 20px 25px 0 0;
+    display: none;
+}
+
+.show-menu {
+    display: block;
+}
+
+.navigation li {
+    list-style: none;
+    margin: 50px 0;
+    transition: all ease .6s;
+    -webkit-transition: all ease .6s;
+}
+
+.navigation li.small-padding {
+    margin: 0;
+ }
+
+.navigation li a {
+    display: block;
+    padding: 2px 5px;
+    color: $color__fitz;
+    text-decoration: none;
+    text-align: right;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-right: 3px solid $color__gray;
+    transition: all ease .3s;
+    -webkit-transition: all ease .3s;
+}
+
+.navigation li a:hover {
+    padding-right: 15px;
+    border-right: 3px solid $color__fitz;
+}
+
+@media only screen and (max-width: 544px) {
+    .sticky-wrap {
+        min-height: 100%;
+        margin-bottom: -80px;
+        &:after {
+            content: "";
+            display: block;
+            height: 80px;
+        }
+    }
+    footer.site-footer {
+        height: 80px;
+    }
+}
+
+// Medium screens
+@media only screen and (min-width: 40.063em) { } /* min-width 641px, medium screens */
+
+@media only screen and (min-width: 40.063em) and (max-width: 64em) { } /* min-width 641px and max-width 1024px, use when QAing tablet-only issues */
+
+// Large screens
+@media only screen and (min-width: 64.063em) { } /* min-width 1025px, large screens */
+
+@media only screen and (min-width: 64.063em) and (max-width: 90em) { } /* min-width 1025px and max-width 1440px, use when QAing large screen-only issues */
+
+// XLarge screens
+@media only screen and (min-width: 90.063em) { } /* min-width 1441px, xlarge screens */
+
+@media only screen and (min-width: 90.063em) and (max-width: 120em) { } /* min-width 1441px and max-width 1920px, use when QAing xlarge screen-only issues */
+
+// XXLarge screens
+@media only screen and (min-width: 120.063em) { } /* min-width 1921px, xxlarge screens */

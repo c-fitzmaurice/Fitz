@@ -8,6 +8,17 @@ body {
   font-family: 'Lato', sans-serif;
   height: 100%; }
 
+a {
+  color: #465058;
+  font-weight: bold; }
+  a:hover, a:active, a:focus {
+    color: #465058;
+    text-decoration: none; }
+
+.hero-text p {
+  margin-top: 1em;
+  font-size: 2em; }
+
 .sticky-page {
   height: 100%; }
 
@@ -28,7 +39,8 @@ footer.site-footer {
   line-height: 40px;
   color: #465058; }
   footer.site-footer ul {
-    margin: 0; }
+    margin: 0;
+    padding: 0; }
     footer.site-footer ul li {
       display: inline;
       list-style-type: none; }
@@ -44,5 +56,71 @@ footer.site-footer {
           background: #465058; }
           footer.site-footer ul li a:hover svg.footer-icon {
             fill: #EEEEEE; }
+
+.hamburger-wrapper {
+  padding: 0;
+  position: fixed;
+  top: 20px;
+  right: 25px;
+  width: 25px;
+  z-index: 999; }
+  .hamburger-wrapper .hamburger {
+    height: 3px;
+    margin: 4px auto;
+    background: #465058;
+    border-radius: 2px; }
+
+.navigation-wrapper {
+  padding: 40px 0 0 0;
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 900;
+  display: none; }
+
+.navigation {
+  padding: 20px 25px 0 0;
+  display: none; }
+
+.show-menu {
+  display: block; }
+
+.navigation li {
+  list-style: none;
+  margin: 50px 0;
+  transition: all ease .6s;
+  -webkit-transition: all ease .6s; }
+
+.navigation li.small-padding {
+  margin: 0; }
+
+.navigation li a {
+  display: block;
+  padding: 2px 5px;
+  color: #465058;
+  text-decoration: none;
+  text-align: right;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-right: 3px solid #EEEEEE;
+  transition: all ease .3s;
+  -webkit-transition: all ease .3s; }
+
+.navigation li a:hover {
+  padding-right: 15px;
+  border-right: 3px solid #465058; }
+
+@media only screen and (max-width: 544px) {
+  .sticky-wrap {
+    min-height: 100%;
+    margin-bottom: -80px; }
+    .sticky-wrap:after {
+      content: "";
+      display: block;
+      height: 80px; }
+  footer.site-footer {
+    height: 80px; } }
 
 /*# sourceMappingURL=fitz.css.map */
