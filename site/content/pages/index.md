@@ -1,5 +1,5 @@
 ---
-title: Colin Fitz-Maurice
+title: Home
 template: home
 list:
   - of

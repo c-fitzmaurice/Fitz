@@ -25,6 +25,10 @@ class PasswordProtector extends AbstractProtector
      */
     public function protect()
     {
+        if ($this->isPasswordFormUrl()) {
+            return;
+        }
+
         if (! $this->hasPassword()) {
             $this->redirectToPasswordForm();
         }
@@ -49,6 +53,11 @@ class PasswordProtector extends AbstractProtector
         );
     }
 
+    protected function isPasswordFormUrl()
+    {
+        return $this->url === $this->getPasswordFormUrl();
+    }
+
     protected function getAllowedPasswords()
     {
         return array_get($this->scheme, 'password.allowed', []);
@@ -63,15 +72,16 @@ class PasswordProtector extends AbstractProtector
         throw $e;
     }
 
-    protected function getRedirectUrl()
+    protected function getPasswordFormUrl()
     {
         $default = '/'; // @todo
 
-        $url = array_get($this->scheme, 'password.form_url', $default);
+        return array_get($this->scheme, 'password.form_url', $default);
+    }
 
-        $url .= '?token=' . $this->generateToken();
-
-        return $url;
+    protected function getRedirectUrl()
+    {
+        return $this->getPasswordFormUrl() . '?token=' . $this->generateToken();
     }
 
     protected function generateToken()

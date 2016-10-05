@@ -60,7 +60,8 @@ class UpdateConfiguration
         $defaults = $this->loadDefaults();
 
         foreach ($defaults as $file => $default) {
-            $config[$file] = array_merge($default, array_get($site, $file, []));
+            $site_config = array_get($site, $file, []);
+            $config[$file] = Arr::combineRecursive($default, $site_config);
         }
 
         $this->settings->hydrate($config);

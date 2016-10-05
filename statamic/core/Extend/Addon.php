@@ -17,7 +17,6 @@ class Addon
     public function __construct($name = null)
     {
         $this->bootstrap();
-        $this->buildAddon($name);
         $this->init();
     }
 }

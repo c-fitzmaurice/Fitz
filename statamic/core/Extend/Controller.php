@@ -13,8 +13,6 @@ class Controller extends CpController
     {
         parent::__construct(app('request'));
 
-        $name = explode('\\', get_called_class())[2];
-        $this->buildAddon($name);
         $this->init();
     }
 }

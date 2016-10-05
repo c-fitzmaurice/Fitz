@@ -2,6 +2,7 @@
 
 namespace Statamic\Http\Controllers;
 
+use Statamic\Http\Requests;
 use Statamic\API\AssetContainer;
 use Statamic\API\Stache;
 use Statamic\API\User;
@@ -61,16 +62,9 @@ class AssetContainersController extends CpController
         ]);
     }
 
-    public function store()
+    public function store(Requests\StoreAssetContainerRequest $request)
     {
         $handle = $this->request->input('handle');
-
-        if (AssetContainer::find($handle)) {
-            return [
-                'success' => false,
-                'errors' => ['A container with this handle already exists.']
-            ];
-        }
 
         $container = AssetContainer::create();
 
@@ -89,7 +83,7 @@ class AssetContainersController extends CpController
         ]);
     }
 
-    public function update($uuid)
+    public function update(Requests\UpdateAssetContainerRequest $request, $uuid)
     {
         $container = AssetContainer::find($uuid);
 

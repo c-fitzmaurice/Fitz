@@ -24,12 +24,6 @@ class AddonServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadTranslations();
-
-        foreach ($this->getAddonProviders() as $provider) {
-            if (method_exists($provider, 'boot')) {
-                $this->app->call([$this->app->resolveProviderClass($provider), 'boot']);
-            }
-        }
     }
 
     /**
@@ -50,6 +44,8 @@ class AddonServiceProvider extends ServiceProvider
         $this->app->bind('Statamic\Contracts\Extend\Management\ComposerManager', function() {
             return new ComposerManager;
         });
+
+        $this->app->singleton('Statamic\Extend\Contextual\Store');
 
         $this->registerAddonServiceProviders();
     }

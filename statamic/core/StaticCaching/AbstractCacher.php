@@ -196,8 +196,18 @@ abstract class AbstractCacher implements Cacher
      */
     protected function isExcluded($url)
     {
-        $excluded = Config::get('caching.static_caching_exclude', []);
+        $exclusions = collect(Config::get('caching.static_caching_exclude', []));
 
-        return in_array($url, $excluded);
+        foreach ($exclusions as $excluded) {
+            if (Str::endsWith($excluded, '*') && Str::startsWith($url, substr($excluded, 0, -1))) {
+                return true;
+            }
+
+            if ($url === $excluded) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

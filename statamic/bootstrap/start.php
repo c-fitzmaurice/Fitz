@@ -4,7 +4,7 @@ use Statamic\API\Str;
 use Statamic\API\URL;
 use Statamic\Http\ResourceServer\Server;
 
-define('STATAMIC_VERSION', '2.1.12');
+define('STATAMIC_VERSION', '2.1.13');
 
 /*
 |--------------------------------------------------------------------------

@@ -15,7 +15,7 @@ class ContextualResource extends ContextualObject
     public function url($path)
     {
         return URL::prependSiteRoot(
-            URL::assemble(RESOURCES_ROUTE, 'addons', $this->context->getAddonClassName(), $path)
+            URL::assemble(RESOURCES_ROUTE, 'addons', $this->context, $path)
         );
     }
 

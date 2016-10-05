@@ -152,7 +152,7 @@ class Tree
                 'children'    => $children,
                 'parent'      => $parent,
                 'is_current'  => URL::getCurrent() == $page->uri(),
-                'is_parent'   => ($page->uri() !== '/') && Pattern::startsWith(URL::getCurrent(), $page->uri())
+                'is_parent'   => URL::isAncestor($page->uri())
             ];
 
             $data[] = array_merge($page_data, $extra);

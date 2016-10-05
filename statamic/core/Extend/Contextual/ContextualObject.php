@@ -2,22 +2,26 @@
 
 namespace Statamic\Extend\Contextual;
 
-use Statamic\Extend\Addon;
-
 class ContextualObject
 {
     /**
-     * @protected \Statamic\Extend\Addon
+     * The "context" of the object. The addon name.
+     *
+     * @protected string
      */
     protected $context;
 
     /**
      * Create a new contextual addon object
      *
-     * @param  \Statamic\Extend\Addon  $context
+     * @param  \Statamic\Extend\Extensible|string  $context
      */
-    public function __construct(Addon $context)
+    public function __construct($context)
     {
+        if (is_object($context)) {
+            $context = $context->getAddonClassName();
+        }
+
         $this->context = $context;
     }
 
@@ -29,6 +33,6 @@ class ContextualObject
      */
     protected function contextualize($value)
     {
-        return 'addons:' . $this->context->getAddonClassName() . ':' . $value;
+        return 'addons:' . $this->context . ':' . $value;
     }
 }

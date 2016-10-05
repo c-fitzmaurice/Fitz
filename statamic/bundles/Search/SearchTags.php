@@ -31,6 +31,16 @@ class SearchTags extends CollectionTags
     private $blink_hash;
 
     /**
+     * The {{ search }} tag. An alias of search:results
+     *
+     * @return string
+     */
+    public function index()
+    {
+        return $this->results();
+    }
+
+    /**
      * The {{ search:results }} tag
      *
      * @return string

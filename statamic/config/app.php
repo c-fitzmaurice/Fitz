@@ -135,7 +135,6 @@ return [
         'Illuminate\Redis\RedisServiceProvider',
         'Illuminate\Auth\Passwords\PasswordResetServiceProvider',
         'Illuminate\Session\SessionServiceProvider',
-        'Illuminate\Translation\TranslationServiceProvider',
         'Illuminate\Validation\ValidationServiceProvider',
         'Statamic\Providers\ViewServiceProvider',
 
@@ -155,6 +154,8 @@ return [
         'Statamic\Providers\BladeServiceProvider',
         'Statamic\Providers\AddonServiceProvider',
         'Statamic\Providers\EmailServiceProvider',
+        'Statamic\Providers\TranslationServiceProvider',
+        'Statamic\Providers\ValidationServiceProvider',
         'Statamic\StaticCaching\ServiceProvider',
         'Collective\Html\HtmlServiceProvider',
         'SocialiteProviders\Manager\ServiceProvider',

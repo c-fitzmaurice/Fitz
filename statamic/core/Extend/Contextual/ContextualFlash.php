@@ -2,8 +2,6 @@
 
 namespace Statamic\Extend\Contextual;
 
-use Statamic\Extend\Contextual\ContextualSession;
-
 class ContextualFlash extends ContextualSession
 {
     /**

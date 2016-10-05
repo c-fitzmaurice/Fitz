@@ -67,9 +67,9 @@ footer.site-footer {
                 }
                 &:hover {
                     text-decoration: none;
-                    background: $color__fitz;
-                    svg.footer-icon {
-                        fill: $color__gray;
+                    svg {
+                        transform: translateY(-5px);
+                        -webkit-transform: translateY(-5px);
                     }
                 }
             }
@@ -100,9 +100,14 @@ footer.site-footer {
     top: 0;
     right: 0;
     height: 100%;
-    width: 100%;
     z-index: 900;
     display: none;
+    background-color: transparent;
+    -webkit-transition: all 1s linear;
+    -moz-transition: all 1s linear;
+    -ms-transition: all 1s linear;
+    -o-transition: all 1s linear;
+    transition: all 1s linear;
 }
 
 .navigation {
@@ -112,13 +117,14 @@ footer.site-footer {
 
 .show-menu {
     display: block;
+    background-color: rgba(70,80,88,0.25);
 }
 
 .navigation li {
     list-style: none;
     margin: 50px 0;
-    transition: all ease .6s;
-    -webkit-transition: all ease .6s;
+    transition: all ease .5s;
+    -webkit-transition: all ease .5s;
 }
 
 .navigation li.small-padding {
@@ -143,6 +149,7 @@ footer.site-footer {
     border-right: 3px solid $color__fitz;
 }
 
+// Small
 @media only screen and (max-width: 544px) {
     .sticky-wrap {
         min-height: 100%;
@@ -153,25 +160,38 @@ footer.site-footer {
             height: 80px;
         }
     }
+    .navigation-wrapper {
+        width: 60%;
+    }
     footer.site-footer {
         height: 80px;
     }
 }
 
-// Medium screens
-@media only screen and (min-width: 40.063em) { } /* min-width 641px, medium screens */
+// Small devices (landscape phones, 544px and up)
+@media (min-width: 544px) {
+    .navigation-wrapper {
+        width: 60%;
+    }
+}
 
-@media only screen and (min-width: 40.063em) and (max-width: 64em) { } /* min-width 641px and max-width 1024px, use when QAing tablet-only issues */
+// Medium devices (tablets, 768px and up)
+@media (min-width: 768px) {
+    .navigation-wrapper {
+        width: 45%;
+    }
+}
 
-// Large screens
-@media only screen and (min-width: 64.063em) { } /* min-width 1025px, large screens */
+// Large devices (desktops, 992px and up)
+@media (min-width: 992px) {
+    .navigation-wrapper {
+        width: 45%;
+    }
+}
 
-@media only screen and (min-width: 64.063em) and (max-width: 90em) { } /* min-width 1025px and max-width 1440px, use when QAing large screen-only issues */
-
-// XLarge screens
-@media only screen and (min-width: 90.063em) { } /* min-width 1441px, xlarge screens */
-
-@media only screen and (min-width: 90.063em) and (max-width: 120em) { } /* min-width 1441px and max-width 1920px, use when QAing xlarge screen-only issues */
-
-// XXLarge screens
-@media only screen and (min-width: 120.063em) { } /* min-width 1921px, xxlarge screens */
+// Extra large devices (large desktops, 1200px and up)
+@media (min-width: 1200px) {
+    .navigation-wrapper {
+        width: 30%;
+    }
+}

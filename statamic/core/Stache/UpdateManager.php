@@ -124,7 +124,14 @@ class UpdateManager
      */
     protected function getTimestamps()
     {
-        return collect(Cache::get('stache::timestamps', []));
+        $timestamps = Cache::get('stache::timestamps', []);
+
+        // After 2.1.13, the timestamps are json encoded.
+        if (is_string($timestamps)) {
+            $timestamps = json_decode($timestamps, true);
+        }
+
+        return collect($timestamps);
     }
 
     /**
@@ -134,7 +141,7 @@ class UpdateManager
      */
     private function persistTimestamps()
     {
-        Cache::put('stache::timestamps', $this->timestamps->all());
+        Cache::put('stache::timestamps', json_encode($this->timestamps->all()));
     }
 
     /**

@@ -12,7 +12,6 @@ class Command extends LaravelCommand
     {
         parent::__construct();
 
-        $name = explode('\\', get_called_class())[2];
-        $this->buildAddon($name);
+        $this->init();
     }
 }

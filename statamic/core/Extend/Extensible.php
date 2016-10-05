@@ -10,6 +10,7 @@ use Statamic\API\Email;
 use Statamic\API\Str;
 use ReflectionException;
 use Statamic\Config\Addons;
+use Statamic\Extend\Contextual\Store;
 use Statamic\Extend\Contextual\ContextualJs;
 use Statamic\Extend\Contextual\ContextualCss;
 use Statamic\Exceptions\ApiNotFoundException;
@@ -25,90 +26,108 @@ use Statamic\Extend\Contextual\ContextualResource;
 trait Extensible
 {
     /**
-     * Name of the addon
-     * @var string
-     */
-    public $addon_name;
-
-    /**
-     * Type of addon. Tags, etc
-     * @var string
-     */
-    public $addon_type;
-
-    /**
-     * @var  \Statamic\Extend\Contextual\ContextualBlink
-     */
-    protected $blink;
-
-    /**
-     * @var  \Statamic\Extend\Contextual\ContextualCache
-     */
-    protected $cache;
-
-    /**
-     * @var  \Statamic\Extend\Contextual\ContextualStorage
-     */
-    protected $storage;
-
-    /**
-     * @var  \Statamic\Extend\Contextual\ContextualSession
-     */
-    protected $session;
-
-    /**
-     * @var  \Statamic\Extend\Contextual\ContextualCookie
-     */
-    protected $cookie;
-
-    /**
-     * @var  \Statamic\Extend\Contextual\ContextualFlash
-     */
-    protected $flash;
-
-    /**
-     * @var  \Statamic\Extend\Contextual\ContextualResource
-     */
-    public $resource;
-
-    /**
-     * @var  \Statamic\Extend\Contextual\ContextualCss
-     */
-    public $css;
-
-    /**
-     * @var  \Statamic\Extend\Contextual\ContextualJs
-     */
-    public $js;
-
-    /**
-     * @var  \Statamic\Extend\Contextual\ContextualImage
-     */
-    public $img;
-
-
-    /**
-     * Build up the addon instance
+     * Magic method for properties so we can keep ->blink etc working as a property
      *
-     * @param null|string $name  The name of the addon, if not inheriting.
+     * @param string $key
+     * @return mixed
      */
-    private function buildAddon($name = null)
+    public function __get($key)
     {
-        $this->addon_name = $name ?: $this->parseAddonName();
-        $this->addon_type = $this->parseAddonType();
+        switch ($key) {
+            case 'addon_name':
+                return $this->getAddonClassName();
+            case 'addon_type':
+                return $this->getAddonType();
+            default:
+                return call_user_func([$this, Str::camel($key)]);
+        }
+    }
 
-        $addon = ($this instanceof Addon) ? $this : new Addon($name);
+    private function getContextualStore($key, $class)
+    {
+        return app(Store::class)
+            ->getOrPut($this->getAddonClassName(), collect())
+            ->getOrPut($key, $class);
+    }
 
-        $this->blink = new ContextualBlink($addon);
-        $this->cache = new ContextualCache($addon);
-        $this->storage = new ContextualStorage($addon);
-        $this->session = new ContextualSession($addon);
-        $this->cookie = new ContextualCookie($addon);
-        $this->flash = new ContextualFlash($addon);
-        $this->resource = new ContextualResource($addon);
-        $this->css = new ContextualCss($addon);
-        $this->js = new ContextualJs($addon);
-        $this->img = new ContextualImage($addon);
+    /**
+     * @return ContextualBlink
+     */
+    public function blink()
+    {
+        return $this->getContextualStore('blink', new ContextualBlink($this));
+    }
+
+    /**
+     * @return ContextualCache
+     */
+    public function cache()
+    {
+        return $this->getContextualStore('cache', new ContextualCache($this));
+    }
+
+    /**
+     * @return ContextualStorage
+     */
+    public function storage()
+    {
+        return $this->getContextualStore('storage', new ContextualStorage($this));
+    }
+
+    /**
+     * @return ContextualSession
+     */
+    public function session()
+    {
+        return $this->getContextualStore('session', new ContextualSession($this));
+    }
+
+    /**
+     * @return ContextualCookie
+     */
+    public function cookie()
+    {
+        return $this->getContextualStore('cookie', new ContextualCookie($this));
+    }
+
+    /**
+     * @return ContextualFlash
+     */
+    public function flash()
+    {
+        return $this->getContextualStore('flash', new ContextualFlash($this));
+    }
+
+    /**
+     * @return ContextualResource
+     */
+    public function resource()
+    {
+        return $this->getContextualStore('resource', new ContextualResource($this));
+    }
+
+    /**
+     * @return ContextualCss
+     */
+    public function css()
+    {
+        return $this->getContextualStore('css', new ContextualCss($this));
+    }
+
+    /**
+     * @return ContextualJs
+     */
+    public function js()
+    {
+        return $this->getContextualStore('js', new ContextualJs($this));
+    }
+
+    /**
+     * @return ContextualImage
+     */
+    public function img()
+    {
+        return $this->getContextualStore('img', new ContextualImage($this));
     }
 
     /**
@@ -135,27 +154,13 @@ trait Extensible
     }
 
     /**
-     * Parses the name of the plugin from the class
-     *
-     * @return string
-     */
-    private function parseAddonName()
-    {
-        if ($this->addon_name) {
-            return $this->addon_name;
-        }
-
-        return $this->addon_name = explode('\\', get_called_class())[2];
-    }
-
-    /**
      * Get the name of the addon, uncustomized by meta.yaml
      *
      * @return string
      */
     public function getAddonClassName()
     {
-        return $this->addon_name;
+        return explode('\\', get_called_class())[2];
     }
 
     /**
@@ -187,7 +192,7 @@ trait Extensible
      *
      * @return string
      */
-    private function parseAddonType()
+    public function getAddonType()
     {
         $class_bits = explode('\\', get_called_class());
         $class = last($class_bits);
@@ -252,7 +257,7 @@ trait Extensible
      */
     public function getConfig($keys = null, $default = null)
     {
-        $config = app(Addons::class)->get(Str::snake($this->addon_name));
+        $config = app(Addons::class)->get(Str::snake($this->addon_name)) ?: [];
 
         if (is_null($keys)) {
             return $config;

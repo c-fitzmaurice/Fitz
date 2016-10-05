@@ -354,6 +354,10 @@ class StatamicController extends Controller
         $data = (is_object($this->data)) ? $this->data->toArray() : $this->data;
 
         if ($redirect = array_get($data, 'redirect')) {
+            if ($redirect == '404') {
+                abort(404);
+            }
+
             return redirect($redirect);
         }
     }
@@ -449,10 +453,8 @@ class StatamicController extends Controller
     /**
      * Adjust the content type header of the request, if we want something other than HTML.
      */
-    private function adjustResponseContentType()
+    private function adjustResponseContentType($data)
     {
-        $data = (is_object($this->data)) ? $this->data->toArray() : $this->data;
-
         $content_type = array_get($data, 'content_type', 'html');
 
         // If it's html, we don't need to continue.
@@ -486,12 +488,22 @@ class StatamicController extends Controller
      */
     private function modifyResponse()
     {
+
+        $data = (is_object($this->data)) ? $this->data->toArray() : $this->data;
+
         // Modify the response if we're attempting to serve something other than just HTML.
-        $this->adjustResponseContentType();
+        $this->adjustResponseContentType($data);
 
         // Add a powered-by header, but only if it's cool with them.
         if (Config::get('system.send_powered_by_header')) {
             $this->response->header('X-Powered-By', 'Statamic');
+        }
+
+        // Allow users to set custom headers
+        $headers = array_get($data, 'headers', []);
+
+        foreach ($headers as $header => $value) {
+            $this->response->header($header, $value);
         }
 
         // Allow addons to modify the response. They can add headers, modify the content, etc.

@@ -63,20 +63,19 @@ class Parser
      */
     public function parse($text, $data = [], $callback = false, $allowPhp = false)
     {
-        // <statamic>
-        // before we get started, make sure there are tags that need parsing
-        if (strpos($text, '{{') === false) {
-            return $text;
-        }
-        // </statamic>
+        $this->allowPhp = $allowPhp;
 
         // <statamic>
+        // before we get started, make sure the text needs parsing
+        if ( ! $this->allowPhp && strpos($text, '{{') === false) {
+            return $text;
+        }
+
         // use : as scope-glue
         $this->scopeGlue = ':';
         // </statamic>
 
         $this->setupRegex();
-        $this->allowPhp = $allowPhp;
 
         // Let's store the current callback data with the the local data
         // so we can use it straight after a callback is called.
@@ -525,113 +524,6 @@ class Parser
                             $parameters = explode(':', $parameters);
                             $values = $this->runModifier($modifier, $values, $parameters, $data);
                         }
-//
-//                        // first only
-//                        if (isset($parameters['first'])) {
-//                            $values = array_splice($values, 0, 1);
-//                        }
-//
-//                        // last only
-//                        if (isset($parameters['last'])) {
-//                            $values = array_splice($values, -1, 1);
-//                        }
-//
-//                        // specific-index only
-//                        if (isset($parameters['index'])) {
-//                            $values = array_splice($values, $parameters['index'] - 1, 1);
-//                        }
-//
-//                        // now filter remaining values ----------------------------
-//
-//                        // excludes
-//                        if (isset($parameters['exclude'])) {
-//                            $exclude = array_flip(explode('|', $parameters['exclude']));
-//                            $values  = array_diff_key($values, $exclude);
-//                        }
-//
-//                        // includes
-//                        if (isset($parameters['include'])) {
-//                            $include = array_flip(explode('|', $parameters['include']));
-//                            $values  = array_intersect_key($values, $include);
-//                        }
-//
-//                        // now sort remaining values ------------------------------
-//
-//                        // field to sort by
-//                        if (isset($parameters['sort_by'])) {
-//                            $sort_field = $parameters['sort_by'];
-//
-//                            if ($sort_field == 'random') {
-//                                shuffle($values);
-//                            } elseif (array_values($values) === $values) {
-//                                sort($values);
-//                            } else {
-//                                usort($values, function ($a, $b) use ($sort_field) {
-//                                    $a_value = array_get($a, $sort_field, null);
-//                                    $b_value = array_get($b, $sort_field, null);
-//
-//                                    return \Helper::compareValues($a_value, $b_value);
-//                                });
-//                            }
-//                        }
-//
-//                        // direction to sort by
-//                        if (isset($parameters['sort_dir']) && $parameters['sort_dir'] == 'desc') {
-//                            $values = array_reverse($values);
-//                        }
-//
-//                        // or, multisort
-//                        if (isset($parameters['sort'])) {
-//                            $chunks = explode(',', $parameters['sort']);
-//                            foreach ($chunks as &$chunk) {
-//                                $chunk = explode(' ', trim($chunk));
-//
-//                                if (empty($chunk[1])) {
-//                                    $chunk[1] = 'asc';
-//                                }
-//                            }
-//
-//                            // sort by field
-//                            usort($values, function ($item_1, $item_2) use ($chunks) {
-//                                foreach ($chunks as $chunk) {
-//                                    $field     = $chunk[0];
-//                                    $direction = $chunk[1];
-//
-//                                    // grab values, translating some user-facing names into internal ones
-//                                    switch ($field) {
-//                                        case "random":
-//                                            return rand(-1, 1);
-//                                            break;
-//
-//                                        // not a special case, grab the field values if they exist
-//                                        default:
-//                                            $value_1 = (isset($item_1[$field])) ? $item_1[$field] : null;
-//                                            $value_2 = (isset($item_2[$field])) ? $item_2[$field] : null;
-//                                            break;
-//                                    }
-//
-//                                    // compare the two values
-//                                    // ----------------------------------------------------------------
-//                                    $result = \Helper::compareValues($value_1, $value_2);
-//
-//                                    if ($result !== 0) {
-//                                        return ($direction === 'desc') ? $result * -1 : $result;
-//                                    }
-//                                }
-//
-//                                return 0;
-//                            });
-//                        }
-
-                        // finally, offset & limit values -------------------------
-
-//                        if (isset($parameters['offset']) || isset($parameters['limit'])) {
-//                            $offset = (isset($parameters['offset'])) ? $parameters['offset'] : 0;
-//                            $limit  = (isset($parameters['limit'])) ? $parameters['limit'] : null;
-//
-//                            $values = array_slice($values, $offset, $limit);
-//                        }
-
 
                         // loop over remaining values, adding contextual tags
                         // to each iteration of the loop

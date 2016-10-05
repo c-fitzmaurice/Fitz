@@ -12,7 +12,7 @@ elixir(function(mix) {
 
     .sass(theme + '.scss', 'css/' + theme + '.css')
 
-    .scripts(theme + '.js', 'js/' + theme + '.js')
+    .scripts(theme + '-raw.js', 'js/' + theme + '.js')
 
     .svgSprite('./svg','./svg');
 

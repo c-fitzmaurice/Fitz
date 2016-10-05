@@ -1,6 +1,6 @@
 collections:
   blog: '/blog/{year}/{month}/{day}/{slug}'
-  things: '/things/{slug}'
+  things: '/projects/{slug}'
   events: '/events/{slug}'
 taxonomies:
   tags: '/blog/tags/{slug}'

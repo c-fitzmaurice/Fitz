@@ -17,7 +17,7 @@
  *
  * Additions and fixes Copyright (c) 2006    Alex Shiels       https://twitter.com/tellyworth
  * Additions and fixes Copyright (c) 2010    Stef Dawson       http://stefdawson.com/
- * Additions and fixes Copyright (c) 2010-14 Netcarver         https://github.com/netcarver
+ * Additions and fixes Copyright (c) 2010-16 Netcarver         https://github.com/netcarver
  * Additions and fixes Copyright (c) 2011    Jeff Soo          http://ipsedixit.net/
  * Additions and fixes Copyright (c) 2012    Robert Wetzlmayr  http://wetzlmayr.com/
  * Additions and fixes Copyright (c) 2012-14 Jukka Svahn       http://rahforum.biz/
@@ -2052,7 +2052,7 @@ class Parser
         }
 
         if ($element == 'td' or $element == 'tr') {
-            if (preg_match("/($this->vlgn)/", $matched, $vert)) {
+            if (preg_match("/^($this->vlgn)/", $matched, $vert)) {
                 $style[] = "vertical-align:" . $this->vAlign($vert[1]);
             }
         }

@@ -40,6 +40,11 @@ class Stache
     private $updates = [];
 
     /**
+     * @var string
+     */
+    private $building_path;
+
+    /**
      * The "temperature" of the Stache.
      *
      * @var int
@@ -68,7 +73,9 @@ class Stache
         $this->drivers = collect();
         $this->repositories = collect();
 
-        $this->cool();
+        $this->building_path = cache_path('stache_building');
+
+        $this->temperature = self::TEMP_COLD;
     }
 
     /**
@@ -79,6 +86,10 @@ class Stache
     public function cool()
     {
         $this->temperature = self::TEMP_COLD;
+
+        if (! file_exists($this->building_path)) {
+            file_put_contents($this->building_path, true);
+        }
     }
 
     /**
@@ -89,6 +100,10 @@ class Stache
     public function heat()
     {
         $this->temperature = self::TEMP_WARM;
+
+        if (file_exists($this->building_path)) {
+            unlink($this->building_path);
+        }
     }
 
     /**
@@ -109,6 +124,16 @@ class Stache
     public function isCold()
     {
         return $this->temperature === self::TEMP_COLD;
+    }
+
+    /**
+     * Whether the Stache is in the middle of performing its initial warm up.
+     *
+     * @return bool
+     */
+    public function isPerformingInitialWarmUp()
+    {
+        return file_exists($this->building_path);
     }
 
     /**

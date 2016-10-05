@@ -7,6 +7,7 @@ use Statamic\API\Helper;
 use Statamic\API\Parse;
 use Statamic\API\Str;
 use Statamic\Exceptions\UuidExistsException;
+use Statamic\Exceptions\UrlNotFoundException;
 use Statamic\Contracts\Data\Data as DataContract;
 
 abstract class Data implements DataContract
@@ -479,7 +480,16 @@ abstract class Data implements DataContract
             $content = Str::replace($content, '}', '&rbrace;');
         }
 
-        return $content;
+        try {
+            return Parse::template(
+                $content,
+                array_merge($this->store->all(), datastore()->getAll())
+            );
+        } catch (UrlNotFoundException $e) {
+            // If content has a {{ 404 }} in it, it'll actually throw the 404.
+            // We don't want to perform the redirect, so we'll just return nothing.
+            return;
+        }
     }
 
     /**

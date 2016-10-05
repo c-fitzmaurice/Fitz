@@ -96,6 +96,14 @@ class StacheServiceProvider extends ServiceProvider
 
         $this->app->make(Stache::class)->locales(Config::getLocales());
 
+        // On large sites, the Stache may take some time to build initially. If another request
+        // hits Statamic while it's in the middle of being built, it may use a half-created
+        // cache resulting in missing data. Here, we'll exit early with a simple refresh
+        // meta tag. Once the Stache is built, the page will resume loading as usual.
+        if ($this->stache->isPerformingInitialWarmUp()) {
+            exit('<meta http-equiv="refresh" content="1; URL=\''.request()->path().'\'" />');
+        }
+
         $this->manager = $this->app->make(Manager::class);
 
         $this->manager->registerDrivers();

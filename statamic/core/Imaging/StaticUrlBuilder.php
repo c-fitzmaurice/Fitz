@@ -72,7 +72,13 @@ class StaticUrlBuilder extends ImageUrlBuilder
             return $this->generator->generateByPath($this->item, $this->params);
         }
 
-        $asset = ($this->type === 'asset') ? $this->item : Asset::find($this->item);
+        $asset = ($this->itemType() === 'asset') ? $this->item : Asset::find($this->item);
+
+        if (! $asset) {
+            throw new AssetNotFoundException(
+                sprintf('Could not generate a static manipulated image URL from asset [%s]', $this->item)
+            );
+        }
 
         return $this->generator->generateByAsset($asset, $this->params);
     }

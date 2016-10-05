@@ -188,7 +188,7 @@ class NavFactory
 
     private function buildConfigureNav()
     {
-        $nav = $this->item('configure');
+        $nav = $this->item('configure')->title(t('nav_configure'));
 
         if ($this->access('super')) {
             $nav->add($this->item('addons')->route('addons')->title(t('nav_addons')));

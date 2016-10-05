@@ -7,7 +7,7 @@ class ContextualBlink extends ContextualObject
     /**
      * @var  array
      */
-    protected static $data = [];
+    protected $data = [];
 
     /**
      * Gets blink data for a variable, or the $default if variable isn't set
@@ -19,7 +19,7 @@ class ContextualBlink extends ContextualObject
     public function get($key, $default = null)
     {
         if ($this->exists($key)) {
-            return self::$data[$key];
+            return $this->data[$key];
         }
 
         return $default;
@@ -33,7 +33,7 @@ class ContextualBlink extends ContextualObject
      */
     public function put($key, $value)
     {
-        self::$data[$key] = $value;
+        $this->data[$key] = $value;
     }
 
     /**
@@ -44,7 +44,7 @@ class ContextualBlink extends ContextualObject
      */
     public function exists($key)
     {
-        return isset(self::$data[$key]);
+        return isset($this->data[$key]);
     }
 
     /**
@@ -55,7 +55,7 @@ class ContextualBlink extends ContextualObject
      */
     public function increment($key, $increment = 1)
     {
-        self::$data[$key] = self::$data[$key] + $increment;
+        $this->data[$key] = $this->data[$key] + $increment;
     }
 
     /**
@@ -63,7 +63,7 @@ class ContextualBlink extends ContextualObject
      */
     public function clear()
     {
-        self::$data = [];
+        $this->data = [];
     }
 
     /**
@@ -73,6 +73,6 @@ class ContextualBlink extends ContextualObject
      */
     public function all()
     {
-        return self::$data;
+        return $this->data;
     }
 }

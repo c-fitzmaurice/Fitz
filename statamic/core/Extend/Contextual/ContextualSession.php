@@ -2,8 +2,6 @@
 
 namespace Statamic\Extend\Contextual;
 
-use Statamic\Extend\Contextual\ContextualObject;
-
 class ContextualSession extends ContextualObject
 {
     /**
@@ -30,7 +28,7 @@ class ContextualSession extends ContextualObject
     }
 
     /**
-     * Check if a key exists in the flash
+     * Check if a key exists in the session
      *
      * @param string $key  Key to check
      * @return bool
@@ -38,5 +36,16 @@ class ContextualSession extends ContextualObject
     public function exists($key)
     {
         return session()->has($this->contextualize($key));
+    }
+
+    /**
+     * Remove a key from the session
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function forget($key)
+    {
+        return session()->remove($this->contextualize($key));
     }
 }

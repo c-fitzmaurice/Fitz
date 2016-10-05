@@ -2,16 +2,14 @@
 
 namespace Statamic\Http\Controllers;
 
-use Statamic\API\Nav;
+use Lang;
 use Statamic\API\Str;
 use Statamic\API\File;
-use Statamic\API\Path;
 use Statamic\API\YAML;
 use Statamic\API\User;
-use Statamic\API\Cache;
+use Statamic\API\Helper;
 use Statamic\API\Config;
 use Statamic\API\Folder;
-use Statamic\API\Content;
 use Illuminate\Http\Request;
 
 /**
@@ -31,11 +29,7 @@ class CpController extends Controller
      */
     public function __construct(Request $request)
     {
-        // Set the locale the translator will use. Allow users to set from
-        // their own account, and fall back to the default site locale.
-        $locale = site_locale();
-        $locale = (\Auth::check()) ? User::getCurrent()->get('locale', $locale) : $locale;
-        \Lang::setLocale($locale);
+        $this->setLocale();
 
         $this->request = $request;
     }
@@ -49,17 +43,6 @@ class CpController extends Controller
     }
 
     /**
-     * Save some flash data to the session
-     *
-     * @param string $key
-     * @param string $value
-     */
-    protected function flash($key, $value)
-    {
-        $this->request->session()->flash($key, $value);
-    }
-
-    /**
      * Set the successful flash message
      *
      * @param string $message
@@ -68,10 +51,10 @@ class CpController extends Controller
      */
     protected function success($message, $text = null)
     {
-        $this->flash('success', $message);
+        $this->request->session()->flash('success', $message);
 
         if ($text) {
-            $this->flash('success_text', $text);
+            $this->request->session()->flash('success_text', $text);
         }
     }
 
@@ -110,5 +93,26 @@ class CpController extends Controller
         }
 
         return $themes;
+    }
+
+    /**
+     * Set the locale the translator will use within the control panel.
+     *
+     * Users can set their own locale in their files. If unspecified, it will fall back
+     * to the locale setting in cp.yaml. Finally, it will fall back to the site locale.
+     *
+     * @return void
+     */
+    private function setLocale()
+    {
+        $user_locale = (User::loggedIn()) ? User::getCurrent()->get('locale') : null;
+
+        $locale = Helper::pick(
+            $user_locale,
+            Config::get('cp.locale'),
+            Config::getDefaultLocale()
+        );
+
+        Lang::setLocale($locale);
     }
 }
