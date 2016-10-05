@@ -1,9 +1,0 @@
-title: Projects
-create_title: Adding my most recent project
-fields:
-  title:
-    type: title
-    display: Title
-  photo:
-    display: Image URL
-    type: text

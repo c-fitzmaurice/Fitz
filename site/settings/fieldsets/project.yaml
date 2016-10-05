@@ -1,0 +1,23 @@
+title: Project Post
+create_title: Create a post for your most recent project
+fields:
+  project:
+    type: text
+    display: Project
+    instructions: Who was this project for?
+    width: 50
+    validate: required
+  website:
+    type: text
+    display: Website
+    instructions: What is the URL for this project?
+    width: 50
+    validate: URL
+  description:
+    type: markdown
+    display: Project Description
+    instructions: What did you do on this project?
+    cheatsheet: true
+    container: main
+    folder: projects
+    validate: required

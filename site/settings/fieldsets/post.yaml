@@ -29,3 +29,4 @@ fields:
     type: markdown
     display: Content
     localizable: true
+    cheatsheet: false

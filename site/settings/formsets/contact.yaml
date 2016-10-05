@@ -1,5 +1,4 @@
-title: Contact Me
-
+title: Get in touch
 fields:
   name:
     display: Name
@@ -12,17 +11,14 @@ fields:
     validate: integer
   comment:
     display: Comment
-
+columns:
+  - name
+  - email
+  - number
+  - comment
 metrics:
-  -
+  - 
     type: total
     label: Total Responses
-  -
-    type: sum
-    field: number
-    label: Sum of Favorite Number
-  -
-    type: average
-    field: number
-    label: Average Favorite Number
-    precision: 1
+email:
+  - [ ]

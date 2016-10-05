@@ -1,7 +1,8 @@
 collections:
-  blog: '/blog/{year}/{month}/{day}/{slug}'
+  blog: '/blog/{slug}'
   things: '/projects/{slug}'
   events: '/events/{slug}'
+  projects: '/projects/{slug}'
 taxonomies:
   tags: '/blog/tags/{slug}'
   categories: '/blog/categories/{slug}'
