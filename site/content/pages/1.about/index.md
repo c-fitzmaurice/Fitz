@@ -1,5 +1,5 @@
 ---
-title: About
+title: About Me
 fieldset: default
 id: c5e76a42-f1e0-4d12-a94b-d6fa7dbdab92
 ---
