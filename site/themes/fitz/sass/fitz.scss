@@ -3,15 +3,15 @@
 $color__fitz: #465058;
 $color__gray: #EEEEEE;
 
-html {
+body {
+    font-family: 'Lato', sans-serif;
+    border-top: 6px solid $color__fitz;
+}
+
+body.home {
     border: 6px solid $color__fitz;
     height: 100%;
     width: 100%;
-}
-
-body {
-    font-family: 'Lato', sans-serif;
-    height: 100%;
 }
 
 a {

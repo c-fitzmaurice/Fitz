@@ -1,12 +1,12 @@
 @import 'https://fonts.googleapis.com/css?family=Lato';
-html {
+body {
+  font-family: 'Lato', sans-serif;
+  border-top: 6px solid #465058; }
+
+body.home {
   border: 6px solid #465058;
   height: 100%;
   width: 100%; }
-
-body {
-  font-family: 'Lato', sans-serif;
-  height: 100%; }
 
 a {
   color: #465058;
