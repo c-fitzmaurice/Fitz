@@ -7,7 +7,15 @@ widgets:
     limit: 5
     importance: 3
   - 
-    type: updater
+    type: collection
+    collection: projects
+    limit: 5
+    importance: 3
+  - 
+    type: collection
+    collection: jobs
+    limit: 5
+    importance: 3
   - 
     type: form
     form: contact
@@ -17,3 +25,5 @@ widgets:
       - name
       - email
       - subject
+  - 
+    type: updater

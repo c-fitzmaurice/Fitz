@@ -1,5 +1,5 @@
 title: Jobs
-create_title: Enter employment details
+create_title: New Job Post
 fields:
   company:
     type: text

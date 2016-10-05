@@ -1,5 +1,5 @@
 title: Project Post
-create_title: Create a post for your most recent project
+create_title: New Project Post
 fields:
   project:
     type: text
