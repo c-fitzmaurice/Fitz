@@ -5,8 +5,13 @@ namespace Statamic\Extend;
 use Statamic\API\Path;
 use Statamic\API\Helper;
 
-class Widget extends Addon
+class Widget
 {
+    /**
+     * Provides access to addon helper methods
+     */
+    use Extensible;
+
     /**
      * The widget configuration as supplied by the user
      * @var array
@@ -20,7 +25,8 @@ class Widget extends Addon
      */
     public function __construct($config)
     {
-        parent::__construct();
+        $this->bootstrap();
+        $this->init();
 
         $this->config = $config;
     }

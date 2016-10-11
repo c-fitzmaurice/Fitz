@@ -1,25 +1,34 @@
 <template>
     <div class="time-template-wrapper">
-        <input type="number" min="00" max="23" v-model="hour" v-el:hour
+        <input class="form-control"
+            type="number" min="00" max="23" v-model="hour" v-el:hour
             @keydown.up.prevent="incrementHour(1)"
             @keydown.down.prevent="incrementHour(-1)"
             @keydown.esc="clear"
             @keydown.186.prevent="focusMinute"
             @keydown.190.prevent="focusMinute"
+            tabindex="0"
         />
         <span class="colon">:</span>
-        <input type="number" min="00" max="59" v-model="minute" v-el:minute
+        <input class="form-control"
+            type="number" min="00" max="59" v-model="minute" v-el:minute
             @keydown.up.prevent="incrementMinute(1)"
             @keydown.down.prevent="incrementMinute(-1)"
             @keydown.esc="clear"
+            tabindex="0"
         />
         <div>
-            <span class="icon icon-remove" v-show="hasTime" v-if="hasTime" @click="clear">&times;</span>
+            <span class="icon icon-remove" tabindex="0"
+                  v-show="hasTime" v-if="hasTime"
+                  @click="clear" @keyup.enter.space="clear">
+                  &times;
+            </span>
         </div>
     </div>
 </template>
 
 <script>
+
 module.exports = {
 
     props: ['data', 'config', 'name'],

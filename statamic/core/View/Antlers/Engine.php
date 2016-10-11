@@ -155,10 +155,11 @@ class Engine implements EngineInterface
                 'parameters' => $parameters,
                 'content'    => $content,
                 'context'    => $context,
-                'tag'        => $name . ':' . $original_method
+                'tag'        => $name . ':' . $original_method,
+                'tag_method' => $original_method
             ]);
 
-            $output = call_user_func([$tag, $method], $original_method);
+            $output = call_user_func([$tag, $method]);
 
             if (is_array($output)) {
                 $output = Parse::template($content, $output, $context);

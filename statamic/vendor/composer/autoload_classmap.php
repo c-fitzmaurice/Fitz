@@ -1754,8 +1754,6 @@ return array(
     'Statamic\\Addons\\Asset\\AssetTags' => $baseDir . '/bundles/Asset/AssetTags.php',
     'Statamic\\Addons\\Assets\\AssetsFieldtype' => $baseDir . '/bundles/Assets/AssetsFieldtype.php',
     'Statamic\\Addons\\Assets\\AssetsTags' => $baseDir . '/bundles/Assets/AssetsTags.php',
-    'Statamic\\Addons\\Cache\\Cache' => $baseDir . '/bundles/Cache/Cache.php',
-    'Statamic\\Addons\\Cache\\CacheController' => $baseDir . '/bundles/Cache/CacheController.php',
     'Statamic\\Addons\\Cache\\CacheTags' => $baseDir . '/bundles/Cache/CacheTags.php',
     'Statamic\\Addons\\Can\\CanAPI' => $baseDir . '/bundles/Can/CanAPI.php',
     'Statamic\\Addons\\Can\\CanTags' => $baseDir . '/bundles/Can/CanTags.php',

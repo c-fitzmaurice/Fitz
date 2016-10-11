@@ -4,7 +4,13 @@ module.exports = {
 
     template: require('./fields.template.html'),
 
-    props: ['fieldData', 'builder', 'fields', 'errors', 'fieldset-name', 'uuid', 'locale', 'editing-fieldset', 'selected-field', 'on-select', 'on-delete', 'on-sort', 'env', 'removeTitle'],
+    index: [],
+
+    props: [
+        'fieldData', 'builder', 'fields', 'errors', 'fieldset-name', 'uuid',
+        'locale', 'editing-fieldset', 'selected-field', 'on-select', 'on-delete',
+        'on-sort', 'env', 'removeTitle', 'focus',
+    ],
 
     data: function () {
         return {
@@ -29,7 +35,6 @@ module.exports = {
             var url = cp_url('fieldsets/') + this.fieldsetName + '/get';
 
             params.locale = this.locale;
-
             this.$http.get(url, params).success(function(data) {
                 if (this.removeTitle) {
                     // Remove the title field

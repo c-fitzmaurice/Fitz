@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit7573a2f22048b5a1de35fbe35c2b0c8f
+class ComposerStaticInit9a9caf6d85bac003bd976e0f3a669a62
 {
     public static $files = array (
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
@@ -2147,8 +2147,6 @@ class ComposerStaticInit7573a2f22048b5a1de35fbe35c2b0c8f
         'Statamic\\Addons\\Asset\\AssetTags' => __DIR__ . '/../..' . '/bundles/Asset/AssetTags.php',
         'Statamic\\Addons\\Assets\\AssetsFieldtype' => __DIR__ . '/../..' . '/bundles/Assets/AssetsFieldtype.php',
         'Statamic\\Addons\\Assets\\AssetsTags' => __DIR__ . '/../..' . '/bundles/Assets/AssetsTags.php',
-        'Statamic\\Addons\\Cache\\Cache' => __DIR__ . '/../..' . '/bundles/Cache/Cache.php',
-        'Statamic\\Addons\\Cache\\CacheController' => __DIR__ . '/../..' . '/bundles/Cache/CacheController.php',
         'Statamic\\Addons\\Cache\\CacheTags' => __DIR__ . '/../..' . '/bundles/Cache/CacheTags.php',
         'Statamic\\Addons\\Can\\CanAPI' => __DIR__ . '/../..' . '/bundles/Can/CanAPI.php',
         'Statamic\\Addons\\Can\\CanTags' => __DIR__ . '/../..' . '/bundles/Can/CanTags.php',
@@ -3445,10 +3443,10 @@ class ComposerStaticInit7573a2f22048b5a1de35fbe35c2b0c8f
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit7573a2f22048b5a1de35fbe35c2b0c8f::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit7573a2f22048b5a1de35fbe35c2b0c8f::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit7573a2f22048b5a1de35fbe35c2b0c8f::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit7573a2f22048b5a1de35fbe35c2b0c8f::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit9a9caf6d85bac003bd976e0f3a669a62::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit9a9caf6d85bac003bd976e0f3a669a62::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit9a9caf6d85bac003bd976e0f3a669a62::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit9a9caf6d85bac003bd976e0f3a669a62::$classMap;
 
         }, null, ClassLoader::class);
     }

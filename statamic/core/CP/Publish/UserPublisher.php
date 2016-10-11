@@ -28,7 +28,13 @@ class UserPublisher extends Publisher
 
         if ($this->isNew()) {
             // Creating a brand new user
-            $this->content = User::create()->username($username)->get();
+            $user = User::create()->email($email);
+
+            if ($this->login_type === 'username') {
+                $user->username($username);
+            }
+
+            $this->content = $user->get();
 
             // Set the ID now because the $user->groups() method relies on it
             $this->id = Helper::makeUuid();

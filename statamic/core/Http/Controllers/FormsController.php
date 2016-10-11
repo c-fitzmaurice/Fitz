@@ -137,7 +137,9 @@ class FormsController extends CpController
     {
         $this->access('super');
 
-        return view('forms.create');
+        return view('forms.create', [
+            'title' => t('creating_formset')
+        ]);
     }
 
     public function store()

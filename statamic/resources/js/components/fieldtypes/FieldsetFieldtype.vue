@@ -4,10 +4,12 @@
             <span class="icon icon-circular-graph animation-spin"></span> {{ translate('cp.loading') }}
         </div>
         <select-fieldtype v-if="!loading" :name="name" :data.sync="data" :config="selectConfig"></select-fieldtype>
+
     </div>
 </template>
 
 <script>
+
 module.exports = {
 
     props: {
@@ -16,7 +18,7 @@ module.exports = {
         name: {},
         required: Boolean,
         hidden: { type: Boolean, default: function() { return true; }},
-        url: String
+        url: String,
     },
 
     data: function() {

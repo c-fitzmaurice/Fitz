@@ -7,8 +7,22 @@ use Illuminate\Console\Scheduling\Schedule;
 /**
  * Repeatable tasks via cron
  */
-abstract class Tasks extends Addon
+abstract class Tasks
 {
+    /**
+     * Provides access to addon helper methods
+     */
+    use Extensible;
+
+    /**
+     * Create a new Tasks instance
+     */
+    public function __construct()
+    {
+        $this->bootstrap();
+        $this->init();
+    }
+
     /**
      * Define the task schedule
      *

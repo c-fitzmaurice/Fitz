@@ -2,7 +2,7 @@
     <div class="toggle-fieldtype-wrapper">
         <div class="toggle-container" :class="{ 'on': isOn }" @click="toggle">
             <div class="toggle-slider">
-                <div class="toggle-knob"></div>
+                <div class="toggle-knob" tabindex="0" @keyup.prevent.space.enter="toggle"></div>
             </div>
         </div>
     </div>

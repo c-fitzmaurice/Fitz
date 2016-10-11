@@ -16,7 +16,7 @@
 
         <div class="asset-uploader-container" :class="{ 'max-files-reached': maxFilesReached }" v-if="!loading">
             <div class="manage-assets" v-else v-if="!maxFilesReached">
-                <button type="button" class="btn btn-with-icon" @click="selectAsset">
+                <button type="button" class="btn btn-with-icon" @click="selectAsset" @keyup.space.enter="selectAsset" tabindex="0">
                     <span class="icon icon-folder-images"></span>
                     {{ translate('cp.add_asset') }}
                 </button>

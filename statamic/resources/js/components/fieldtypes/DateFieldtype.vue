@@ -1,14 +1,14 @@
 <template>
     <div class="datetime clearfix">
 
-    	<button type="button" class="btn btn-default add-date" v-if="!hasDate" @click="addDate">
+    	<button type="button" class="btn btn-default add-date" v-if="!hasDate" @click="addDate" tabindex="0">
     		{{ translate('cp.add_date') }}
     	</button>
 
     	<div v-if="hasDate" class="date-time-container">
 
     		<div class="col-date">
-    			<div class="daterange daterange--single" :data-datetime="date">
+    			<div class="daterange daterange--single" :data-datetime="date" @focus="openCalendar()" @blur="closeCalendar()">
     				<span class="icon icon-calendar"></span>
     				<span class="icon icon-remove" @click="removeDate" v-if="blankAllowed">&times;</span>
     			</div>
@@ -16,7 +16,7 @@
     		<div class="col-time">
     			<div class="time-fieldtype" v-if="timeAllowed">
     				<time-fieldtype v-ref:time v-show="hasTime" :data.sync="time"></time-fieldtype>
-    				<button type="button" class="btn btn-default btn-icon add-time" v-show="!hasTime" @click="addTime">
+    				<button type="button" class="btn btn-default btn-icon add-time" v-show="!hasTime" @click="addTime" tabindex="0">
     					<span class="icon icon-clock"></span>
     				</button>
     			</div>
@@ -29,16 +29,18 @@
 </template>
 
 <script>
+
 module.exports = {
 
     props: {
         name: String,
         data: {},
-        config: { default: function() { return {}; } }
+        config: { default: function() { return {}; } },
     },
 
     data: function() {
         return {
+            calendar: null,
             time: null
         }
     },
@@ -136,7 +138,7 @@ module.exports = {
                 ? moment(self.dateString())
                 : moment().format('YYYY-MM-DD');
 
-            new Calendar({
+            this.calendar = new Calendar({
                 element: $(self.$el).find('.daterange'),
                 current_date: moment(date),
                 earliest_date: this.config.earliest_date || "January 1, 1900",
@@ -145,7 +147,15 @@ module.exports = {
                     self.updateDateString(newDate);
                 }
             });
-        }
+        },
+
+        openCalendar: function () {
+            // this.calendar.calendarOpen();
+        },
+
+        closeCalendar: function () {
+            // this.calendar.calendarClose();
+        },
 
     },
 

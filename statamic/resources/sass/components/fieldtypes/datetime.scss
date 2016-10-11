@@ -1,19 +1,22 @@
 
 .daterange {
+	outline: none;
+	@include form-control-focus;
+
 	.icon {
 		position: absolute;
 		z-index: 20;
 		color: rgba(0,0,0,.3);
 	}
 
-    .icon-calendar {
+	.icon-calendar {
 		top: 5px;
 		right: 10px;
 		pointer-events: none;
 	}
 
 	.icon-remove { right: 32px; }
-    .dr-calendar { max-width: 250px; }
+	.dr-calendar { max-width: 250px; }
 }
 
 .datetime .icon-remove, .time-fieldtype .icon-remove {
@@ -44,11 +47,16 @@
 		position: relative;
 		top: 0;
 		right: -5px;
+		outline: none;
+	}
+
+	.icon-remove:focus {
+		@include form-control-focus;
 	}
 }
 
 .date-time-container {
-    display: flex;
+	display: flex;
 
 	.col-date {
 		flex: 1;

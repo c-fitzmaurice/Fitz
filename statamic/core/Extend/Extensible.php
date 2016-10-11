@@ -38,9 +38,31 @@ trait Extensible
                 return $this->getAddonClassName();
             case 'addon_type':
                 return $this->getAddonType();
-            default:
-                return call_user_func([$this, Str::camel($key)]);
+            case 'blink':
+                return $this->getContextualStore('blink', new ContextualBlink($this));
+            case 'cache':
+                return $this->getContextualStore('cache', new ContextualCache($this));
+            case 'session':
+                return $this->getContextualStore('session', new ContextualSession($this));
+            case 'flash':
+                return $this->getContextualStore('flash', new ContextualFlash($this));
+            case 'storage':
+                return $this->getContextualStore('storage', new ContextualStorage($this));
+            case 'cookie':
+                return $this->getContextualStore('cookie', new ContextualCookie($this));
+            case 'resource':
+                return $this->getContextualStore('resource', new ContextualResource($this));
+            case 'css':
+                return $this->getContextualStore('css', new ContextualCss($this));
+            case 'js':
+                return $this->getContextualStore('js', new ContextualJs($this));
+            case 'img':
+                return $this->getContextualStore('img', new ContextualImage($this));
         }
+
+        throw new \ErrorException(
+            sprintf('Undefined property: %s::$%s', static::class, $key)
+        );
     }
 
     private function getContextualStore($key, $class)
@@ -48,86 +70,6 @@ trait Extensible
         return app(Store::class)
             ->getOrPut($this->getAddonClassName(), collect())
             ->getOrPut($key, $class);
-    }
-
-    /**
-     * @return ContextualBlink
-     */
-    public function blink()
-    {
-        return $this->getContextualStore('blink', new ContextualBlink($this));
-    }
-
-    /**
-     * @return ContextualCache
-     */
-    public function cache()
-    {
-        return $this->getContextualStore('cache', new ContextualCache($this));
-    }
-
-    /**
-     * @return ContextualStorage
-     */
-    public function storage()
-    {
-        return $this->getContextualStore('storage', new ContextualStorage($this));
-    }
-
-    /**
-     * @return ContextualSession
-     */
-    public function session()
-    {
-        return $this->getContextualStore('session', new ContextualSession($this));
-    }
-
-    /**
-     * @return ContextualCookie
-     */
-    public function cookie()
-    {
-        return $this->getContextualStore('cookie', new ContextualCookie($this));
-    }
-
-    /**
-     * @return ContextualFlash
-     */
-    public function flash()
-    {
-        return $this->getContextualStore('flash', new ContextualFlash($this));
-    }
-
-    /**
-     * @return ContextualResource
-     */
-    public function resource()
-    {
-        return $this->getContextualStore('resource', new ContextualResource($this));
-    }
-
-    /**
-     * @return ContextualCss
-     */
-    public function css()
-    {
-        return $this->getContextualStore('css', new ContextualCss($this));
-    }
-
-    /**
-     * @return ContextualJs
-     */
-    public function js()
-    {
-        return $this->getContextualStore('js', new ContextualJs($this));
-    }
-
-    /**
-     * @return ContextualImage
-     */
-    public function img()
-    {
-        return $this->getContextualStore('img', new ContextualImage($this));
     }
 
     /**
@@ -160,6 +102,10 @@ trait Extensible
      */
     public function getAddonClassName()
     {
+        if (property_exists($this, 'addon_name') && ! is_null($this->addon_name)) {
+            return $this->addon_name;
+        }
+
         return explode('\\', get_called_class())[2];
     }
 

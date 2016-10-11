@@ -11,8 +11,8 @@
         </thead>
         <tbody v-el:tbody>
             <tr v-for="field in fields">
-                <td class="col-handle"><input type="text" class="code" v-model="field.name" :disabled="field.name === 'title'"/></td>
-                <td class="col-display"><input type="text" v-model="field.display" /></td>
+                <td class="col-handle"><input type="text" class="code" v-model="field.name" :disabled="field.name === 'title'" tabindex="0" /></td>
+                <td class="col-display"><input type="text" v-model="field.display" tabindex="0" /></td>
                 <td>{{ fieldtypeLabel(field.type) }}</td>
                 <td class="col-localizable" v-if="canLocalize">
                     <toggle-fieldtype :data="field.localizable"></toggle-fieldtype>

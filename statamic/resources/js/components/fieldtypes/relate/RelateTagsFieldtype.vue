@@ -1,6 +1,6 @@
 <template>
 
-    <select v-el:tags multiple></select>
+    <select v-el:tags multiple tabindex="0" ></select>
 
     <input type="hidden" :name="name" :value="data|json" class="form-control" />
 

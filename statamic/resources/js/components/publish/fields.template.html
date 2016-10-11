@@ -20,10 +20,11 @@
 			</div>
 
 			<component v-else
-			           :is="field.type + '-fieldtype'"
-			           :name="field.name"
-			           :data.sync="fieldData[field.name]"
-			           :config="fields[$index]">
+						:is="field.type + '-fieldtype'"
+						:name="field.name"
+						:data.sync="fieldData[field.name]"
+						:config="fields[$index]"
+                        :autofocus="this.focus && $index == 0">
 			</component>
 
 			<div class="field-mask" v-if="editingFieldset">

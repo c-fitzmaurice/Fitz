@@ -21,13 +21,14 @@
                 <div class="form-group">
                     <label class="block">{{ t('title') }}</label>
                     <small class="help-block">{{ t('collection_title_instructions') }}</small>
-                    <input type="text" name="title" class="form-control" value="{{ old('title') }}" />
+                    <input type="text" name="title" class="form-control" value="{{ old('title') }}" autofocus="autofocus">
                 </div>
+
 
                 <div class="form-group">
                     <label class="block">{{ t('handle') }}</label>
                     <small class="help-block">{{ t('collection_handle_instructions') }}</small>
-                    <input type="text" name="slug" class="form-control" value="{{ old('slug') }}"/>
+                    <input type="text" name="slug" class="form-control" value="{{ old('slug') }}">
                 </div>
 
                 <div class="form-group">
@@ -48,7 +49,7 @@
                 <div class="form-group">
                     <label class="block">{{ t('route') }}</label>
                     <small class="help-block">{{ t('collection_route_instructions') }}</small>
-                    <input type="text" name="route" class="form-control" value="{{ old('route') }}" />
+                    <input type="text" name="route" class="form-control" value="{{ old('route') }}">
                 </div>
 
             </div>

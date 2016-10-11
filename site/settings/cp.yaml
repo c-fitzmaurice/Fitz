@@ -3,12 +3,12 @@ date_format: Y/n/d
 widgets:
   - 
     type: collection
-    collection: blog
+    collection: projects
     limit: 5
     importance: 3
   - 
     type: collection
-    collection: projects
+    collection: blog
     limit: 5
     importance: 3
   - 

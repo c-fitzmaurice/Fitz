@@ -1,6 +1,6 @@
 <div class="form-group">
     <label for="">{{ trans_choice('cp.titles', 1) }}</label>
-    <input type="text" name="title" value="{{ $group_title }}" class="form-control" />
+    <input type="text" name="title" value="{{ $group_title }}" class="form-control" autofocus="autofocus" />
 </div>
 
 <div class="form-group">

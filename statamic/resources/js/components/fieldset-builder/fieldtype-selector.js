@@ -6,7 +6,8 @@ module.exports = {
 
     data: function() {
         return {
-            fieldtypeSelection: null
+            fieldtypeSelection: null,
+            isActive: false,
         }
     },
 
@@ -21,7 +22,7 @@ module.exports = {
             });
 
             opts.unshift({ text: 'Select a field to add', value: null });
-            
+
             // Disable title if there already is one
             var self = this;
             if (_.findWhere(self.$parent.fields, { name: 'title' })) {

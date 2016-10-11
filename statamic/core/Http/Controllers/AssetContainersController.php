@@ -64,11 +64,9 @@ class AssetContainersController extends CpController
 
     public function store(Requests\StoreAssetContainerRequest $request)
     {
-        $handle = $this->request->input('handle');
-
         $container = AssetContainer::create();
 
-        $container->handle($handle);
+        $container->handle($request->handle);
 
         return $this->save($container);
     }
@@ -78,7 +76,7 @@ class AssetContainersController extends CpController
         $container = AssetContainer::find($uuid);
 
         return view('assets.containers.edit', [
-            'title' => 'Editing Container',
+            'title'     => t('editing_asset_container'),
             'container' => $container
         ]);
     }

@@ -6,6 +6,7 @@
 
 <script>
 module.exports = {
+
     props: ['data', 'config', 'name'],
 
 

@@ -8,9 +8,11 @@
       <library name="PHARS">
         <CLASSES>
           <root url="phar://$MODULE_DIR$/statamic/composer.phar/" />
+          <root url="phar://$MODULE_DIR$/local/temp/update-unzipped/statamic/statamic/composer.phar/" />
         </CLASSES>
         <SOURCES>
           <root url="phar://$MODULE_DIR$/statamic/composer.phar/" />
+          <root url="phar://$MODULE_DIR$/local/temp/update-unzipped/statamic/statamic/composer.phar/" />
         </SOURCES>
       </library>
     </orderEntry>

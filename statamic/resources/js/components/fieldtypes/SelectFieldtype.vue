@@ -1,12 +1,13 @@
 <template>
-    <div class="select select-full" :data-content="label">
-    	<select :name="name" v-model="data">
+    <div class="select select-full" :class="{ 'select--active': isActive }" :data-content="label">
+    	<select :name="name" v-model="data" tabindex="0" @focus="isActive = true" @blur="isActive = false">
     		<option v-for="option in selectOptions" :value="option.value">{{ option.text }}</option>
     	</select>
     </div>
 </template>
 
 <script>
+
 module.exports = {
 
     props: ['name', 'data', 'config', 'options'],
@@ -14,7 +15,8 @@ module.exports = {
     data: function() {
         return {
             keyed: false,
-            selectOptions: []
+            selectOptions: [],
+            isActive: false,
         }
     },
 

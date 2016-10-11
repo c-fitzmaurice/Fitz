@@ -17,9 +17,19 @@ module.exports = {
 
     props: {
         title: String,
-        extra: String,
+        extra: {
+            type: Object,
+            coerce: function (extra) {
+                return JSON.parse(extra);
+            },
+        },
         isNew: Boolean,
-        contentData: String,
+        contentData: {
+            type: Object,
+            coerce: function (data) {
+                return JSON.parse(data);
+            },
+        },
         contentType: String,
         titleDisplayName: {
             type: String,
@@ -38,7 +48,15 @@ module.exports = {
             default: true
         },
         locale: String,
-        locales: String, // json string. parsed in ready()
+        locales: {
+            coerce: function (locales) {
+                if (! locales) {
+                    return null;
+                }
+
+                return JSON.parse(locales);
+            }
+        },
         isDefaultLocale: {
             type: Boolean,
             default: true
@@ -148,7 +166,11 @@ module.exports = {
 
         hasErrors: function() {
             return _.size(this.errors) !== 0;
-        }
+        },
+
+        hasAnyMetaData: function () {
+            return this.shouldShowTitle || this.shouldShowSlug || this.shouldShowDate || this.shouldShowLocales || this.shouldShowStatus;
+        },
 
     },
 
@@ -351,17 +373,11 @@ module.exports = {
 
             this.isSlugModified = (this.$slugify(title) !== slug);
         },
+
     },
 
     ready: function() {
         var self = this;
-
-        // `contentData` is passed as json string prop, we need to parse it.
-        this.contentData = JSON.parse(this.contentData);
-        // `extra` is passed as json string prop, we need to parse it.
-        this.extra = JSON.parse(this.extra);
-        // `locales` is passed as json string prop, we need to parse it.
-        this.locales = (this.locales) ? JSON.parse(this.locales) : null;
 
         this.initFormData();
 

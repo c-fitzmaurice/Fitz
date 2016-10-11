@@ -21,7 +21,7 @@
                 <div class="form-group">
                     <label class="block">{{ t('title') }}</label>
                     <small class="help-block">{{ t('taxonomies_title_instructions') }}</small>
-                    <input type="text" name="title" class="form-control" value="{{ old('title') }}" />
+                    <input type="text" name="title" class="form-control" value="{{ old('title') }}" autofocus="autofocus" />
                 </div>
 
                 <div class="form-group">

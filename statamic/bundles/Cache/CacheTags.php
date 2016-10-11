@@ -8,16 +8,6 @@ use Statamic\Extend\Tags;
 class CacheTags extends Tags
 {
     /**
-     * @var \Statamic\Addons\Cache\Cache
-     */
-    private $core;
-
-    public function init()
-    {
-        $this->core = app('Statamic\Addons\Cache\Cache');
-    }
-
-    /**
      * The {{ cache }} tag
      *
      * @return string
@@ -25,7 +15,7 @@ class CacheTags extends Tags
     public function index()
     {
         // If disabled, do nothing.
-        if (! $this->core->isEnabled()) {
+        if (! $this->isEnabled()) {
             return $this->parse([]);
         }
 
@@ -41,5 +31,10 @@ class CacheTags extends Tags
         }
 
         return $this->cache->get($path);
+    }
+
+    private function isEnabled()
+    {
+        return true;
     }
 }

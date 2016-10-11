@@ -9,8 +9,16 @@ use Statamic\Data\DataCollection;
 /**
  * Template tags
  */
-abstract class Tags extends Addon
+abstract class Tags
 {
+    /**
+     * Provides access to addon helper methods
+     */
+    use Extensible;
+
+    /**
+     * Provides access to methods for retrieving parameters
+     */
     use HasParameters;
 
     /**
@@ -26,10 +34,24 @@ abstract class Tags extends Addon
     public $context;
 
     /**
-     * The tag that was used (without any parameters), eg. ron:swanson
+     * The tag that was used
+     *
+     * eg. For {{ ron:swanson foo="bar" }}, this would be `ron:swanson`
+     *     and for {{ ron foo="bar" }} it would be `ron:index`
+     *
      * @var string
      */
     public $tag;
+
+    /**
+     * The tag method that was used
+     *
+     * eg. For {{ ron:swanson foo="bar" }}, this would be `swanson`
+     *     and for {{ ron foo="bar" }}, it would `index`
+     *
+     * @var string
+     */
+    public $tag_method;
 
     /**
      * If is a tag pair
@@ -44,7 +66,7 @@ abstract class Tags extends Addon
     protected $trim = false;
 
     /**
-     * Set the properties
+     * Create a new Tags instance
      *
      * @param array  $properties  Properties that to set
      * @return Tags
@@ -56,8 +78,10 @@ abstract class Tags extends Addon
         $this->context     = $properties['context'];
         $this->isPair      = $this->content !== '';
         $this->tag         = array_get($properties, 'tag');
+        $this->tag_method  = array_get($properties, 'tag_method');
 
-        parent::__construct();
+        $this->bootstrap();
+        $this->init();
     }
 
     /**

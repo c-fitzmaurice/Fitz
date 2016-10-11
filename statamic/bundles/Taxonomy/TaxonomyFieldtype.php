@@ -9,9 +9,7 @@ class TaxonomyFieldtype extends RelateFieldtype
 {
     public function process($data)
     {
-        $data = collect(parent::process($data));
-
-        return $data->map(function ($item) {
+        $data = collect(parent::process($data))->map(function ($item) {
             if (Term::exists($item)) {
                 return $item;
             }
@@ -24,5 +22,7 @@ class TaxonomyFieldtype extends RelateFieldtype
 
             return $term->id();
         })->all();
+
+        return parent::process($data);
     }
 }

@@ -1,7 +1,9 @@
 @import 'https://fonts.googleapis.com/css?family=Lato';
 body {
   font-family: 'Lato', sans-serif;
-  border-top: 6px solid #465058; }
+  font-size: 16px;
+  border-top: 6px solid #465058;
+  color: #909090; }
 
 body.home {
   border: 6px solid #465058;
@@ -13,7 +15,7 @@ a {
   font-weight: bold; }
   a:hover, a:active, a:focus {
     color: #465058;
-    text-decoration: none; }
+    text-decoration: underline; }
 
 .sticky-page {
   height: 100%; }
@@ -26,9 +28,36 @@ a {
     display: block;
     height: 40px; }
 
-#logo {
+#home-logo {
   width: 100%;
   padding-top: 15px; }
+
+#logo {
+  margin-top: 3em; }
+
+h1 {
+  color: #465058;
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  font-size: 40px;
+  font-size: 2.5rem; }
+
+.body-copy > p {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  font-size: 18px;
+  font-size: 1.125rem; }
+
+.spam {
+  display: none; }
+
+input,
+textarea {
+  resize: none;
+  outline: none; }
+
+.form-control:focus {
+  border-color: #465058; }
 
 .hamburger-wrapper {
   padding: 0;

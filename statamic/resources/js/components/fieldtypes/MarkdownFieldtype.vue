@@ -4,20 +4,20 @@
         <div class="markdown-toolbar clearfix">
             <ul class="markdown-modes">
                 <li :class="{ 'active': mode == 'write' }">
-                    <a href="" @click.prevent="mode = 'write'">{{ translate('cp.write') }}</a>
+                    <a href="" @click.prevent="mode = 'write'" tabindex="-1">{{ translate('cp.write') }}</a>
                 </li>
                 <li :class="{ 'active': mode == 'preview' }">
-                    <a href="" @click.prevent="mode = 'preview'">{{ translate('cp.preview') }}</a>
+                    <a href="" @click.prevent="mode = 'preview'" tabindex="-1">{{ translate('cp.preview') }}</a>
                 </li>
             </ul>
 
             <ul class="markdown-buttons">
-                <li><a href="" @click.prevent="bold"><b>B</b></a></li>
-                <li><a href="" @click.prevent="italic"><i>i</i></a></li>
-                <li><a href="" @click.prevent="insertLink('')">
+                <li><a href="" @click.prevent="bold" tabindex="-1"><b>B</b></a></li>
+                <li><a href="" @click.prevent="italic" tabindex="-1"><i>i</i></a></li>
+                <li><a href="" @click.prevent="insertLink('')" tabindex="-1">
                     <span class="icon icon-link"></span>
                 </a></li>
-                <li><a href="" @click.prevent="insertImage('')">
+                <li><a href="" @click.prevent="insertImage('')" tabindex="-1">
                     <span class="icon icon-image"></span>
                 </a></li>
             </ul>
@@ -30,8 +30,8 @@
                  @dragover="draggingFile = true"
                  @dragleave="draggingFile = false"
                  @drop="draggingFile = false"
-                 @keydown="shortcut"
-            >
+                 @keydown="shortcut">
+
                 <div class="editor" v-el:codemirror></div>
 
                 <div class="helpers">
@@ -436,7 +436,8 @@ module.exports = {
             mode: 'gfm',
             dragDrop: false,
             lineWrapping: true,
-            viewportMargin: Infinity
+            viewportMargin: Infinity,
+            tabindex: 0,
         });
 
         self.codemirror.on('change', function (cm) {

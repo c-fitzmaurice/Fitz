@@ -10,8 +10,13 @@ use Statamic\API\Str;
 /**
  * Control panel fieldtype
  */
-class Fieldtype extends Addon implements FieldtypeInterface
+class Fieldtype implements FieldtypeInterface
 {
+    /**
+     * Provides access to addon helper methods
+     */
+    use Extensible;
+
     /**
      * The configuration of the field from within a fieldset
      * @var array
@@ -43,7 +48,8 @@ class Fieldtype extends Addon implements FieldtypeInterface
      */
     public function __construct($config)
     {
-        parent::__construct();
+        $this->bootstrap();
+        $this->init();
 
         $this->field_config = $config;
     }

@@ -21,7 +21,7 @@
                 <div class="form-group">
                     <label class="block">{{ translate('cp.title') }}</label>
                     <small class="help-block">{{ translate('cp.globals_title_instructions') }}</small>
-                    <input type="text" name="title" class="form-control" />
+                    <input type="text" name="title" class="form-control" autofocus="autofocus" />
                 </div>
 
                 <div class="form-group">

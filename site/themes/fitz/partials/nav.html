@@ -1,27 +1,28 @@
 <header>
-    <div class="row">
-        <div class="col-md-4 col-sm-6 col-xs-6">
+    <div class="row text-center">
+        <div class="col-xs-12 text-xs-center">
             <a href="/">
-                <svg class="">
+                <svg id="logo">
                     <use xlink:href="/site/themes/fitz/svg/sprite.svg#fitz"></use>
                 </svg>
             </a>
         </div>
-        <a id="menulink" href="#">
-            <div class="hamburger-wrapper">
-                <div class="hamburger"></div>
-                <div class="hamburger"></div>
-                <div class="hamburger"></div>
-            </div>
-        </a>
-        <div class="navigation-wrapper">
-            <ul class="navigation">
-                {{ nav from="/" include_home="true" scope="tag" }}
-                    <li{{ if is_current or is_parent }} class="active"{{ /if }}>
-                        <a href="{{ url }}">{{ tag:nav_title or title }}</a>
-                    </li>
-                {{ /nav }}
-            </ul>
+    </div>
+
+    <a id="menulink" href="#">
+        <div class="hamburger-wrapper">
+            <div class="hamburger"></div>
+            <div class="hamburger"></div>
+            <div class="hamburger"></div>
         </div>
+    </a>
+    <div class="navigation-wrapper">
+        <ul class="navigation">
+            {{ nav from="/" include_home="true" scope="tag" }}
+                <li{{ if is_current or is_parent }} class="active"{{ /if }}>
+                    <a href="{{ url }}">{{ tag:nav_title or title }}</a>
+                </li>
+            {{ /nav }}
+        </ul>
     </div>
 </header>

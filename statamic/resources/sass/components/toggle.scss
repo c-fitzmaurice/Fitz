@@ -21,6 +21,7 @@ $toggle_radius: 20px;
     transition: all 0.2s ease;
 }
 
+
 .toggle-knob {
     position: absolute;
     top: 1px;
@@ -30,12 +31,28 @@ $toggle_radius: 20px;
     border-radius: 50%;
     background: white;
     box-shadow: 0 1px 3px rgba(black, .4);
+    outline: none;
+    transition: box-shadow 0.1s, background-color 0.2s ease-in-out;
+}
+
+.toggle-knob:hover {
+    box-shadow: 0 1px 3px rgba($brand-primary, .9);
+}
+
+.toggle-knob:focus {
+    background-color: #efefef;
+    @include form-control-focus;
 }
 
 .toggle-container.on {
     .toggle-slider {
         width: 44px;
         background: $toggle_green;
+    }
+
+    .toggle-knob:focus {
+        background-color: darken($toggle_green, 20%);
+        box-shadow: 0 0 10px rgba($toggle_green, .7);
     }
 }
 
