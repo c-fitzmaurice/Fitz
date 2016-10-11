@@ -3,7 +3,7 @@ locales:
   en:
     name: English
     full: en_US
-    url: /
+    url: /colin.hunterspicturepost.com/
 timezone: UTC
 date_format: F Y
 default_extension: md
@@ -23,7 +23,7 @@ filesystems:
     url: /site/themes
 app_key: hvnPF505v2ztelWg9YaB51CJC4rlFiFL
 redactor:
-  - 
+  -
     name: Standard
     settings:
       buttons:
@@ -33,7 +33,7 @@ redactor:
         - unorderedlist
         - orderedlist
         - html
-  - 
+  -
     name: Basic
     settings:
       buttons:
