@@ -3,7 +3,7 @@ locales:
   en:
     name: English
     full: en_US
-    url: /colin.hunterspicturepost.com/
+    url: /
 timezone: UTC
 date_format: F Y
 default_extension: md

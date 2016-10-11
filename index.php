@@ -25,7 +25,7 @@ $statamic = './statamic';
 |
 */
 
-$site_root = '/colin.hunterspicturepost.com/';
+$site_root = '/';
 
 /*
 |--------------------------------------------------------------------------
