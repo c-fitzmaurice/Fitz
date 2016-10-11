@@ -16,14 +16,14 @@ fields:
 columns:
   - name
   - email
-  - number
-  - comment
+  - subject
 metrics:
-  - 
-    type: null
-    label: null
+  -
+    type: total
+    label: Total
 email:
-  - 
+  -
     to: colin@fitz-maurice.com
-    subject: Contact form on Fitz.com
+    from: colin@fitz-maurice.com
+    subject: FITZ | Contact
     automagic: true

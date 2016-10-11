@@ -8,3 +8,5 @@ Hello. I'm Colin Fitz-Maurice, a <a href="https://laravel.com/" target="_blank">
 You can see some of my work on [GitHub](https://github.com/c-fitzmaurice), follow me on [Twitter](https://twitter.com/C_FitzMaurice) or email me at [colin@fitz-maurice.com](colin@fitz-maurice.com).
 
 I'm taking on a select project list at the moment, if you want to chat, please submit a request [here](/contact).
+
+<img class="avatar" src="/assets/img/Colin-Fitz-Maurice.jpg" alt="Colin Fitz-Maurice">

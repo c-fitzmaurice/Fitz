@@ -47,17 +47,16 @@ h1 {
   margin-bottom: 1em;
   font-size: 18px;
   font-size: 1.125rem; }
+  .body-copy > p p > img {
+    max-width: 100%;
+    height: auto; }
 
-.spam {
-  display: none; }
-
-input,
-textarea {
-  resize: none;
-  outline: none; }
-
-.form-control:focus {
-  border-color: #465058; }
+.avatar {
+  display: block;
+  width: 35%;
+  margin: 0 auto;
+  border-radius: 50%;
+  border: 4px solid #EEEEEE; }
 
 .hamburger-wrapper {
   padding: 0;
@@ -116,6 +115,41 @@ textarea {
 .navigation li a:hover {
   padding-right: 15px;
   border-right: 3px solid #465058; }
+
+input,
+textarea {
+  resize: none;
+  outline: none; }
+
+.spam {
+  display: none; }
+
+.form-control:focus {
+  border-color: #465058; }
+
+.btn-primary {
+  background-color: #465058;
+  border-color: #465058; }
+
+.resume section {
+  margin-top: 1em;
+  margin-bottom: 1em; }
+
+.resume h2, .resume .dates {
+  color: #465058;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em; }
+
+.resume h3 {
+  font-size: 18px;
+  font-size: 1.125rem;
+  font-style: italic; }
+
+.resume a {
+  border-top: 1px solid #EEEEEE;
+  padding-top: 0.5em;
+  margin-top: 1em;
+  display: inline-block; }
 
 footer.site-footer {
   height: 40px;

@@ -1,18 +1,19 @@
 title: Project Post
 create_title: New Project Post
 fields:
-  project:
-    type: text
-    display: Project
-    instructions: Who was this project for?
-    width: 50
-    validate: required
   website:
     type: text
     display: Website
     instructions: What is the URL for this project?
     width: 50
     validate: URL
+  hero_image:
+    type: assets
+    display: Hero Image
+    instructions: '**Hero image to be determined**'
+    container: main
+    folder: projects
+    width: 50
   description:
     type: markdown
     display: Project Description
@@ -21,3 +22,9 @@ fields:
     container: main
     folder: projects
     validate: required
+  images:
+    type: assets
+    display: Images of the project
+    instructions: 'Images cropped to **1280 x 775 @ 72 DPI**'
+    container: main
+    folder: projects
