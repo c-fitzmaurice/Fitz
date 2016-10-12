@@ -59,15 +59,23 @@ h1 {
     @include font-size(2.5);
 }
 
-.body-copy > p {
-    margin-top: 1em;
+.body-copy {
     margin-bottom: 1em;
-    @include font-size(1.125);
+    & > p {
+        margin-top: 1em;
+        margin-bottom: 1em;
+        @include font-size(1.125);
 
-    p > img {
-        max-width: 100%;
-        height: auto;
+        p > img {
+            max-width: 100%;
+            height: auto;
+        }
     }
+}
+
+img {
+    max-width: 100%;
+    height: auto;
 }
 
 .avatar {
@@ -81,5 +89,8 @@ h1 {
 @import "nav";
 @import "forms";
 @import "resume";
+@import "projects";
+@import "a_project";
 @import "footer";
 @import "media_queries";
+@import "lightbox";

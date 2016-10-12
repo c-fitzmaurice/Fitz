@@ -1,2 +1,27 @@
 title: Projects
-assets: [ ]
+assets:
+  181eefad-cc8d-4d9f-977c-1089b444a345:
+    file: lifezette_mobile_app.png
+  015a32ed-3815-4120-a84f-a57dedce48bb:
+    title: LifeZette Mobile App
+    alt: LifeZette Mobile App
+    file: lifezette_mobile_app_hero.png
+  a60d2820-8d0b-42f7-a84c-d0bff0fa5b9b:
+    alt: LifeZette Article Detail
+    file: lifezette_3.png
+  3e6f404e-2010-4e0a-9339-4aec2d187339:
+    alt: LifeZette Article View
+    file: lifezette_4.png
+  b7db3a25-ef57-4c17-9ae1-4eca658bf481:
+    alt: LifeZette Menu
+    file: lifezette_6.png
+  e7bebe8f-7bfd-4fd7-a7f6-a0262b11990b:
+    alt: LifeZette Vertical View
+    file: lifezette_2.png
+  60036f56-f66c-4aea-aa3b-2d79574feed0:
+    alt: LifeZette Video Page
+    file: lifezette_5.png
+  96ad1f9e-a383-438a-aa0f-6b8d62ca7001:
+    title: LifeZette Homepage
+    alt: lifezette_homepage
+    file: lifezette_1.png

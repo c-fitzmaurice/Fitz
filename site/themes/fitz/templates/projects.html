@@ -1,8 +1,31 @@
-<div class="">
-    <h1>My Blog</h1>
+<div class="container projects">
+
+    <div class="row">
+        <div class="col-xs-12 text-xs-center">
+            <h1>{{ title }}</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 text-xs-center">
+            <p>Display a list of tags here</p>
+        </div>
+    </div>
 
     {{ collection:projects }}
-    <h1><a href="{{ url }}">{{ title }}</a></h1><br>
-    <hr>
+        {{ if index|%:2 == 1 || index == 0 }}<div class="row">{{ endif }}
+            <div class="col-md-6">
+
+                <div class="project__wrapper">
+                    {{ assets:hero_image }}<img src="{{ url }}" alt="{{ alt }}"/>{{ /assets:hero_image }}
+                    <div class="project__overlay">
+                       <h2>Hover effect 3</h2>
+                       <a class="project__info" href="{{ url }}">link here</a>
+                    </div>
+                </div>
+
+            </div>
+        {{ if index|%:2 == 0 && index != 0 || last }}</div>{{ endif }}
     {{ /collection:projects }}
 </div>
+
