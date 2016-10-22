@@ -8,23 +8,32 @@ $roundCap: true;
     padding: 0;
     position: fixed;
     top: 20px;
-    right: 30px;
-    width: 25px;
+    right: 20px;
+    width: 35px;
     z-index: 999;
+    cursor: pointer;
+
+    &:hover {
+        cursor: pointer;
+    }
 
     .x {
+        cursor: pointer;
         input#menu-x {
             display: none;
+            cursor: pointer;
         }
         label {
             display: block;
             width: $size;
             height: ($thickness * 3 + $gap * 2);
             position: relative;
+            cursor: pointer;
 
             span {
                 position: relative;
                 top: $thickness + $gap;
+                cursor: pointer;
 
                 &,
                 &:before,
@@ -37,6 +46,7 @@ $roundCap: true;
                     background: $color;
                     width: $size;
                     height: $thickness;
+                    cursor: pointer;
                     @if $roundCap {
                         border-radius: $thickness / 2;
                     }

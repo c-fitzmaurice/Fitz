@@ -3,16 +3,16 @@ honeypot: spam
 fields:
   name:
     display: Name
-    validate: required|min:2
+    validate: required|min:3
   email:
     display: Email Address
     validate: required|email
   subject:
     display: Subject
-    validate: required
+    validate: required|min:5
   message:
     display: Message
-    validate: required
+    validate: required|min:15
 columns:
   - name
   - email
