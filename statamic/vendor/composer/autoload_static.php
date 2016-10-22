@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit9a9caf6d85bac003bd976e0f3a669a62
+class ComposerStaticInit28e75aafe637339955565bed2e38e4cc
 {
     public static $files = array (
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
@@ -2123,6 +2123,7 @@ class ComposerStaticInit9a9caf6d85bac003bd976e0f3a669a62
         'Statamic\\API\\Pattern' => __DIR__ . '/../..' . '/core/API/Pattern.php',
         'Statamic\\API\\Permission' => __DIR__ . '/../..' . '/core/API/Permission.php',
         'Statamic\\API\\Permissions' => __DIR__ . '/../..' . '/core/API/Permissions.php',
+        'Statamic\\API\\Please' => __DIR__ . '/../..' . '/core/API/Please.php',
         'Statamic\\API\\Request' => __DIR__ . '/../..' . '/core/API/Request.php',
         'Statamic\\API\\Role' => __DIR__ . '/../..' . '/core/API/Role.php',
         'Statamic\\API\\Roles' => __DIR__ . '/../..' . '/core/API/Roles.php',
@@ -2161,6 +2162,7 @@ class ComposerStaticInit9a9caf6d85bac003bd976e0f3a669a62
         'Statamic\\Addons\\Env\\EnvTags' => __DIR__ . '/../..' . '/bundles/Env/EnvTags.php',
         'Statamic\\Addons\\Fields\\FieldsFieldtype' => __DIR__ . '/../..' . '/bundles/Fields/FieldsFieldtype.php',
         'Statamic\\Addons\\Fieldset\\FieldsetFieldtype' => __DIR__ . '/../..' . '/bundles/Fieldset/FieldsetFieldtype.php',
+        'Statamic\\Addons\\Form\\FormFieldtype' => __DIR__ . '/../..' . '/bundles/Form/FormFieldtype.php',
         'Statamic\\Addons\\Form\\FormListener' => __DIR__ . '/../..' . '/bundles/Form/FormListener.php',
         'Statamic\\Addons\\Form\\FormTags' => __DIR__ . '/../..' . '/bundles/Form/FormTags.php',
         'Statamic\\Addons\\Form\\FormWidget' => __DIR__ . '/../..' . '/bundles/Form/FormWidget.php',
@@ -2222,6 +2224,7 @@ class ComposerStaticInit9a9caf6d85bac003bd976e0f3a669a62
         'Statamic\\Addons\\Suggest\\Modes\\AbstractMode' => __DIR__ . '/../..' . '/bundles/Suggest/Modes/AbstractMode.php',
         'Statamic\\Addons\\Suggest\\Modes\\CollectionMode' => __DIR__ . '/../..' . '/bundles/Suggest/Modes/CollectionMode.php',
         'Statamic\\Addons\\Suggest\\Modes\\CollectionsMode' => __DIR__ . '/../..' . '/bundles/Suggest/Modes/CollectionsMode.php',
+        'Statamic\\Addons\\Suggest\\Modes\\FormMode' => __DIR__ . '/../..' . '/bundles/Suggest/Modes/FormMode.php',
         'Statamic\\Addons\\Suggest\\Modes\\OptionsMode' => __DIR__ . '/../..' . '/bundles/Suggest/Modes/OptionsMode.php',
         'Statamic\\Addons\\Suggest\\Modes\\PagesMode' => __DIR__ . '/../..' . '/bundles/Suggest/Modes/PagesMode.php',
         'Statamic\\Addons\\Suggest\\Modes\\TaxonomyMode' => __DIR__ . '/../..' . '/bundles/Suggest/Modes/TaxonomyMode.php',
@@ -2312,6 +2315,7 @@ class ComposerStaticInit9a9caf6d85bac003bd976e0f3a669a62
         'Statamic\\Console\\Commands\\SetCommand' => __DIR__ . '/../..' . '/core/Console/Commands/SetCommand.php',
         'Statamic\\Console\\Commands\\ShowCommand' => __DIR__ . '/../..' . '/core/Console/Commands/ShowCommand.php',
         'Statamic\\Console\\Kernel' => __DIR__ . '/../..' . '/core/Console/Kernel.php',
+        'Statamic\\Console\\Please' => __DIR__ . '/../..' . '/core/Console/Please.php',
         'Statamic\\Contracts\\Assets\\Asset' => __DIR__ . '/../..' . '/core/Contracts/Assets/Asset.php',
         'Statamic\\Contracts\\Assets\\AssetContainer' => __DIR__ . '/../..' . '/core/Contracts/Assets/AssetContainer.php',
         'Statamic\\Contracts\\Assets\\AssetContainerFactory' => __DIR__ . '/../..' . '/core/Contracts/Assets/AssetContainerFactory.php',
@@ -3443,10 +3447,10 @@ class ComposerStaticInit9a9caf6d85bac003bd976e0f3a669a62
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit9a9caf6d85bac003bd976e0f3a669a62::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit9a9caf6d85bac003bd976e0f3a669a62::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit9a9caf6d85bac003bd976e0f3a669a62::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit9a9caf6d85bac003bd976e0f3a669a62::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit28e75aafe637339955565bed2e38e4cc::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit28e75aafe637339955565bed2e38e4cc::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit28e75aafe637339955565bed2e38e4cc::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit28e75aafe637339955565bed2e38e4cc::$classMap;
 
         }, null, ClassLoader::class);
     }

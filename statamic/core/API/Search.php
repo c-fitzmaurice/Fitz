@@ -57,7 +57,12 @@ class Search
      */
     public static function update($index = null)
     {
-        return self::search()->update($index);
+        try {
+            return self::search()->update($index);
+        } catch (\Exception $e) {
+            \Log::error('Error updating the search index.');
+            \Log::error($e);
+        }
     }
 
     /**
@@ -69,7 +74,12 @@ class Search
      */
     public static function insert($id, $value)
     {
-        return self::search()->insert($id, $value);
+        try {
+            return self::search()->insert($id, $value);
+        } catch (\Exception $e) {
+            \Log::error("Error inserting [$id] into search index.");
+            \Log::error($e);
+        }
     }
 
     /**
@@ -79,6 +89,10 @@ class Search
      */
     public static function delete($id)
     {
-        return self::search()->delete($id);
+        try {
+            return self::search()->delete($id);
+        } catch (\Exception $e) {
+            \Log::error("Error deleting [$id] from search index.");
+        }
     }
 }

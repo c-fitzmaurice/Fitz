@@ -38,7 +38,7 @@
                         <dd v-if="downloading">
                             <span class="icon icon-circular-graph animation-spin"></span>
                             {{ t('downloading') }}
-                            <small class="help-block">{{ t('download_latest') }}</small>
+                            <small class="help-block">{{ t('downloading_latest') }}</small>
                         </dd>
                         <dd v-if="downloaded">
                             <span class="icon icon-check text-success"></span>

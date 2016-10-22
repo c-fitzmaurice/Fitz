@@ -17,19 +17,9 @@ module.exports = {
 
     props: {
         title: String,
-        extra: {
-            type: Object,
-            coerce: function (extra) {
-                return JSON.parse(extra);
-            },
-        },
+        extra: String,
         isNew: Boolean,
-        contentData: {
-            type: Object,
-            coerce: function (data) {
-                return JSON.parse(data);
-            },
-        },
+        contentData: String,
         contentType: String,
         titleDisplayName: {
             type: String,
@@ -48,15 +38,7 @@ module.exports = {
             default: true
         },
         locale: String,
-        locales: {
-            coerce: function (locales) {
-                if (! locales) {
-                    return null;
-                }
-
-                return JSON.parse(locales);
-            }
-        },
+        locales: String,
         isDefaultLocale: {
             type: Boolean,
             default: true
@@ -378,6 +360,13 @@ module.exports = {
 
     ready: function() {
         var self = this;
+
+        this.extra = JSON.parse(this.extra);
+        this.contentData = JSON.parse(this.contentData);
+        if (this.locales) {
+            this.locales = JSON.parse(this.locales);
+        }
+
 
         this.initFormData();
 

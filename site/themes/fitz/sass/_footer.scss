@@ -19,6 +19,7 @@ footer.site-footer {
                 }
                 &:hover {
                     text-decoration: none;
+                    background-color: transparent !important;
                     svg {
                         transform: translateY(-5px);
                         -webkit-transform: translateY(-5px);

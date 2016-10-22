@@ -4,6 +4,7 @@ namespace Statamic\Stache;
 
 use Illuminate\Support\Collection;
 use Statamic\API\Str;
+use Statamic\API\File;
 use Statamic\API\Config;
 use Statamic\Stache\Drivers\AggregateDriver;
 
@@ -87,8 +88,8 @@ class Stache
     {
         $this->temperature = self::TEMP_COLD;
 
-        if (! file_exists($this->building_path)) {
-            file_put_contents($this->building_path, true);
+        if (! File::exists($this->building_path)) {
+            File::put($this->building_path, true);
         }
     }
 
@@ -101,8 +102,8 @@ class Stache
     {
         $this->temperature = self::TEMP_WARM;
 
-        if (file_exists($this->building_path)) {
-            unlink($this->building_path);
+        if (File::exists($this->building_path)) {
+            File::delete($this->building_path);
         }
     }
 
@@ -133,7 +134,7 @@ class Stache
      */
     public function isPerformingInitialWarmUp()
     {
-        return file_exists($this->building_path);
+        return File::exists($this->building_path);
     }
 
     /**

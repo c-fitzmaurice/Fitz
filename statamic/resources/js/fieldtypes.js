@@ -10,6 +10,7 @@ import CollectionsFieldtype from './components/fieldtypes/CollectionsFieldtype.v
 import DateFieldtype from './components/fieldtypes/DateFieldtype.vue'
 import GridFieldtype from './components/fieldtypes/GridFieldtype.vue'
 import FieldsetFieldtype from './components/fieldtypes/FieldsetFieldtype.vue'
+import FormFieldtype from './components/fieldtypes/FormFieldtype.vue'
 import HiddenFieldtype from './components/fieldtypes/HiddenFieldtype.vue'
 import ListFieldtype from './components/fieldtypes/ListFieldtype.vue'
 import LocaleSettingsFieldtype from './components/fieldtypes/LocaleSettingsFieldtype.vue'
@@ -48,6 +49,7 @@ Vue.component('collection-fieldtype', CollectionFieldtype);
 Vue.component('collections-fieldtype', CollectionsFieldtype);
 Vue.component('date-fieldtype', DateFieldtype);
 Vue.component('fieldset-fieldtype', FieldsetFieldtype);
+Vue.component('form-fieldtype', FormFieldtype);
 Vue.component('grid-fieldtype', GridFieldtype);
 Vue.component('hidden-fieldtype', HiddenFieldtype);
 Vue.component('list-fieldtype', ListFieldtype);

@@ -45,6 +45,10 @@ class TaxonomyTags extends Tags
             return $this->parseNoResults();
         }
 
+        $this->terms->supplement('collection', function ($term) {
+            return $term->collection();
+        });
+
         $data = $this->terms->toArray();
 
         return $this->parseLoop($data);

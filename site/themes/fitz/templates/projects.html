@@ -27,5 +27,11 @@
             </div>
         {{ if index|%:2 == 0 && index != 0 || last }}</div>{{ endif }}
     {{ /collection:projects }}
+
+    {{ github:repos account="c-fitzmaurice" type="*all*" sort="created" direction="desc" }}
+        <h2>{{ name }}</h2>
+        <p>{{ description }}</p>
+        <hr />
+    {{ /github:repos }}
 </div>
 

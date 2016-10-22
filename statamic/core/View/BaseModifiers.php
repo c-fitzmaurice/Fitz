@@ -413,6 +413,10 @@ class BaseModifiers extends Modifier
      */
     public function get($value, $params)
     {
+        if (is_array($value)) {
+            $value = array_get($value, 0);
+        }
+
         if (! $item = Data::find($value)) {
             return $value;
         }
@@ -1866,6 +1870,10 @@ class BaseModifiers extends Modifier
      */
     public function url($value)
     {
+        if (is_array($value)) {
+            $value = array_get($value, 0);
+        }
+
         if (! $item = Asset::find($value)) {
             if (! $item = Content::find($value)) {
                 return $value;

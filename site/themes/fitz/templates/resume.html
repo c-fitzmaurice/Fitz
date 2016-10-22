@@ -23,9 +23,9 @@
                             <h2>{{ title }}</h2>
                         </div>
                         <div class="col-md-6 text-md-right dates">
-                            {{ start_date }} &nbsp;&nbsp; - &nbsp;&nbsp;
+                            {{ start_date format="F Y" }} &nbsp;&nbsp; - &nbsp;&nbsp;
                             {{ if end_date }}
-                                {{ end_date }}
+                                {{ end_date format="F Y" }}
                             {{ else }}
                                 Present
                             {{ endif }}

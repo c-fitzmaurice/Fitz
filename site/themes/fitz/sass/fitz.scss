@@ -22,11 +22,21 @@ body.home {
 }
 
 a {
-    color: $color__fitz;
-    font-weight: bold;
+    color: $color__fitz !important;
+    font-weight: bold !important;
     &:hover, &:active, &:focus {
-        color: $color__fitz;
-        text-decoration: underline;
+        color: $color__fitz !important;
+        background-color: $color__gray !important;
+    }
+}
+
+button {
+    color: $color__gray !important;
+    font-weight: bold !important;
+    border: 2px solid $color__fitz;
+    &:hover, &:active, &:focus {
+        color: $color__fitz !important;
+        background-color: $color__gray !important;
     }
 }
 
@@ -50,6 +60,14 @@ a {
 }
 #logo {
     margin-top: 3em;
+    &:hover {
+        background-color: transparent;
+    }
+}
+.logo-link {
+    &:hover {
+        background-color: transparent !important;
+    }
 }
 
 h1 {

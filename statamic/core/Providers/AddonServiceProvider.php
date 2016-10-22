@@ -112,7 +112,7 @@ class AddonServiceProvider extends ServiceProvider
             $parts = array_slice($parts, 0, 5);
             $path = join('/', $parts);
 
-            $this->loadTranslationsFrom($path, $namespace);
+            $this->loadTranslationsFrom(root_path($path), $namespace);
         });
     }
 }
