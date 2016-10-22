@@ -15,13 +15,29 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ theme:css }}">
     <!-- Favicon & Touch Icon -->
-    <link rel="shortcut icon" href="http://fitz-maurice.com/favicon.ico" />
-    <link rel="icon" type="image/png" href="http://fitz-maurice.com/assets/img/favicon.png" />
-    <!-- My SVGs -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/assets/img/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/img/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/assets/img/manifest.json">
+    <link rel="mask-icon" href="/assets/img/safari-pinned-tab.svg" color="#465058">
+    <link rel="shortcut icon" href="/assets/img/favicon.ico">
+    <meta name="msapplication-config" content="/assets/img/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
     <!-- Facebook Open Graph -->
-
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="{{ title }}">
+    <meta property="og:description" content="{{ description|markdown }}">
+    <meta property="og:site_name" content="Colin Fitz-Maurice">
+    <meta property="og:url" content="{{ current_url }}">
+    <meta property="og:image" content="http://fitz-maurice.com/assets/img/fitz_social_media.png">
+    <meta property="article:published_time" content="{{ date }}">
+    <meta property="article:author" content="https://www.facebook.com/colin.fitz.maurice">
     <!-- Twitter Cards -->
-
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@c_fitzmaurice">
+    <meta name="twitter:title" content="{{ date }}">
+    <meta name="twitter:description" content="{{ description|markdown }}">
+    <meta name="twitter:image" content="http://fitz-maurice.com/assets/img/fitz_social_media.png">
 </head>
 
 <body class="{{ title }}">

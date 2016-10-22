@@ -1,20 +1,92 @@
-
-// ---------------------------------------
-.hamburger-wrapper {
+$size: 35px;
+$thickness: 5px;
+$gap: 5px;
+$color: $color__fitz;
+$roundCap: true;
+// HAMBURGER -----------------------------------
+.menu-icon-wrapper {
     padding: 0;
     position: fixed;
     top: 20px;
-    right: 25px;
+    right: 30px;
     width: 25px;
     z-index: 999;
-    .hamburger {
-        height: 3px;
-        margin: 4px auto;
-        background: $color__fitz;
-        border-radius: 2px;
+
+    .x {
+        input#menu-x {
+            display: none;
+        }
+        label {
+            display: block;
+            width: $size;
+            height: ($thickness * 3 + $gap * 2);
+            position: relative;
+
+            span {
+                position: relative;
+                top: $thickness + $gap;
+
+                &,
+                &:before,
+                &:after {
+                    -webkit-transition: all 300ms ease;
+                    -moz-transition: all 300ms ease;
+                    -o-transition: all 300ms ease;
+                    transition: all 300ms ease;
+                    display: block;
+                    background: $color;
+                    width: $size;
+                    height: $thickness;
+                    @if $roundCap {
+                        border-radius: $thickness / 2;
+                    }
+                }
+                &:before,
+                &:after {
+                    content: '';
+                    position: absolute;
+                }
+
+                &:before {
+                    bottom: $gap + $thickness;
+                }
+
+                &:after {
+                    top: $gap + $thickness;
+                }
+            }
+        }
     }
 }
-// ----------------------------------------
+
+label {
+    span {
+
+        :checked ~ & {
+
+            .x & {
+                width: 0;
+                &:before {
+                    -webkit-transform: rotate(-45deg);
+                    -moz-transform: rotate(-45deg);
+                    -o-transform: rotate(-45deg);
+                    transform: rotate(45deg);
+                    bottom: 0;
+                }
+                &:after {
+                    -webkit-transform: rotate(-45deg);
+                    -moz-transform: rotate(-45deg);
+                    -o-transform: rotate(-45deg);
+                    transform: rotate(-45deg);
+                    top: 0;
+                }
+            }
+        }
+
+    }
+}
+
+// MENU ----------------------------------------
 .navigation-wrapper {
     padding: 40px 0 0 0;
     position: fixed;
@@ -29,43 +101,43 @@
     -ms-transition: all 1s linear;
     -o-transition: all 1s linear;
     transition: all 1s linear;
-}
 
-.navigation {
-    padding: 20px 25px 0 0;
-    display: none;
+    ul.navigation {
+        padding: 20px 25px 0 0;
+        display: none;
+
+        li {
+            list-style: none;
+            margin: 50px 0;
+            transition: all ease .5s;
+            -webkit-transition: all ease .5s;
+
+            &.small-padding {
+                margin: 0;
+            }
+
+            a {
+                display: block;
+                padding: 2px 5px;
+                color: $color__fitz;
+                text-decoration: none;
+                text-align: right;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                border-right: 3px solid $color__gray;
+                transition: all ease .3s;
+                -webkit-transition: all ease .3s;
+
+                &:hover {
+                    padding-right: 15px;
+                    border-right: 3px solid $color__fitz;
+                }
+            }
+        }
+    }
 }
 
 .show-menu {
     display: block;
     background-color: rgba(70,80,88,0.25);
-}
-
-.navigation li {
-    list-style: none;
-    margin: 50px 0;
-    transition: all ease .5s;
-    -webkit-transition: all ease .5s;
-}
-
-.navigation li.small-padding {
-    margin: 0;
-}
-
-.navigation li a {
-    display: block;
-    padding: 2px 5px;
-    color: $color__fitz;
-    text-decoration: none;
-    text-align: right;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border-right: 3px solid $color__gray;
-    transition: all ease .3s;
-    -webkit-transition: all ease .3s;
-}
-
-.navigation li a:hover {
-    padding-right: 15px;
-    border-right: 3px solid $color__fitz;
 }
