@@ -1,0 +1,30 @@
+title: Project Post
+create_title: New Project Post
+fields:
+  website:
+    type: text
+    display: Website
+    instructions: What is the URL for this project?
+    width: 50
+    validate: URL
+  hero_image:
+    type: assets
+    display: Hero Image
+    instructions: '**Hero image to be determined**'
+    container: main
+    folder: projects
+    width: 50
+  description:
+    type: markdown
+    display: Project Description
+    instructions: What did you do on this project?
+    cheatsheet: true
+    container: main
+    folder: projects
+    validate: required
+  images:
+    type: assets
+    display: Images of the project
+    instructions: 'Images cropped to **1280 x 775 @ 72 DPI**'
+    container: main
+    folder: projects

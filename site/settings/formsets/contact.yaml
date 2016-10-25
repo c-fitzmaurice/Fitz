@@ -1,0 +1,30 @@
+title: Get in touch
+honeypot: spam
+fields:
+  name:
+    display: Name
+    validate: required|min:3
+  email:
+    display: Email Address
+    validate: required|email
+  subject:
+    display: Subject
+    validate: required|min:5
+  message:
+    display: Message
+    validate: required|min:15
+columns:
+  - name
+  - email
+  - subject
+metrics:
+  - 
+    type: total
+    label: Total
+email:
+  - 
+    to: colin@fitz-maurice.com
+    from: colin@fitz-maurice.com
+    subject: FITZ | Contact Form
+    automagic: true
+    reply_to: '{{ email }}'

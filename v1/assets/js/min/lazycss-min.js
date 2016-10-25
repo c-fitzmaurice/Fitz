@@ -1,0 +1,1 @@
+function loadCSS(e){var s=window.document.createElement("link"),a=window.document.getElementsByTagName("head")[0];s.rel="stylesheet",s.href=e,s.media="only x",a.appendChild(s),setTimeout(function(){s.media="all"},0)}loadCSS("assets/css/bootstrap.css"),loadCSS("assets/css/main.css"),loadCSS("http://fonts.googleapis.com/css?family=Raleway:400,600,700,300");

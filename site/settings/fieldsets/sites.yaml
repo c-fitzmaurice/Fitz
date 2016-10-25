@@ -1,0 +1,9 @@
+title: Sites
+create_title: New Site
+fields:
+  site_url:
+    type: text
+    display: Site URL
+    instructions: 'Address of the website	'
+    width: 66
+    validate: required
