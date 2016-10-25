@@ -1,28 +1,34 @@
 @import 'https://fonts.googleapis.com/css?family=Lato';
+/* $color__fitz: #465058;  */
+/* FITZ - Original */
+/* Material Design */
 body {
   font-family: 'Lato', sans-serif;
   font-size: 16px;
-  border-top: 6px solid #465058;
+  border-top: 6px solid #37474F;
   color: #909090; }
 
 body.home {
-  border: 6px solid #465058;
+  border: 6px solid #37474F;
   height: 100%;
   width: 100%; }
 
 a {
-  color: #465058 !important;
+  color: #37474F !important;
   font-weight: bold !important; }
   a:hover, a:active, a:focus {
-    color: #465058 !important;
+    color: #37474F !important;
     background-color: #EEEEEE !important; }
+
+a.lb-prev:hover, a.lb-next:hover, a.lb-close:hover {
+  background-color: transparent !important; }
 
 button {
   color: #EEEEEE !important;
   font-weight: bold !important;
-  border: 2px solid #465058; }
+  border: 2px solid #37474F; }
   button:hover, button:active, button:focus {
-    color: #465058 !important;
+    color: #37474F !important;
     background-color: #EEEEEE !important; }
 
 .sticky-page {
@@ -49,7 +55,7 @@ button {
   background-color: transparent !important; }
 
 h1 {
-  color: #465058;
+  color: #37474F;
   margin-top: 1.25em;
   margin-bottom: 1.25em;
   font-size: 40px;
@@ -106,7 +112,7 @@ img {
           -webkit-transition: all 300ms ease;
           transition: all 300ms ease;
           display: block;
-          background: #465058;
+          background: #37474F;
           width: 35px;
           height: 5px;
           cursor: pointer;
@@ -154,7 +160,7 @@ img {
       .navigation-wrapper ul.navigation li a {
         display: block;
         padding: 2px 5px;
-        color: #465058;
+        color: #37474F;
         text-decoration: none;
         text-align: right;
         text-transform: uppercase;
@@ -164,7 +170,7 @@ img {
         -webkit-transition: all ease .3s; }
         .navigation-wrapper ul.navigation li a:hover {
           padding-right: 15px;
-          border-right: 3px solid #465058; }
+          border-right: 3px solid #37474F; }
 
 .show-menu {
   display: block;
@@ -179,18 +185,18 @@ textarea {
   display: none; }
 
 .form-control:focus {
-  border-color: #465058; }
+  border-color: #37474F; }
 
 .btn-primary {
-  background-color: #465058;
-  border-color: #465058; }
+  background-color: #37474F;
+  border-color: #37474F; }
 
 .resume section {
   margin-top: 1em;
   margin-bottom: 1em; }
 
 .resume h2, .resume .dates {
-  color: #465058;
+  color: #37474F;
   margin-top: 0.5em;
   margin-bottom: 0.5em; }
 
@@ -241,14 +247,15 @@ textarea {
     position: relative;
     font-size: 17px;
     padding: 10px;
-    background: rgba(255, 255, 255, 0.9);
+    letter-spacing: 2px;
+    background: #37474F;
+    color: #fff;
     -webkit-transform: scale(0.7);
     transform: scale(0.7);
     -webkit-transition: all 0.4s ease-in;
     transition: all 0.4s ease-in;
     opacity: 0;
     filter: alpha(opacity=0);
-    color: #465058;
     text-transform: uppercase;
     box-shadow: 0px 7px 26px 0px rgba(0, 0, 0, 0.75); }
   .projects .project__wrapper .project__info {
@@ -281,7 +288,7 @@ textarea {
 footer.site-footer {
   height: 40px;
   line-height: 40px;
-  color: #465058; }
+  color: #37474F; }
   footer.site-footer ul {
     height: 40px;
     margin: 0;
@@ -295,7 +302,7 @@ footer.site-footer {
         footer.site-footer ul li a svg.footer-icon {
           height: 30px;
           width: 30px;
-          fill: #465058; }
+          fill: #37474F; }
         footer.site-footer ul li a:hover {
           text-decoration: none;
           background-color: transparent !important; }
@@ -304,7 +311,7 @@ footer.site-footer {
             -webkit-transform: translateY(-5px); }
   footer.site-footer.top-border {
     margin-top: 30px;
-    border-top: 2px solid #465058; }
+    border-top: 2px solid #37474F; }
 
 @media only screen and (max-width: 544px) {
   .sticky-wrap {

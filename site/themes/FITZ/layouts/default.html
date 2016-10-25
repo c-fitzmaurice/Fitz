@@ -26,7 +26,7 @@
     <!-- Facebook Open Graph -->
     <meta property="og:type" content="article">
     <meta property="og:title" content="{{ title }}">
-    <meta property="og:description" content="{{ description|markdown }}">
+    <meta property="og:description" content="{{ description|safe_truncate:140:... }}">
     <meta property="og:site_name" content="Colin Fitz-Maurice">
     <meta property="og:url" content="{{ current_url }}">
     <meta property="og:image" content="http://fitz-maurice.com/assets/img/fitz_social_media.png">
@@ -36,7 +36,7 @@
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@c_fitzmaurice">
     <meta name="twitter:title" content="{{ date }}">
-    <meta name="twitter:description" content="{{ description|markdown }}">
+    <meta name="twitter:description" content="{{ description|safe_truncate:140:... }}">
     <meta name="twitter:image" content="http://fitz-maurice.com/assets/img/fitz_social_media.png">
 </head>
 

@@ -7,6 +7,15 @@ widgets:
     limit: 5
     importance: 3
   - 
+    type: form
+    form: contact
+    limit: 3
+    title: Recent Submissions
+    fields:
+      - name
+      - email
+      - subject
+  - 
     type: collection
     collection: blog
     limit: 5
@@ -16,14 +25,5 @@ widgets:
     collection: jobs
     limit: 5
     importance: 3
-  - 
-    type: form
-    form: contact
-    limit: 3
-    title: Recent Submissions
-    fields:
-      - name
-      - email
-      - subject
   - 
     type: updater

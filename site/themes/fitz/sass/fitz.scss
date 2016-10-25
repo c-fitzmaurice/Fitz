@@ -1,6 +1,7 @@
 @import 'https://fonts.googleapis.com/css?family=Lato';
 
-$color__fitz: #465058;
+/* $color__fitz: #465058;  */ /* FITZ - Original */
+$color__fitz: #37474F; /* Material Design */
 $color__gray: #EEEEEE;
 
 @mixin font-size($sizeValue: 1) {
@@ -27,6 +28,11 @@ a {
     &:hover, &:active, &:focus {
         color: $color__fitz !important;
         background-color: $color__gray !important;
+    }
+}
+a.lb-prev, a.lb-next, a.lb-close {
+    &:hover {
+        background-color: transparent !important;
     }
 }
 
