@@ -1,0 +1,40 @@
+<div class="container a_project">
+
+    <div class="row">
+        <div class="col-xs-12 text-xs-center">
+            <h1>{{ title }}</h1>
+            <p><a href="{{ website }}">{{ website }}</a></p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 offset-sm-2 col-md-10 offset-md-1 col-lg-8 offset-lg-2 text-center">
+            {{ assets:hero_image }}<img class="hero_img" src="{{ url }}" alt="{{ alt }}"/>{{ /assets:hero_image }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="body-copy col-xs-12 col-sm-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+            {{ description|markdown }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+            <div class="row">
+                {{ assets:images }}
+                    <div class="col-xs-6 col-sm-6 col-md-4 text-center">
+                        <a
+                            class="project__thumbs_link"
+                            href="{{ url }}"
+                            data-lightbox="project"
+                        >
+                            <img class="project__thumbs" src="{{ glide:id width="200" height="200" fit="crop" }}" alt="{{ alt }}"/>
+                        </a>
+                    </div>
+                {{ /assets:images }}
+            </div>
+        </div>
+    </div>
+
+</div>
