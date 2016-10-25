@@ -1,0 +1,18 @@
+collections:
+  blog: '/blog/{slug}'
+  things: '/projects/{slug}'
+  events: '/events/{slug}'
+  projects: '/projects/{slug}'
+taxonomies:
+  tags: '/blog/tags/{slug}'
+  categories: '/blog/categories/{slug}'
+routes:
+  /blog/tags: blog/taxonomies
+  /search: search
+  /users: user/index
+  /users/{username}: user/profile
+  /account: user/account
+  /login: auth/login
+  /register: auth/register
+  /forgot-password: auth/password-forgot
+  /reset-password: auth/password-reset

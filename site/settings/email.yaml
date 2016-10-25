@@ -1,0 +1,9 @@
+driver: mailgun
+from_email: colin@fitz-maurice.com
+from_name: Contact Form on Fitz.com
+port: 587
+encryption: tls
+username: ""
+password: ""
+mailgun_secret: key-600d408da3f8d003fde665558c56c965
+mailgun_domain: fitz-maurice.com

@@ -1,0 +1,46 @@
+title: Jobs
+create_title: New Job Post
+fields:
+  position:
+    type: text
+    display: Position
+    instructions: What title did you have?
+    width: 50
+    validate: required
+  website:
+    type: text
+    display: Website
+    instructions: Website of the company
+    width: 50
+    validate: required
+  project_link:
+    type: text
+    display: Project Link
+    instructions: Link to the project on this website
+    width: 50
+  start_date:
+    type: date
+    display: Start Date
+    instructions: Date you started
+    allow_blank: false
+    allow_time: false
+    earliest_date: January 1, 1900
+    width: 25
+    validate: date
+  end_date:
+    type: date
+    display: end_date
+    instructions: Date you left the company
+    allow_blank: true
+    allow_time: false
+    earliest_date: January 1, 1900
+    width: 25
+    validate: date
+  description:
+    type: markdown
+    display: Description
+    instructions: What I did while employeed
+    cheatsheet: true
+    container: main
+    folder: jobs
+    validate: required
