@@ -47,7 +47,7 @@ class SuggestController extends Controller
             $mode = Str::studly($this->request->input('mode', 'options'));
         }
 
-        $class = 'Statamic\Addons\Suggest\Modes\\' . ucfirst($mode) . 'Mode';
+        $class = 'Statamic\Addons\Suggest\Modes\\' . Str::studly($mode) . 'Mode';
 
         if (! class_exists($class)) {
             $class = "Statamic\\Addons\\{$mode}\\{$mode}SuggestMode";

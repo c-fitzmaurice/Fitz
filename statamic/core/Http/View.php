@@ -10,6 +10,7 @@ use Statamic\DataStore;
 use Statamic\API\Parse;
 use Statamic\API\Config;
 use Statamic\API\Helper;
+use Statamic\Config\Globals;
 
 /**
  * Controls the rendering of templates in views
@@ -86,13 +87,7 @@ class View
         ]);
 
         // Add globals. Each global set will get their own scope.
-        foreach (GlobalSet::all() as $global) {
-            $global = $global->in(site_locale())->get();
-            $env = $this->store->getEnvInScope('globals.'.$global->slug(), []);
-            $data = $global->dataWithDefaultLocale();
-            $data = Arr::combineRecursive($data, $env);
-            $this->store->mergeInto($global->slug(), $data);
-        }
+        $this->mergeGlobalsIntoDataStore();
 
         // The 'global.yaml' global set will be merged into the global cascade.
         $this->store->merge($this->store->getScope('global'));
@@ -102,6 +97,27 @@ class View
         $data = (is_object($this->data)) ? $this->data->toArray() : $this->data;
         $this->store->merge($data);
         $this->store->mergeInto('page', $data);
+    }
+
+    /**
+     * Merge the globals into the data store
+     *
+     * @return void
+     */
+    private function mergeGlobalsIntoDataStore()
+    {
+        GlobalSet::all()->each(function ($global) {
+            $global = $global->in(site_locale())->get();
+
+            $data = $global->dataWithDefaultLocale();
+
+            // The data for the global can be overridden within environment yaml files. We want
+            // to grab these overrides if they exist and merge it with the actual global data.
+            $env = app(Globals::class)->get($global->slug(), []);
+            $data = Arr::combineRecursive($data, $env);
+
+            $this->store->mergeInto($global->slug(), $data);
+        });
     }
 
     /**

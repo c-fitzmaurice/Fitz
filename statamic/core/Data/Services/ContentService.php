@@ -65,7 +65,7 @@ class ContentService extends AbstractService
      */
     public function uriExists($uri)
     {
-        return $this->uris()->has(default_locale() . '::' . $uri);
+        return $this->uris()->has(default_locale() . '::' . Str::ensureLeft($uri, '/'));
     }
 
     /**

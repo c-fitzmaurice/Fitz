@@ -14,10 +14,6 @@ class UsersFieldtype extends RelateFieldtype
             $data = $user->id();
         }
 
-        if ($this->get('max_items') === 1) {
-            return $data;
-        }
-
-        return [$data];
+        return parent::preProcess($data);
     }
 }

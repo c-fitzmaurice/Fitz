@@ -53,7 +53,10 @@ class SearchController extends CpController
 
         $query = $request->query('q');
 
-        $fields = ['title', 'url'];
+        // Zend should search for specific fields. Other drivers - ie. Algolia - should just search their
+        // default methods. If Algolia has searchable atttributes defined, it'll use those. Otherwise,
+        // it'll search all indexed attributes. Either way, Algolia will be much faster than Zend.
+        $fields = (Config::get('search.driver') === 'zend') ? ['title', 'url'] : null;
 
         if (strlen($query) >= 3) {
             $query = $query . '*'; // Wildcard some of the things;

@@ -71,6 +71,7 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('partials.scripts', 'Statamic\Http\ViewComposers\FieldtypeJsComposer');
         view()->composer('partials.scripts', 'Statamic\Http\ViewComposers\JavascriptComposer');
         view()->composer('partials.nav-main', 'Statamic\Http\ViewComposers\NavigationComposer');
+        view()->composer('settings.edit', 'Statamic\Http\ViewComposers\SettingsComposer');
 
         $this->collectionMacros();
     }

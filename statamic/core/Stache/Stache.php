@@ -43,7 +43,7 @@ class Stache
     /**
      * @var string
      */
-    private $building_path;
+    public $building_path;
 
     /**
      * The "temperature" of the Stache.

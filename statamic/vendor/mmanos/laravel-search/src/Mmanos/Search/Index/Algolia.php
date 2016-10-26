@@ -10,21 +10,21 @@ class Algolia extends \Mmanos\Search\Index
 	 * @var \AlgoliaSearch\Client
 	 */
 	protected static $client;
-	
+
 	/**
 	 * Index instance.
 	 *
 	 * @var \AlgoliaSearch\Index
 	 */
 	protected $index;
-	
+
 	/**
 	 * An array of stored query totals to help reduce subsequent count calls.
 	 *
 	 * @var array
 	 */
 	protected $stored_query_totals = array();
-	
+
 	/**
 	 * Get the Algolia client associated with this instance.
 	 *
@@ -38,10 +38,10 @@ class Algolia extends \Mmanos\Search\Index
 				Config::get('search.connections.algolia.config.admin_api_key')
 			);
 		}
-		
+
 		return static::$client;
 	}
-	
+
 	/**
 	 * Create the index.
 	 *
@@ -53,21 +53,21 @@ class Algolia extends \Mmanos\Search\Index
 	{
 		return false;
 	}
-	
+
 	/**
 	 * Get the Algolia index instance associated with this instance.
 	 *
 	 * @return \AlgoliaSearch\Index
 	 */
-	protected function getIndex()
+	public function getIndex()
 	{
 		if (!$this->index) {
 			$this->index = $this->getClient()->initIndex($this->name);
 		}
-		
+
 		return $this->index;
 	}
-	
+
 	/**
 	 * Get a new query instance from the driver.
 	 *
@@ -82,7 +82,7 @@ class Algolia extends \Mmanos\Search\Index
 			),
 		);
 	}
-	
+
 	/**
 	 * Add a search/where clause to the given query based on the given condition.
 	 * Return the given $query instance when finished.
@@ -95,18 +95,18 @@ class Algolia extends \Mmanos\Search\Index
 	 *                         - phrase     : match as a phrase
 	 *                         - filter     : filter results on value
 	 *                         - fuzzy      : fuzziness value (0 - 1)
-	 * 
+	 *
 	 * @return array
 	 */
 	public function addConditionToQuery($query, array $condition)
 	{
 		$value = trim(array_get($condition, 'value'));
 		$field = array_get($condition, 'field');
-		
+
 		if ('xref_id' == $field) {
 			$field = 'objectID';
 		}
-		
+
 		if (array_get($condition, 'filter')) {
 			if (is_numeric($value)) {
 				$query['query']['numericFilters'][] = "{$field}={$value}";
@@ -121,16 +121,16 @@ class Algolia extends \Mmanos\Search\Index
 		}
 		else {
 			$query['terms'] .= ' ' . $value;
-			
+
 			if (!empty($field) && '*' !== $field) {
 				$field = is_array($field) ? $field : array($field);
 				$query['query']['restrictSearchableAttributes'] = implode(',', $field);
 			}
 		}
-		
+
 		return $query;
 	}
-	
+
 	/**
 	 * Execute the given query and return the results.
 	 * Return an array of records where each record is an array
@@ -142,32 +142,32 @@ class Algolia extends \Mmanos\Search\Index
 	 * @param array $query
 	 * @param array $options - limit  : max # of records to return
 	 *                       - offset : # of records to skip
-	 * 
+	 *
 	 * @return array
 	 */
 	public function runQuery($query, array $options = array())
 	{
 		$original_query = $query;
-		
+
 		if (isset($options['limit']) && isset($options['offset'])) {
 			$query['query']['page'] = ($options['offset'] / $options['limit']);
 			$query['query']['hitsPerPage'] = $options['limit'];
 		}
-		
+
 		$query['terms'] = trim($query['terms']);
 		if (isset($query['query']['numericFilters'])) {
 			$query['query']['numericFilters'] = implode(',', $query['query']['numericFilters']);
 		}
-		
+
 		try {
 			$response = $this->getIndex()->search(array_get($query, 'terms'), array_get($query, 'query'));
 			$this->stored_query_totals[md5(serialize($original_query))] = array_get($response, 'nbHits');
 		} catch (\Exception $e) {
 			$response = array();
 		}
-		
+
 		$results = array();
-		
+
 		if (array_get($response, 'hits')) {
 			foreach (array_get($response, 'hits') as $hit) {
 				$hit['id'] = array_get($hit, 'objectID');
@@ -175,15 +175,15 @@ class Algolia extends \Mmanos\Search\Index
 				$results[] = $hit;
 			}
 		}
-		
+
 		return $results;
 	}
-	
+
 	/**
 	 * Execute the given query and return the total number of results.
 	 *
 	 * @param array $query
-	 * 
+	 *
 	 * @return int
 	 */
 	public function runCount($query)
@@ -191,7 +191,7 @@ class Algolia extends \Mmanos\Search\Index
 		if (isset($this->stored_query_totals[md5(serialize($query))])) {
 			return $this->stored_query_totals[md5(serialize($query))];
 		}
-		
+
 		$query['terms'] = trim($query['terms']);
 		if (isset($query['numericFilters'])) {
 			$query['numericFilters'] = implode(',', $query['numericFilters']);
@@ -199,14 +199,14 @@ class Algolia extends \Mmanos\Search\Index
 		if (isset($query['facets'])) {
 			$query['facets'] = implode(',', $query['facets']);
 		}
-		
+
 		try {
 			return array_get($this->getIndex()->search(array_get($query, 'terms'), array_get($query, 'query')), 'nbHits');
 		} catch (\Exception $e) {
 			return 0;
 		}
 	}
-	
+
 	/**
 	 * Add a new document to the index.
 	 * Any existing document with the given $id should be deleted first.
@@ -216,23 +216,23 @@ class Algolia extends \Mmanos\Search\Index
 	 * @param mixed $id
 	 * @param array $fields
 	 * @param array $parameters
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function insert($id, array $fields, array $parameters = array())
 	{
 		$fields['objectID'] = $id;
-		
+
 		$this->getIndex()->saveObject(array_merge($parameters, $fields));
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Delete the document from the index associated with the given $id.
 	 *
 	 * @param mixed $id
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function delete($id)
@@ -242,10 +242,10 @@ class Algolia extends \Mmanos\Search\Index
 		} catch (\Exception $e) {
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Delete the entire index.
 	 *
@@ -258,7 +258,7 @@ class Algolia extends \Mmanos\Search\Index
 		} catch (\Exception $e) {
 			return false;
 		}
-		
+
 		return true;
 	}
 }

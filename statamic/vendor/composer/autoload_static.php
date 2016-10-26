@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit28e75aafe637339955565bed2e38e4cc
+class ComposerStaticInit71b6a8414510866655d39ce0dfc14d38
 {
     public static $files = array (
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
@@ -2228,6 +2228,7 @@ class ComposerStaticInit28e75aafe637339955565bed2e38e4cc
         'Statamic\\Addons\\Suggest\\Modes\\OptionsMode' => __DIR__ . '/../..' . '/bundles/Suggest/Modes/OptionsMode.php',
         'Statamic\\Addons\\Suggest\\Modes\\PagesMode' => __DIR__ . '/../..' . '/bundles/Suggest/Modes/PagesMode.php',
         'Statamic\\Addons\\Suggest\\Modes\\TaxonomyMode' => __DIR__ . '/../..' . '/bundles/Suggest/Modes/TaxonomyMode.php',
+        'Statamic\\Addons\\Suggest\\Modes\\UserGroupsMode' => __DIR__ . '/../..' . '/bundles/Suggest/Modes/UserGroupsMode.php',
         'Statamic\\Addons\\Suggest\\Modes\\UsersMode' => __DIR__ . '/../..' . '/bundles/Suggest/Modes/UsersMode.php',
         'Statamic\\Addons\\Suggest\\SuggestController' => __DIR__ . '/../..' . '/bundles/Suggest/SuggestController.php',
         'Statamic\\Addons\\Suggest\\SuggestFieldtype' => __DIR__ . '/../..' . '/bundles/Suggest/SuggestFieldtype.php',
@@ -2281,6 +2282,7 @@ class ComposerStaticInit28e75aafe637339955565bed2e38e4cc
         'Statamic\\CP\\Router' => __DIR__ . '/../..' . '/core/CP/Router.php',
         'Statamic\\Config\\Addons' => __DIR__ . '/../..' . '/core/Config/Addons.php',
         'Statamic\\Config\\Config' => __DIR__ . '/../..' . '/core/Config/Config.php',
+        'Statamic\\Config\\Globals' => __DIR__ . '/../..' . '/core/Config/Globals.php',
         'Statamic\\Config\\Roles' => __DIR__ . '/../..' . '/core/Config/Roles.php',
         'Statamic\\Config\\Settings' => __DIR__ . '/../..' . '/core/Config/Settings.php',
         'Statamic\\Console\\Commands\\Assets\\AssetsFindCommand' => __DIR__ . '/../..' . '/core/Console/Commands/Assets/AssetsFindCommand.php',
@@ -2434,6 +2436,8 @@ class ComposerStaticInit28e75aafe637339955565bed2e38e4cc
         'Statamic\\Events\\OAuth\\FindingUser' => __DIR__ . '/../..' . '/core/Events/OAuth/FindingUser.php',
         'Statamic\\Events\\OAuth\\GeneratingUserData' => __DIR__ . '/../..' . '/core/Events/OAuth/GeneratingUserData.php',
         'Statamic\\Events\\OAuth\\GeneratingUsername' => __DIR__ . '/../..' . '/core/Events/OAuth/GeneratingUsername.php',
+        'Statamic\\Events\\SearchQueryPerformed' => __DIR__ . '/../..' . '/core/Events/SearchQueryPerformed.php',
+        'Statamic\\Events\\SearchSettingsUpdated' => __DIR__ . '/../..' . '/core/Events/SearchSettingsUpdated.php',
         'Statamic\\Events\\StacheUpdated' => __DIR__ . '/../..' . '/core/Events/StacheUpdated.php',
         'Statamic\\Events\\Stache\\RepositoryItemInserted' => __DIR__ . '/../..' . '/core/Events/Stache/RepositoryItemInserted.php',
         'Statamic\\Events\\Stache\\RepositoryItemRemoved' => __DIR__ . '/../..' . '/core/Events/Stache/RepositoryItemRemoved.php',
@@ -2531,6 +2535,7 @@ class ComposerStaticInit28e75aafe637339955565bed2e38e4cc
         'Statamic\\Http\\Controllers\\PublishController' => __DIR__ . '/../..' . '/core/Http/Controllers/PublishController.php',
         'Statamic\\Http\\Controllers\\RolesController' => __DIR__ . '/../..' . '/core/Http/Controllers/RolesController.php',
         'Statamic\\Http\\Controllers\\SearchController' => __DIR__ . '/../..' . '/core/Http/Controllers/SearchController.php',
+        'Statamic\\Http\\Controllers\\SearchSettingsController' => __DIR__ . '/../..' . '/core/Http/Controllers/SearchSettingsController.php',
         'Statamic\\Http\\Controllers\\SettingsController' => __DIR__ . '/../..' . '/core/Http/Controllers/SettingsController.php',
         'Statamic\\Http\\Controllers\\ShopController' => __DIR__ . '/../..' . '/core/Http/Controllers/ShopController.php',
         'Statamic\\Http\\Controllers\\SnippetsController' => __DIR__ . '/../..' . '/core/Http/Controllers/SnippetsController.php',
@@ -2561,6 +2566,7 @@ class ComposerStaticInit28e75aafe637339955565bed2e38e4cc
         'Statamic\\Http\\ViewComposers\\LayoutComposer' => __DIR__ . '/../..' . '/core/Http/ViewComposers/LayoutComposer.php',
         'Statamic\\Http\\ViewComposers\\NavigationComposer' => __DIR__ . '/../..' . '/core/Http/ViewComposers/NavigationComposer.php',
         'Statamic\\Http\\ViewComposers\\PermissionComposer' => __DIR__ . '/../..' . '/core/Http/ViewComposers/PermissionComposer.php',
+        'Statamic\\Http\\ViewComposers\\SettingsComposer' => __DIR__ . '/../..' . '/core/Http/ViewComposers/SettingsComposer.php',
         'Statamic\\Http\\ViewComposers\\TranslationComposer' => __DIR__ . '/../..' . '/core/Http/ViewComposers/TranslationComposer.php',
         'Statamic\\Imaging\\AssetNotFoundException' => __DIR__ . '/../..' . '/core/Imaging/AssetNotFoundException.php',
         'Statamic\\Imaging\\GlideImageManipulator' => __DIR__ . '/../..' . '/core/Imaging/GlideImageManipulator.php',
@@ -2573,6 +2579,8 @@ class ComposerStaticInit28e75aafe637339955565bed2e38e4cc
         'Statamic\\Importing\\Statamic\\Preparer' => __DIR__ . '/../..' . '/core/Importing/Statamic/Preparer.php',
         'Statamic\\Importing\\Statamic\\StatamicImporter' => __DIR__ . '/../..' . '/core/Importing/Statamic/StatamicImporter.php',
         'Statamic\\Jobs\\Job' => __DIR__ . '/../..' . '/core/Jobs/Job.php',
+        'Statamic\\Listeners\\FlushCache' => __DIR__ . '/../..' . '/core/Listeners/FlushCache.php',
+        'Statamic\\Listeners\\UpdateSearchIndex' => __DIR__ . '/../..' . '/core/Listeners/UpdateSearchIndex.php',
         'Statamic\\Logging\\LoggingHandler' => __DIR__ . '/../..' . '/core/Logging/LoggingHandler.php',
         'Statamic\\Outpost' => __DIR__ . '/../..' . '/core/Outpost.php',
         'Statamic\\Permissions\\File\\Role' => __DIR__ . '/../..' . '/core/Permissions/File/Role.php',
@@ -3447,10 +3455,10 @@ class ComposerStaticInit28e75aafe637339955565bed2e38e4cc
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit28e75aafe637339955565bed2e38e4cc::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit28e75aafe637339955565bed2e38e4cc::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit28e75aafe637339955565bed2e38e4cc::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit28e75aafe637339955565bed2e38e4cc::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit71b6a8414510866655d39ce0dfc14d38::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit71b6a8414510866655d39ce0dfc14d38::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit71b6a8414510866655d39ce0dfc14d38::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit71b6a8414510866655d39ce0dfc14d38::$classMap;
 
         }, null, ClassLoader::class);
     }

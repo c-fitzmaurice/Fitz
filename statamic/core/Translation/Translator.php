@@ -3,6 +3,7 @@
 namespace Statamic\Translation;
 
 use Statamic\API\Folder;
+use Statamic\API\Config;
 
 class Translator extends \Illuminate\Translation\Translator
 {
@@ -18,9 +19,11 @@ class Translator extends \Illuminate\Translation\Translator
      */
     public function all()
     {
+        $locale = Config::get('cp.locale') ?: Config::getDefaultLocale();
+
         return collect(array_replace_recursive(
-            $this->getTranslations(base_path() . '/resources/lang/' . site_locale()),
-            $this->getTranslations(site_path() . '/lang/' . site_locale())
+            $this->getTranslations(base_path() . '/resources/lang/en'),
+            $this->getTranslations(site_path() . '/lang/' . $locale)
         ));
     }
 

@@ -14,7 +14,11 @@ class EventServiceProvider extends ServiceProvider
         ],
         \Statamic\Events\DataIdCreated::class => [
             \Statamic\Stache\Listeners\SaveCreatedId::class
-        ]
+        ],
+        \Statamic\Events\SearchSettingsUpdated::class => [
+            \Statamic\Listeners\UpdateSearchIndex::class,
+            \Statamic\Listeners\FlushCache::class,
+        ],
     ];
 
     protected $subscribe = [

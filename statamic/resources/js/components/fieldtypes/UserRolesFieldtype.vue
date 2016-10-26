@@ -8,11 +8,13 @@
                 {{ role }}<template v-if="$index !== selectedRoleNames.length-1">,</template>
             </template>
         </p>
-        <checkboxes-fieldtype v-if="!loading && canEdit"
-            :name="name"
-            :data.sync="data"
-            :config="checkboxesConfig">
-        </checkboxes-fieldtype>
+        <div class="user_roles-fieldtype" v-if="!loading && canEdit">
+            <relate-fieldtype :data.sync="data"
+                              :name="name"
+                              :config="config"
+                              :suggestions-prop="roles">
+            </relate-fieldtype>
+        </div>
     </div>
 </template>
 
@@ -30,12 +32,8 @@ module.exports = {
 
     computed: {
 
-        checkboxesConfig: function() {
-            return { options: this.roles };
-        },
-
         canEdit: function() {
-            return Vue.can('user-roles:manage');
+            return Vue.can('super');
         },
 
         selectedRoleNames: function() {

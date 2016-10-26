@@ -1,5 +1,5 @@
 <template>
-    <div class="users-fieldtype-wrapper">
+    <div class="users-fieldtype">
         <relate-fieldtype :data.sync="data" :name="name" :config="config" v-if="config.type"></relate-fieldtype>
     </div>
 </template>
