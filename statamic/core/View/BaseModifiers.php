@@ -406,46 +406,6 @@ class BaseModifiers extends Modifier
     }
 
     /**
-     * Get any variable from a relationship
-     *
-     * @param $value
-     * @return string
-     */
-    public function get($value, $params)
-    {
-        if (is_array($value)) {
-            $value = array_get($value, 0);
-        }
-
-        if (! $item = Data::find($value)) {
-            return $value;
-        }
-
-        $var = array_get($params, 0);
-
-        if ($var === "url") {
-            return $item->url();
-        }
-
-        return $item->get($var);
-    }
-
-    /**
-     * Generate an HTML link.
-     *
-     * @param $value
-     * @param $params
-     * @return string
-     */
-    public function link($value, $params)
-    {
-        $attributes = $this->buildAttributesFromParameters($params);
-        $title = array_pull($attributes, 'title', null);
-
-        return app('html')->link($value, $title, $attributes);
-    }
-
-    /**
      * Generate a link to a Favicon file.
      *
      * @param $value
@@ -560,6 +520,33 @@ class BaseModifiers extends Modifier
         return preg_replace_callback('/="(\/[^"]+)"/ism', function($item) use ($domain) {
             return '="' . Path::tidy($domain . $item[1]) . '"';
         }, $value);
+    }
+
+    /**
+     * Get any variable from a relationship
+     *
+     * @param $value
+     * @return string
+     */
+    public function get($value, $params)
+    {
+        // If the requested value is an array, we'll just grab the first one.
+        if (is_array($value)) {
+            $value = array_get($value, 0);
+        }
+
+        // If the requested value (it should be an ID) doesn't exist, we'll just
+        // spit the value back as-is. This seems like a sensible solution here.
+        if (! $item = Data::find($value)) {
+            return $value;
+        }
+
+        // Get the requested variable, which is the first parameter.
+        $var = array_get($params, 0);
+
+        // Convert the item to an array, since we'll want access to all the
+        // supplemented data. Then grab the requested variable from there.
+        return array_get($item->toArray(), $var);
     }
 
     /**
@@ -941,6 +928,21 @@ class BaseModifiers extends Modifier
     public function limit($value, $params)
     {
         return array_slice($value, 0, array_get($params, 0, 0));
+    }
+
+    /**
+     * Generate an HTML link.
+     *
+     * @param $value
+     * @param $params
+     * @return string
+     */
+    public function link($value, $params)
+    {
+        $attributes = $this->buildAttributesFromParameters($params);
+        $title = array_pull($attributes, 'title', null);
+
+        return app('html')->link($value, $title, $attributes);
     }
 
     /**

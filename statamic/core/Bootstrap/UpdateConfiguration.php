@@ -7,6 +7,7 @@ use Statamic\API\Str;
 use Statamic\API\YAML;
 use Statamic\Application;
 use Statamic\Config\Addons;
+use Statamic\Config\Globals;
 use Statamic\Config\Roles;
 use Statamic\Config\Settings;
 use Illuminate\Filesystem\Filesystem;
@@ -48,6 +49,8 @@ class UpdateConfiguration
 
         $this->loadSettings();
         $this->loadAddonSettings();
+
+        $this->loadGlobalOverrides();
     }
 
     private function loadSettings()
@@ -93,7 +96,7 @@ class UpdateConfiguration
             return;
         }
 
-        return YAML::parse($this->filesystem->get($path));
+        return $this->parseYAML($path);
     }
 
     /**
@@ -108,7 +111,7 @@ class UpdateConfiguration
         $settings = [];
         foreach ($files as $file) {
             $scope = pathinfo($file)['filename'];
-            $settings[$scope] = YAML::parse($this->filesystem->get($file));
+            $settings[$scope] = $this->parseYAML($file);
         }
 
         return $settings;
@@ -126,7 +129,7 @@ class UpdateConfiguration
         $settings = [];
         foreach ($files as $file) {
             $scope = pathinfo($file)['filename'];
-            $settings[$scope] = YAML::parse($this->filesystem->get($file));
+            $settings[$scope] = $this->parseYAML($file);
         }
 
         $settings_env = array_get($this->env, 'settings', []);
@@ -147,13 +150,13 @@ class UpdateConfiguration
 
                 // Get the default, if there is one
                 if ($this->filesystem->exists($default_path = $addon . '/default.yaml')) {
-                    $default = YAML::parse($this->filesystem->get($default_path));
+                    $default = $this->parseYAML($default_path);
                 }
 
                 // Get the user addon config files
                 $addon_name = Str::snake(basename($addon));
                 if ($this->filesystem->exists($main_file = settings_path('addons/'.$addon_name.'.yaml'))) {
-                    $config = YAML::parse($this->filesystem->get($main_file));
+                    $config = $this->parseYAML($main_file);
                 }
 
                 // Merge with the environment
@@ -199,5 +202,46 @@ class UpdateConfiguration
             'search.connections.algolia.config.application_id' => ConfigAPI::get('search.algolia_app_id'),
             'search.connections.algolia.config.admin_api_key' => ConfigAPI::get('search.algolia_api_key'),
         ]);
+    }
+
+    /**
+     * Parse YAML from a file
+     *
+     * On parse failure, an error will be output to screen. At this point in bootstrapping, the
+     * exception handler and logger is not yet available and wouldn't output anything useful.
+     *
+     * @param string $file Filename
+     * @return array
+     */
+    private function parseYAML($file)
+    {
+        try {
+            return YAML::parse($this->filesystem->get($file));
+        } catch (\Exception $e)  {
+            $message = "
+                <style>body{font:normal 16px/2 arial, sans-serif;}code{font:bold 14px/2 consolas,monospace;
+                background:#eee;padding:3px 5px;}</style>
+                <p>There was a problem parsing the YAML inside <code>%s</code>.</p>
+                <p><code>%s</code></p>
+            ";
+
+            exit(sprintf($message, realpath($file), $e->getMessage()));
+        }
+    }
+
+    private function loadGlobalOverrides()
+    {
+        $globals = new Globals;
+        $this->app->instance(Globals::class, $globals);
+
+        $data = array_get($this->env, 'globals', []);
+
+        // If the user has provided something other than an array, do nothing. This may
+        // be due to some invalid formatting. Doing nothing is better than an error.
+        if (! is_array($data)) {
+            return;
+        }
+
+        $globals->hydrate($data);
     }
 }

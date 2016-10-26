@@ -50,7 +50,7 @@ class TreeFactory
         );
 
         if (! $tree_content) {
-            return false;
+            return new Tree([]);
         }
 
         if ($this->params['include_home']) {

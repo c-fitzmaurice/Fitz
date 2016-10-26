@@ -4,6 +4,7 @@ namespace Statamic\Search;
 
 use Statamic\API\Config;
 use Statamic\API\Content;
+use Statamic\Events\SearchQueryPerformed;
 use Mmanos\Search\Search as SearchPackage;
 use Statamic\Contracts\Search\Search as SearchContract;
 
@@ -33,6 +34,8 @@ class Search implements SearchContract
      */
     public function search($query, $fields = null)
     {
+        event(new SearchQueryPerformed($query));
+
         return $this->index()->search($fields, $query);
     }
 

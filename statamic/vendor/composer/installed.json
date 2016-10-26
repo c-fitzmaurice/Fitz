@@ -3146,13 +3146,13 @@
         "version_normalized": "9999999-dev",
         "source": {
             "type": "git",
-            "url": "https://github.com/mmanos/laravel-search.git",
-            "reference": "92bc9ae4e05de219c08a72ea37de21931245ba62"
+            "url": "https://github.com/statamic/laravel-search.git",
+            "reference": "4d4e47e43aeb634b45436e76db3f47cbb14acd6c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/mmanos/laravel-search/zipball/92bc9ae4e05de219c08a72ea37de21931245ba62",
-            "reference": "92bc9ae4e05de219c08a72ea37de21931245ba62",
+            "url": "https://api.github.com/repos/statamic/laravel-search/zipball/4d4e47e43aeb634b45436e76db3f47cbb14acd6c",
+            "reference": "4d4e47e43aeb634b45436e76db3f47cbb14acd6c",
             "shasum": ""
         },
         "require": {
@@ -3169,7 +3169,7 @@
             "elasticsearch/elasticsearch": "Required for ElasticSearch driver.",
             "zendframework/zendsearch": "Required for ZendSearch driver."
         },
-        "time": "2016-05-22 21:55:31",
+        "time": "2016-10-21 14:27:49",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -3177,7 +3177,6 @@
                 "Mmanos\\Search\\": "src/"
             }
         },
-        "notification-url": "https://packagist.org/downloads/",
         "license": [
             "MIT"
         ],
@@ -3197,7 +3196,10 @@
             "search",
             "text",
             "zendsearch"
-        ]
+        ],
+        "support": {
+            "source": "https://github.com/statamic/laravel-search/tree/master"
+        }
     },
     {
         "name": "mustangostang/spyc",

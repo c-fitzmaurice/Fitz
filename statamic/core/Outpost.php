@@ -196,6 +196,7 @@ class Outpost
         return [
             'license_key' => Config::get('system.license_key'),
             'version'     => STATAMIC_VERSION,
+            'php_version' => PHP_VERSION,
             'request'     => [
                 'domain'  => request()->server('HTTP_HOST'),
                 'ip'      => request()->ip(),

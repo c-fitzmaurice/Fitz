@@ -220,6 +220,9 @@ Route::group(['prefix' => CP_ROUTE, 'middleware' => ['auth']], function () {
 
     // Settings
     Route::group(['prefix' => 'settings', 'middleware' => 'configurable'], function () {
+        get('search', 'SearchSettingsController@edit')->name('settings.search.edit');
+        post('search', 'SearchSettingsController@update')->name('settings.search.update');
+
         get('/', 'SettingsController@index')->name('settings');
         get('{name}', 'SettingsController@edit')->name('settings.edit');
         post('{name}', 'SettingsController@update')->name('settings.update');

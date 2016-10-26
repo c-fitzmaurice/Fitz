@@ -2,7 +2,9 @@
 
 namespace Statamic\Providers;
 
+use Exception;
 use Statamic\API\Str;
+use Statamic\API\File;
 use Statamic\API\Config;
 use Illuminate\Http\Request;
 use Statamic\Stache\Loader;
@@ -101,7 +103,7 @@ class StacheServiceProvider extends ServiceProvider
         // cache resulting in missing data. Here, we'll exit early with a simple refresh
         // meta tag. Once the Stache is built, the page will resume loading as usual.
         if ($this->stache->isPerformingInitialWarmUp()) {
-            exit('<meta http-equiv="refresh" content="1; URL=\''.request()->path().'\'" />');
+            $this->outputRefreshResponse();
         }
 
         $this->manager = $this->app->make(Manager::class);
@@ -135,10 +137,32 @@ class StacheServiceProvider extends ServiceProvider
         // If we've opted to update the Stache, we'll do so, and
         // then persist any updates so we can load it next time.
         if ($update) {
-            $this->manager->update();
+            $this->updateStache();
         }
 
         $this->stache->heat();
+    }
+
+    /**
+     * Update the Stache.
+     *
+     * If an error is encountered, the temporary file that keeps track of the
+     * initial warm up should be deleted. Otherwise, users will run into an
+     * infinitely refreshing/redirecting site. That's not very fun at all.
+     *
+     * @throws Exception
+     */
+    private function updateStache()
+    {
+        try {
+            $this->manager->update();
+        } catch (Exception $e) {
+            if (File::exists($this->stache->building_path)) {
+                File::delete($this->stache->building_path);
+            }
+
+            throw $e;
+        }
     }
 
     /**
@@ -183,5 +207,19 @@ class StacheServiceProvider extends ServiceProvider
     public function provides()
     {
         return [Stache::class];
+    }
+
+    /**
+     * When the Stache is being built, we'll output a refresh/redirect until it's ready.
+     *
+     * @return void
+     */
+    private function outputRefreshResponse()
+    {
+        $url = Str::ensureLeft(request()->path(), '/');
+
+        $html = sprintf('<meta http-equiv="refresh" content="1; URL=\'%s\'" />', $url);
+
+        exit($html);
     }
 }

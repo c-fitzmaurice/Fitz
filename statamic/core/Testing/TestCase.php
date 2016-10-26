@@ -2,6 +2,8 @@
 
 namespace Statamic\Testing;
 
+use Tests\Doubles\EventFake;
+
 class TestCase extends \Illuminate\Foundation\Testing\TestCase
 {
     /**
@@ -21,6 +23,8 @@ class TestCase extends \Illuminate\Foundation\Testing\TestCase
         $app = require __DIR__.'/../../bootstrap/app.php';
 
         $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
+
+        \Event::swap(new EventFake);
 
         return $app;
     }

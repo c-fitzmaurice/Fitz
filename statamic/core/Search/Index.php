@@ -2,6 +2,7 @@
 
 namespace Statamic\Search;
 
+use Mmanos\Search\Index\Algolia;
 use Mmanos\Search\Index\Zend;
 use Mmanos\Search\Index as MmanosIndex;
 
@@ -40,6 +41,51 @@ class Index
         }
 
         $this->index->insert($id, $fields);
+    }
+
+    /**
+     * A setter/getter for the searchable attribute.
+     *
+     * If there are no parameters given, return all the indexable attributes,
+     * and just set the attributes when given parameters.
+     *
+     * @param  array  $fields
+     * @return Index
+     */
+    public function searchableAttributes(array $attributes = null)
+    {
+        if (! $this->index instanceof Algolia) {
+            return;
+        }
+
+        if (! func_num_args()) {
+            return $this->getSettings()['attributesToIndex'];
+        }
+
+        $this->setSearchableAttributes($attributes);
+    }
+
+    /**
+     * Set the attributes to index.
+     *
+     * @param  array  $attributes
+     * @return void
+     */
+    private function setSearchableAttributes(array $attributes)
+    {
+        $this->index->getIndex()->setSettings([
+            'attributesToIndex' => $attributes
+        ]);
+    }
+
+    /**
+     * Return all the settings.
+     *
+     * @return array
+     */
+    private function getSettings()
+    {
+        return $this->index->getIndex()->getSettings();
     }
 
     /**

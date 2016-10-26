@@ -72,6 +72,16 @@ abstract class Config implements ConfigContract
     }
 
     /**
+     * Get all the environment variable based values
+     *
+     * @return array
+     */
+    public function env()
+    {
+        return $this->env;
+    }
+
+    /**
      * Parse environment variable placeholders with the actual values
      *
      * @param   mixed  $value  The value to parse

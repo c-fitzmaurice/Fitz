@@ -10,6 +10,7 @@ use Statamic\API\YAML;
 use Statamic\API\Helper;
 use Statamic\API\Cache;
 use Statamic\API\Stache;
+use Statamic\Config\Settings;
 
 class SettingsController extends CpController
 {
@@ -22,11 +23,6 @@ class SettingsController extends CpController
 
     public function edit($name)
     {
-        $settings = [];
-        foreach (Folder::getFilesByType(statamic_path('settings/defaults'), 'yaml') as &$path) {
-            $settings[] = pathinfo($path)['filename'];
-        }
-
         $data = Config::get($name);
 
         $fieldset = Fieldset::get($name, 'settings');
@@ -38,13 +34,12 @@ class SettingsController extends CpController
         return view('settings.edit', [
             'title' => t('settings_'.$name),
             'extra' => [
-                'env' => datastore()->getEnvInScope('settings.'.$name)
+                'env' => array_get(app(Settings::class)->env(), $name)
             ],
             'slug' => $name,
             'content_data' => $data,
             'content_type' => 'settings',
             'fieldset' => 'settings.'.$name,
-            'settings' => $settings
         ]);
     }
 

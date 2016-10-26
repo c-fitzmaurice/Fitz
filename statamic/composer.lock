@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "82800e3a19e3d47fe6d3a376028ca070",
-    "content-hash": "4e0cff12e31ecaa29a9a82cc3c36c031",
+    "hash": "12c33eddb7abf4c292053a2cc1031ac4",
+    "content-hash": "cfdf42ca0673c49b1d8e2ed4e741247b",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
@@ -1627,13 +1627,13 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/mmanos/laravel-search.git",
-                "reference": "92bc9ae4e05de219c08a72ea37de21931245ba62"
+                "url": "https://github.com/statamic/laravel-search.git",
+                "reference": "4d4e47e43aeb634b45436e76db3f47cbb14acd6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mmanos/laravel-search/zipball/92bc9ae4e05de219c08a72ea37de21931245ba62",
-                "reference": "92bc9ae4e05de219c08a72ea37de21931245ba62",
+                "url": "https://api.github.com/repos/statamic/laravel-search/zipball/4d4e47e43aeb634b45436e76db3f47cbb14acd6c",
+                "reference": "4d4e47e43aeb634b45436e76db3f47cbb14acd6c",
                 "shasum": ""
             },
             "require": {
@@ -1656,7 +1656,6 @@
                     "Mmanos\\Search\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1677,7 +1676,10 @@
                 "text",
                 "zendsearch"
             ],
-            "time": "2016-05-22 21:55:31"
+            "support": {
+                "source": "https://github.com/statamic/laravel-search/tree/master"
+            },
+            "time": "2016-10-21 14:27:49"
         },
         {
             "name": "monolog/monolog",
