@@ -24,7 +24,10 @@ metrics:
 email:
   - 
     to: colin@fitz-maurice.com
-    from: colin@fitz-maurice.com
     subject: FITZ | Contact Form
     automagic: true
     reply_to: '{{ email }}'
+  - 
+    to: '{{ email }}'
+    subject: 'Thank you for reaching out about {{ subject }}'
+    template: thank-you

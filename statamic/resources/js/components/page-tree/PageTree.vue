@@ -32,10 +32,9 @@ export default {
 
     ready: function() {
         this.getPages();
-        self = this;
-        Mousetrap.bindGlobal('mod+s', function(e) {
+        Mousetrap.bindGlobal('mod+s', (e) => {
             e.preventDefault();
-            self.save();
+            this.save();
         });
     },
 
@@ -62,7 +61,7 @@ export default {
 
             $('.page-tree').addClass('tree-sortable');
 
-            self = this;
+            var self = this;
             var draggedIndex, draggedPage, draggedInstance;
 
             var placeholder = '' +

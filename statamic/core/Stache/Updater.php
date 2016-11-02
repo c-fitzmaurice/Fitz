@@ -225,9 +225,9 @@ class Updater
 
             $item->in($locale)->data($data);
             $item->syncOriginal();
-            $repo->setItem($id, $item);
 
             $repo->setPath($id, $path, $locale);
+            $repo->setItem($id, $item);
 
             if ($this->driver->isRoutable()) {
                 $repo->setUri($id, $this->driver->getLocalizedUri($locale, $data, $path), $locale);
@@ -248,8 +248,8 @@ class Updater
                 $id = $repo_prefix . '::' . $id;
             }
 
-            $this->repo->setItem($id, $item)
-                       ->setPath($id, $path);
+            $this->repo->setPath($id, $path)
+                       ->setItem($id, $item);
 
             $this->setUriForItem($id, $item);
         });

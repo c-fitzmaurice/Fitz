@@ -63,6 +63,16 @@ class Tree
     }
 
     /**
+     * Determine if the tree is empty
+     *
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return $this->count() === 0;
+    }
+
+    /**
      * Specify how the tree will be sorted
      *
      * @param  string  $sort
