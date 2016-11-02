@@ -1,6 +1,6 @@
 driver: mailgun
 from_email: colin@fitz-maurice.com
-from_name: Contact Form on Fitz.com
+from_name: Colin Fitz-Maurice
 port: 587
 encryption: tls
 username: ""

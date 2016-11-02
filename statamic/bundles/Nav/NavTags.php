@@ -25,13 +25,13 @@ class NavTags extends Tags
 
         $tree = $this->factory->create();
 
-        if ($tree) {
-            $tree->sort($this->get('sort'));
-
-            return $this->parseLoop($tree->toArray());
+        if ($tree->isEmpty()) {
+            return null;
         }
 
-        return null;
+        $tree->sort($this->get('sort'));
+
+        return $this->parseLoop($tree->toArray());
     }
 
     /**
@@ -45,7 +45,7 @@ class NavTags extends Tags
 
         $tree = $this->factory->create();
 
-        if (! $tree) {
+        if ($tree->isEmpty()) {
             return null;
         }
 

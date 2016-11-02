@@ -83,8 +83,8 @@ class UpdateItem
 
         $this->stache->repo($repo)
             ->load()
-            ->setItem($id, $data)
-            ->setPath($id, $path);
+            ->setPath($id, $path)
+            ->setItem($id, $data);
 
         if ($this->stache->driver($this->driverKey($repo))->isRoutable()) {
             $this->stache->repo($repo)->setUri($id, $data->uri());

@@ -10,7 +10,7 @@
                 @foreach($submissions as $submission)
                     <tr>
                         @foreach($fields as $key => $field)
-                        <td><a href="">{{ array_get($submission, $field) }}</a></td>
+                        <td><a href="{{ route('form.submission.show', [$form->name(), $submission['id']]) }}">{{ array_get($submission, $field) }}</a></td>
                         @endforeach
                         <td class="minor text-right">
                             {{ ($submission['date']->diffInDays() <= 14) ? $submission['date']->diffForHumans() : $submission['date']->format($format) }}
