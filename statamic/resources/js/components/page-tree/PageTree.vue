@@ -55,7 +55,7 @@ export default {
         },
 
         initSortable: function() {
-            if (! Vue.can('pages:reorder')) {
+            if (this.pages.length < 2 || ! Vue.can('pages:reorder')) {
                 return;
             }
 
@@ -78,7 +78,7 @@ export default {
 
             $(this.$el).find('.page-tree > ul + ul').nestedSortable({
                 containerSelector: 'ul',
-                handle: 'li',
+                handle: '.drag-handle',
                 placeholderClass: 'branch-placeholder',
                 placeholder: placeholder,
                 bodyClass: 'page-tree-dragging',
@@ -220,6 +220,15 @@ export default {
         'pages.unmount': function(id) {
             this.saving = true;
             this.$broadcast('pages.unmount', id);
+        },
+        'page.deleted': function () {
+            if (this.pages.length > 1) {
+                return;
+            }
+
+            $('.page-tree').removeClass('tree-sortable');
+
+            $(this.$el).find('.page-tree > ul + ul').nestedSortable('destroy');
         }
     }
 

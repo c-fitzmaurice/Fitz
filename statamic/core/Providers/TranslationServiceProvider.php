@@ -27,6 +27,10 @@ class TranslationServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      *
+     * Store the default translations (the core translations) to a fallback
+     * instance. Use the fallback when the translation isn't found in the
+     * user's local translations.
+     *
      * @return void
      */
     public function register()

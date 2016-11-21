@@ -249,7 +249,7 @@ $branchHoverBg: rgba(black,.025);
 
     // Only if the tree is sortable
     &.tree-sortable {
-        li {
+        .drag-handle {
             cursor: move;
             cursor: grab;
             &:active {

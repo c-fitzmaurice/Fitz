@@ -116,6 +116,8 @@ export default {
             }, function() {
                 self.$http.post(cp_url('pages/delete'), { uuid: self.uuid }).success(function() {
                     self.$parent.pages.splice(self.branchIndex, 1);
+
+                    this.$dispatch('page.deleted');
                 });
             });
         },

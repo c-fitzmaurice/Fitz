@@ -26,7 +26,13 @@
                                 @foreach($submission->get($name) as $key => $value)
                                     <tr>
                                         <th>{{ $key }}</th>
-                                        <td>{{ $value }}</td>
+                                        <td>
+                                            @if(is_array($value))
+                                                {{ json_encode($value) }}
+                                            @else
+                                                {{ $value }}
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             </table>

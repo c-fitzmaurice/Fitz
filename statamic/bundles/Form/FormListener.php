@@ -2,10 +2,12 @@
 
 namespace Statamic\Addons\Form;
 
+use Carbon\Carbon;
 use Statamic\API\Form;
 use Statamic\API\Crypt;
 use Statamic\API\Email;
 use Statamic\API\Parse;
+use Statamic\API\Config;
 use Statamic\API\Request;
 use Statamic\Extend\Listener;
 use Illuminate\Http\Response;
@@ -149,7 +151,7 @@ class FormListener extends Listener
         $config = $this->parseConfig($config, $submission->toArray());
 
         $email->to($config['to'])
-              ->with($submission->toArray());
+              ->with(array_merge($this->loadKeyVars(), $submission->toArray()));
 
         if ($from = array_get($config, 'from')) {
             $email->from($from);
@@ -157,6 +159,14 @@ class FormListener extends Listener
 
         if ($reply_to = array_get($config, 'reply_to')) {
             $email->replyTo($reply_to);
+        }
+
+        if ($cc = array_get($config, 'cc')) {
+            $email->cc($cc);
+        }
+
+        if ($bcc = array_get($config, 'bcc')) {
+            $email->bcc($bcc);
         }
 
         if ($subject = array_get($config, 'subject')) {
@@ -224,5 +234,21 @@ class FormListener extends Listener
         }
 
         return [$errors, $submission];
+    }
+
+    /**
+     * Bring in a couple common global vars that might be needed in the email template
+     *
+     * @return array
+     */
+    private function loadKeyVars()
+    {
+        return [
+                'site_url'   => Config::getSiteUrl(),
+                'date'       => Carbon::now(),
+                'now'        => Carbon::now(),
+                'today'      => Carbon::now(),
+                'locale'     => site_locale()
+        ];
     }
 }

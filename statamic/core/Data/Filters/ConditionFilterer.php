@@ -139,6 +139,12 @@ class ConditionFilterer implements ConditionFiltererContract
             case 'regex':
                 return preg_match($original_needle, $original_value);
                 break;
+            default:
+                try {
+                    return modify($value)->$type($needle)->fetch();
+                } catch(Exception $e) {
+                    \Log::notice("[$type] is not a valid condition");
+                }
         }
     }
 

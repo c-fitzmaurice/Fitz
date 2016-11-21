@@ -86,6 +86,7 @@
         if (typeof key !== 'string' || !this.messages) {
             return false;
         }
+
         return this._getMessage(key) !== null;
     };
 
@@ -182,7 +183,27 @@
         if (typeof key !== 'string') {
             return null;
         }
+
         var segments = key.split('.');
+
+        /**
+         * @note    This is deteting if the key is an add on but to be honest,
+         *          this should just work the same since the indexes stays the
+         *          same all throughout the translations.
+         *
+         *          I'm just not sure if there are any edge cases of nested
+         *          translations are included though I'm doubtful there are.
+         *
+         *          Just to clarify though, we _can_ just use this if there
+         *          aren't any nested translations.
+         */
+        if (key.includes('::')) {
+            return {
+                source: this.getLocale() + '.' + segments.splice(0, segments.length - 1).join('.'),
+                entries: segments.slice(segments.length - 1)
+            };
+        }
+
         return {
             source: this.getLocale() + '.' + segments[0],
             entries: segments.slice(1)

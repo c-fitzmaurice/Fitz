@@ -11,6 +11,15 @@ module.exports = {
         }
     },
 
+    computed: {
+        licenseKeyInstructions: function() {
+            return translate('cp.license_key_instructions', {
+              'licenses': 'https://account.statamic.com/licenses',
+              'buy_license': 'https://store.statamic.com'
+            });
+        }
+    },
+
     methods: {
         continue: function() {
             this.$dispatch('licensekey.complete');
