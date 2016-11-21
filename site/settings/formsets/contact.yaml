@@ -18,16 +18,16 @@ columns:
   - email
   - subject
 metrics:
-  - 
+  -
     type: total
     label: Total
 email:
-  - 
+  -
     to: colin@fitz-maurice.com
     subject: FITZ | Contact Form
     automagic: true
     reply_to: '{{ email }}'
-  - 
+  -
     to: '{{ email }}'
-    subject: 'Thank you for reaching out about {{ subject }}'
+    subject: 'Thanks for reaching out'
     template: thank-you

@@ -2,9 +2,10 @@
 
 use Statamic\API\Str;
 use Statamic\API\URL;
+use Statamic\API\Path;
 use Statamic\Http\ResourceServer\Server;
 
-define('STATAMIC_VERSION', '2.1.17');
+define('STATAMIC_VERSION', '2.1.18');
 
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +17,7 @@ define('STATAMIC_VERSION', '2.1.17');
 */
 
 define('APP_FOLDER', pathinfo($statamic)['filename']);
-define('BASE', realpath(rtrim(APP, APP_FOLDER)));
+define('BASE', Path::tidy(realpath(rtrim(APP, APP_FOLDER))));
 
 define('ARTISAN_BINARY', STATAMIC_ROOT . '/please');
 

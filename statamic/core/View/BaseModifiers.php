@@ -174,11 +174,15 @@ class BaseModifiers extends Modifier
      * @param $context
      * @return bool
      */
-    public function contains($value, $params, $context)
+    public function contains($haystack, $params, $context)
     {
         $needle = array_get($context, $params[0], $params[0]);
 
-        return Stringy::contains($value, $needle, array_get($params, 1, false));
+        if (is_array($haystack)) {
+            return in_array($needle, $haystack);
+        }
+
+        return Stringy::contains($haystack, $needle, array_get($params, 1, false));
     }
 
     /**

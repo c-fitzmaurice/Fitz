@@ -45,7 +45,11 @@ export default {
         },
 
         create: function(fieldset) {
-            window.location = cp_url('pages/create/'+this.parent+'?fieldset='+fieldset);
+            let parent = (this.parent === '/') ? '' : this.parent;
+
+            let url = cp_url('pages/create' + parent + '?fieldset=' + fieldset);
+
+            window.location = url;
         },
 
         getFieldsets: function() {

@@ -85,6 +85,7 @@ class PagesController extends CpController
             /** @var \Statamic\Contracts\Data\Pages\Page $page */
             $page = $item['page'];
 
+            $uri = $page->uri();
             $url = $page->url();
 
             $data[] = [
@@ -92,9 +93,10 @@ class PagesController extends CpController
                 'order'       => $page->order(),
                 'title'       => $page->get('title'),
                 'url'         => $url,
+                'uri'         => $uri,
                 'extension'   => $page->dataType(),
-                'edit_url'    => route('page.edit', ['url' => ltrim($url, '/')]),
-                'create_child_url' => route('page.create', ['url' => ltrim($url, '/')]),
+                'edit_url'    => route('page.edit', ['url' => ltrim($uri, '/')]),
+                'create_child_url' => route('page.create', ['url' => ltrim($uri, '/')]),
                 'slug'        => $page->slug(),
                 'published'   => $page->published(),
                 'has_entries' => $page->hasEntries(),
