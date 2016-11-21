@@ -3,28 +3,33 @@
 namespace Statamic\Translation;
 
 use Statamic\API\Folder;
-use Statamic\API\Config;
 
 class Translator extends \Illuminate\Translation\Translator
 {
     /**
+     * Fallback translation loader.
+     *
      * @var \Illuminate\Translation\Translator
      */
     private $fallbackTranslator;
 
     /**
-     * Return all the translations of all the translations.
+     * Return all the translations of all the translation files.
+     *
+     * Priority would first go the the user's local site translations before
+     * Statamic's default translations.
+     *
+     * Since addon's localizations have a prefix, there isn't any issues that
+     * will happen, or it's an edge case at the very least.
      *
      * @return array
      */
     public function all()
     {
-        $locale = Config::get('cp.locale') ?: Config::getDefaultLocale();
-
         return collect(array_replace_recursive(
-            $this->getTranslations(base_path() . '/resources/lang/en'),
-            $this->getTranslations(site_path() . '/lang/' . $locale)
-        ));
+                $this->getTranslations(base_path() . '/resources/lang/en'),
+                $this->getTranslations(site_path() . '/lang/' . $this->locale())
+            ))->merge($this->getAddonTranslations());
     }
 
     /**
@@ -76,21 +81,50 @@ class Translator extends \Illuminate\Translation\Translator
      */
     private function getTranslations($path)
     {
-        $messages = [];
+        return collect(Folder::getFiles($path))
+            ->localize()
+            ->all();
+    }
 
-        foreach (Folder::getFiles($path) as $file) {
-            $pathinfo = pathinfo($file);
+    /**
+     * Return all the addon translations.
+     *
+     * @return array
+     */
+    private function getAddonTranslations()
+    {
+        return $this
+            ->getLocalizableAddons()
+            ->map(function ($files, $addon) {
+                return collect($files)
+                    ->localize("addons.{$addon}::")
+                    ->all();
+            })
+            ->collapse();
+    }
 
-            if ($pathinfo['extension'] !== 'php') {
-                continue;
-            }
-
-            $key = str_replace('\\', '.', $pathinfo['filename']);
-            $key = str_replace('/', '.', $key);
-
-            $messages[site_locale() . '.' . $key] = include root_path($file);
-        }
-
-        return $messages;
+    /**
+     * Return all the addons with localization available.
+     *
+     * @note    Not sure if it's better to clean this up with a macro or just
+     *          keep it here in this method.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    private function getLocalizableAddons()
+    {
+        return collect(Folder::getFolders(site_path('addons')))
+            ->filter(function ($item) {
+                return Folder::exists(root_path() . $item . '/resources/lang/' . site_locale());
+            })
+            ->keyBy(function ($item) {
+                return pathinfo($item, PATHINFO_BASENAME);
+            })
+            ->map(function ($item) {
+                return root_path() . $item . '/resources/lang/' . site_locale();
+            })
+            ->map(function ($item) {
+                return Folder::getFiles($item);
+            });
     }
 }

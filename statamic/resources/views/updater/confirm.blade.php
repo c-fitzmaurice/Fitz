@@ -22,7 +22,7 @@
                         <dd v-if="backingUp">
                             <span class="icon icon-circular-graph animation-spin"></span>
                             {{ t('backing_up') }}
-                            <small class="help-block">{{ t('backing_up_instructions') }}</small>
+                            <small class="help-block">{!! t('backing_up_instructions') !!}</small>
                         </dd>
                         <dd v-if="backedUp">
                             <span class="icon icon-check text-success"></span>

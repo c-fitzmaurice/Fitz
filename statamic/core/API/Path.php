@@ -78,7 +78,7 @@ class Path
      */
     public static function resolve($path)
     {
-        return Util::normalizeRelativePath($path);
+        return Util::normalizeRelativePath(self::tidy($path));
     }
 
     /**
@@ -207,14 +207,19 @@ class Path
     }
 
     /**
-     * Removes occurrences of "//" in a $path (except when part of a protocol)
+     * Tidy a path.
      *
-     * @param string $path  Path to remove "//" from
+     * @param string $path  Path to tidy
      * @return string
      */
     public static function tidy($path)
     {
-        return preg_replace('#(^|[^:])//+#', '\\1/', $path);
+        // Remove occurrences of "//" in a $path (except when part of a protocol).
+        $path = preg_replace('#(^|[^:])//+#', '\\1/', $path);
+
+        // Replace backslashes with forward slashes for consistency between platforms.
+        // PHP is capable of understanding Windows paths that use forward slashes.
+        return str_replace('\\', '/', $path);
     }
 
     /**

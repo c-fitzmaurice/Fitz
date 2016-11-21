@@ -24,6 +24,13 @@ class User extends Data implements UserContract, Authenticatable, PermissibleCon
     use Permissible;
 
     /**
+     * Array of OAuth IDs stored in the YAML file
+     *
+     * @var array
+     */
+    private static $oauth_ids;
+
+    /**
      * Get or set a user's username
      *
      * @param string|null $username
@@ -372,9 +379,11 @@ class User extends Data implements UserContract, Authenticatable, PermissibleCon
      */
     public function getOAuthId($provider)
     {
-        $yaml = YAML::parse(File::get($this->oAuthIdsPath(), ''));
+        if (! self::$oauth_ids) {
+            self::$oauth_ids = YAML::parse(File::get($this->oAuthIdsPath(), ''));
+        }
 
-        return array_get($yaml, $provider.'.'.$this->id());
+        return array_get(self::$oauth_ids, $provider.'.'.$this->id());
     }
 
     /**

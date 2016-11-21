@@ -10,7 +10,7 @@
 <link rel="shortcut icon" href="{{ cp_resource_url('img/favicon.png') }}" />
 <script>
     var Statamic = {
-    	'siteRoot': '/',
+    	'siteRoot': '{!! SITE_ROOT !!}',
     	'cpRoot': '{!! $cp_root !!}',
     	'urlPath': '/{!! request()->path() !!}',
     	'resourceUrl': '{!! cp_resource_url('/') !!}',

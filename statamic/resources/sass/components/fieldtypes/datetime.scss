@@ -33,7 +33,10 @@
 
 .time-fieldtype {
 	input {
-		width: 50px;
+		max-width: 40px !important;
+        padding-left: 3px;
+        padding-right: 3px;
+        text-align: center;
 		-moz-appearance: textfield;
 	}
 
@@ -64,4 +67,28 @@
 	.col-time {
 		padding-left: 10px;
 	}
+}
+
+/* === Inside a Grid === */
+
+.grid-field .date-fieldtype {
+    .daterange .icon {
+        top: 8px;
+    }
+
+    .btn.add-time { top: 8px; }
+
+    .col-time {
+        padding: 0 10px;
+        input.form-control {
+            background: #f8f8f8;
+            width: auto;
+            text-align: center;
+        }
+        .colon {
+            background: #f8f8f8;
+            margin: 0;
+            padding: 8px 5px;
+        }
+    }
 }

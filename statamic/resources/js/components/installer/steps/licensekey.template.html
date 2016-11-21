@@ -14,14 +14,7 @@
     <p v-if="valid">{{ translate('cp.license_valid') }}</p>
 
     <template v-if="!loading && !valid">
-        <p>
-          {{{
-            translate('cp.license_key_instructions', {
-              licenses_url: 'https://account.statamic.com/licenses',
-              buy_license:  'https://trading-post.statamic.com'
-            })
-          }}}
-        </p>
+        <p v-html="licenseKeyInstructions"></p>
 
         <div class="form-group">
             <p v-if="!valid && keySubmitted" class="license-error">

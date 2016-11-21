@@ -284,6 +284,12 @@ class Modify implements \IteratorAggregate
             case "tz":
                 return "timezone";
 
+            case "inFuture":
+                return "isFuture";
+
+            case "inPast":
+                return "isPast";
+
             default:
                 return $modifier;
         }

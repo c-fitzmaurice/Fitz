@@ -1,7 +1,7 @@
 var $ = require('jquery');
 
 global.cp_url = function(url) {
-    url = Statamic.siteRoot + '/'+ Statamic.cpRoot + '/' + url;
+    url = Statamic.cpRoot + '/' + url;
     return url.replace(/\/+/g, '/');
 };
 

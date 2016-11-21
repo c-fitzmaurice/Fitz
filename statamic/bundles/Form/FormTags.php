@@ -13,7 +13,12 @@ class FormTags extends CollectionTags
     /**
      * @var string
      */
-    private $formset_name;
+    private $formsetName;
+
+    /**
+     * @var object
+     */
+    private $errorBag;
 
     /**
      * Maps to {{ form:set }}
@@ -38,12 +43,14 @@ class FormTags extends CollectionTags
     {
         $data = [];
 
-        $this->formset_name = $formset = $this->getFormset();
+        $this->formsetName = $formset = $this->getFormset();
+        $this->errorBag = $this->getErrorBag();
 
         $html = $this->formOpen('create');
 
         if ($this->hasErrors()) {
-            $data['errors'] = session('errors')->getBag('form.'.$formset)->all();
+            $data['error']  = $this->getErrors();
+            $data['errors'] = $this->getErrorMessages();
         }
 
         if ($this->flash->exists('success')) {
@@ -52,6 +59,9 @@ class FormTags extends CollectionTags
 
         // Make formset data available to the tag
         $data['fields'] = (Form::fields($formset));
+
+        // Make the old data available
+        $data['old'] = old();
 
         $this->addToDebugBar($data);
 
@@ -179,6 +189,38 @@ class FormTags extends CollectionTags
     }
 
     /**
+     * Get the errorBag from session
+     *
+     * @return object
+     */
+    private function getErrorBag()
+    {
+        if ($this->hasErrors()) {
+            return session('errors')->getBag('form.'.$this->formsetName);
+        }
+    }
+
+    /**
+     * Get an array of all the error messages, keyed by their input names
+     *
+     * @return array
+     */
+    private function getErrors()
+    {
+        return array_combine($this->errorBag->keys(), $this->getErrorMessages());
+    }
+
+    /**
+     * Get an array of all the error messages
+     *
+     * @return array
+     */
+    private function getErrorMessages()
+    {
+        return $this->errorBag->all();
+    }
+
+    /**
      * Add data to the debug bar
      *
      * Each form on the page will have its data placed in an array named
@@ -190,7 +232,7 @@ class FormTags extends CollectionTags
     private function addToDebugBar($data)
     {
         $debug = [];
-        $debug[$this->formset_name] = $data;
+        $debug[$this->formsetName] = $data;
 
         if ($this->blink->exists('debug_bar_data')) {
             $debug = array_merge($debug, $this->blink->get('debug_bar_data'));
