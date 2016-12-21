@@ -26,7 +26,8 @@
         "algolia/algoliasearch-client-php": "^1.6",
         "league/csv": "^8.0",
         "socialiteproviders/manager": "^2.1",
-        "twistor/flysystem-guzzle": "^6.0"
+        "twistor/flysystem-guzzle": "^6.0",
+        "marbles/sitemap": "*@dev"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
