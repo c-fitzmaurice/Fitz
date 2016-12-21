@@ -1827,6 +1827,8 @@ return array(
     'Statamic\\Addons\\Section\\SectionFieldtype' => $baseDir . '/bundles/Section/SectionFieldtype.php',
     'Statamic\\Addons\\Section\\SectionTags' => $baseDir . '/bundles/Section/SectionTags.php',
     'Statamic\\Addons\\Select\\SelectFieldtype' => $baseDir . '/bundles/Select/SelectFieldtype.php',
+    'Statamic\\Addons\\Sitemap\\SitemapController' => $baseDir . '/../site/addons/Sitemap/SitemapController.php',
+    'Statamic\\Addons\\Sitemap\\SitemapServiceProvider' => $baseDir . '/../site/addons/Sitemap/SitemapServiceProvider.php',
     'Statamic\\Addons\\Suggest\\Mode' => $baseDir . '/bundles/Suggest/Mode.php',
     'Statamic\\Addons\\Suggest\\Modes\\AbstractMode' => $baseDir . '/bundles/Suggest/Modes/AbstractMode.php',
     'Statamic\\Addons\\Suggest\\Modes\\CollectionMode' => $baseDir . '/bundles/Suggest/Modes/CollectionMode.php',
