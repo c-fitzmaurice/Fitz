@@ -99,12 +99,13 @@ class AggregateRepository
     /**
      * Get all the URIs of all repos, grouped by repo key
      *
+     * @param string|null $locale
      * @return Collection
      */
-    public function getUris()
+    public function getUris($locale = null)
     {
-        return $this->repositories->map(function ($repo) {
-            return $repo->getUris();
+        return $this->repositories->map(function ($repo) use ($locale) {
+            return $repo->getUris($locale);
         });
     }
 
@@ -227,15 +228,16 @@ class AggregateRepository
      *
      * @param string $id A `repo::id` string
      * @param string $url
+     * @param string|null $locale
      * @return $this
      */
-    public function setUri($id, $url)
+    public function setUri($id, $url, $locale = null)
     {
         list($repo, $id) = $this->extractKeys($id);
 
         $this->ensureRepo($repo);
 
-        $this->repo($repo)->setUri($id, $url);
+        $this->repo($repo)->setUri($id, $url, $locale);
 
         return $this;
     }

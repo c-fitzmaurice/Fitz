@@ -580,3 +580,20 @@ function cp_middleware()
 {
     return ['locale', 'outpost'];
 }
+
+/**
+ * Recusive friendly method of sanitizing an array.
+ *
+ * @return array
+ */
+function sanitizeArray($array)
+{
+    $result = array();
+
+    foreach ($array as $key => $value) {
+        $key = htmlentities($key);
+        $result[$key] = is_array($value) ? sanitizeArray($value) : htmlentities($value);
+    }
+
+    return $result;
+}

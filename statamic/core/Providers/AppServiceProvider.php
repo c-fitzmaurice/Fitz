@@ -43,7 +43,7 @@ class AppServiceProvider extends ServiceProvider
         try {
             setlocale(LC_TIME, Config::getFullLocale());
             Carbon::setLocale(site_locale());
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             \Log::error("Your locale does not match any available language translations.");
         }
 

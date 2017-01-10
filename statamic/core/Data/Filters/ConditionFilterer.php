@@ -137,7 +137,7 @@ class ConditionFilterer implements ConditionFiltererContract
             case 'matches':
             case 'match':
             case 'regex':
-                return preg_match($original_needle, $original_value);
+                return (is_array($original_value)) ? preg_grep($original_needle, $original_value) : preg_match($original_needle, $original_value);
                 break;
             default:
                 try {

@@ -41,10 +41,15 @@ class TermItemCreator
     public function create()
     {
         return $this->files->map(function ($contents, $path) {
+            // We only want files from the default locale.
+            if (substr_count($path, '/') > 2) {
+                return null;
+            }
+
             $taxonomy = explode('/', $path)[1];
             $item = $this->createTerm($contents, $path, $taxonomy);
             return compact('item', 'path', 'taxonomy');
-        })->values()->groupBy('taxonomy');
+        })->filter()->values()->groupBy('taxonomy');
     }
 
     private function createTerm($contents, $path, $taxonomy)
