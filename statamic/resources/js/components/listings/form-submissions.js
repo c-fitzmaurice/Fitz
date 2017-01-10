@@ -19,7 +19,7 @@ module.exports = {
                             {{ item[column.label] }}
                         </a>
                         <template v-else>
-                            {{{ item[column.label] }}}
+                            {{ item[column.label] }}
                         </template>`
                 }
             }

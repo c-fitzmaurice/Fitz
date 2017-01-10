@@ -507,7 +507,9 @@ class BaseModifiers extends Modifier
         $dec_point = array_get($params, 1, '.');
         $thousands_sep = array_get($params, 2, ',');
 
-        return number_format($value, $precision, $dec_point, $thousands_sep);
+        $number = floatval(str_replace(',', '', $value));
+
+        return number_format($number, $precision, $dec_point, $thousands_sep);
     }
 
     /**

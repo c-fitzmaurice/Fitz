@@ -14,7 +14,11 @@ module.exports = {
 
         adjustedConfig() {
             let c = this.config;
-            c.create = true;
+
+            if (c.create === undefined) {
+                c.create = true;
+            }
+
             return c;
         }
 

@@ -113,7 +113,10 @@ class Updater
         $this->updateLocalized();
 
         // Update the URIs for any localized pages
-        $this->updateLocalizedUris();
+        $this->updateLocalizedPageUris();
+
+        // Update the URIs for any localized entries
+        $this->updateLocalizedEntryUris();
 
         // If any modifications or deletions occurred, the Stache'll need
         // to be re-persisted. Persisting the cache means more overhead
@@ -166,18 +169,16 @@ class Updater
     {
         foreach ($repo->repos() as $repo) {
             // Using map because filter doesnt pass keys in Laravel 5.1
-            $modified = $modified->map(function ($contents, $path) use ($repo) {
+            $modifiedFiles = $modified->map(function ($contents, $path) use ($repo) {
                 $key = $this->driver->getKeyFromPath($path);
                 return ($key === $repo->key()) ? $contents : false;
             })->filter();
 
-            // Using map because filter doesnt pass keys in Laravel 5.1
-            $deleted = $deleted->map(function ($contents, $path) use ($repo) {
-                $key = $this->driver->getKeyFromPath($path);
-                return ($key === $repo->key()) ? $contents : false;
+            $deletedFiles = $deleted->filter(function ($path) use ($repo) {
+                return $this->driver->getKeyFromPath($path) === $repo->key();
             })->filter();
 
-            $this->updateLocale($locale, $repo, $modified, $deleted);
+            $this->updateLocale($locale, $repo, $modifiedFiles, $deletedFiles);
         }
     }
 
@@ -191,6 +192,10 @@ class Updater
      */
     private function updateLocale($locale, $repo, $modified, $deleted)
     {
+        if ($modified->isEmpty() && $deleted->isEmpty()) {
+            return;
+        }
+
         $repo->load();
 
         $deleted->each(function ($path) use ($locale, $repo) {
@@ -405,7 +410,7 @@ class Updater
      *
      * @return void
      */
-    protected function updateLocalizedUris()
+    protected function updateLocalizedPageUris()
     {
         if (!$this->updates || !$this->localized || $this->driver->key() !== 'pages') {
             return;
@@ -444,6 +449,56 @@ class Updater
 
             // Recursion!
             $this->updateChildPageUris($child, $locale);
+        }
+    }
+
+    /**
+     * Update the localized URIs for entries and terms
+     *
+     * When routes for specific locales have been defined for collections and taxonomies,
+     * we need to add references to them even if no data has been localized.
+     *
+     * @return void
+     */
+    private function updateLocalizedEntryUris()
+    {
+        if (!$this->updates || !$this->localized || !in_array($this->driver->key(), ['entries', 'terms'])) {
+            return;
+        }
+
+        foreach ($this->repo->repos() as $repo) {
+            // Get the routes. If there's no route defined, we're done here.
+            $section = ($this->driver->key() === 'entries') ? 'collections' : 'taxonomies';
+            if (! $routes = Config::get("routes.{$section}.{$repo->key()}")) {
+                continue;
+            }
+
+            // If the route definition is a string, there's no localization needed.
+            if (is_string($routes)) {
+                continue;
+            }
+
+            foreach (Config::getOtherLocales() as $locale) {
+                // Get the route definition. If there isn't one, no localization needed.
+                if (! $route = array_get($routes, $locale)) {
+                    continue;
+                }
+
+                // If it's the same as the default route definition, no localization needed.
+                if ($route === array_get($routes, default_locale())) {
+                    continue;
+                }
+
+                foreach ($repo->getUris() as $id => $uri) {
+                    // If the current locale already has a URI, it's done.
+                    if ($repo->getUri($id, $locale)) {
+                        continue;
+                    }
+
+                    // Add a localized uri for the given entry
+                    $repo->setUri($id, $repo->getItem($id)->in($locale)->uri(), $locale);
+                }
+            }
         }
     }
 }

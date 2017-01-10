@@ -439,13 +439,18 @@ class StatamicController extends Controller
     {
         $this->loadKeyVars();
 
+        $data = datastore()->getAll();
+
+        $template = Str::removeLeft(Path::assemble(Config::get('theming.error_template_folder'), '404'), '/');
+        $layout = array_get($data, 'layout', Config::get('theming.default_layout'));
+
         datastore()->merge([
-            'response_code' => 404
+            'response_code' => 404,
+            'template' => $template,
+            'layout' => $layout
         ]);
 
         $this->setUpDebugBar();
-
-        $template = Str::removeLeft(Path::assemble(Config::get('theming.error_template_folder'), '404'), '/');
 
         return response($this->view->render([], $template), 404);
     }

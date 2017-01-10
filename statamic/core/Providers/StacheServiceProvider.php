@@ -102,7 +102,7 @@ class StacheServiceProvider extends ServiceProvider
         // hits Statamic while it's in the middle of being built, it may use a half-created
         // cache resulting in missing data. Here, we'll exit early with a simple refresh
         // meta tag. Once the Stache is built, the page will resume loading as usual.
-        if ($this->stache->isPerformingInitialWarmUp()) {
+        if ($this->stache->isPerformingInitialWarmUp() && !app()->runningInConsole()) {
             $this->outputRefreshResponse();
         }
 

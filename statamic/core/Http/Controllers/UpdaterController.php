@@ -202,6 +202,13 @@ class UpdaterController extends CpController
             return $this->fail("Couldn't copy the new statamic folder.", $e);
         }
 
+        // Clear the cache
+        try {
+            Cache::clear();
+        } catch (\Exception $e) {
+            return $this->fail("Couldn't clear the cache.", $e);
+        }
+
         return $this->okay("Statamic folder swapped.");
     }
 
@@ -234,13 +241,6 @@ class UpdaterController extends CpController
         // } catch (\Exception $e) {
         //     $errors[] = ['message' => "Couldn't delete the zip.", 'e' => $e]);
         // }
-
-        // Clear the cache
-        try {
-            Cache::clear();
-        } catch (\Exception $e) {
-            $errors[] = ['message' => "Couldn't clear the cache.", 'e' => $e];
-        }
 
         // Fire the event, devs can do their thang
         try {

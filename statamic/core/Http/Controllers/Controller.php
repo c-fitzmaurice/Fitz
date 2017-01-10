@@ -30,6 +30,10 @@ abstract class Controller extends BaseController
 
         $this->request = request();
 
+        $get = sanitizeArray($this->request->query->all());
+        $post = ($this->request->isMethod('post')) ? sanitizeArray($this->request->request->all()) : [];
+        $get_post = sanitizeArray($this->request->all());
+
         datastore()->merge(array_merge(
             [
                 'site_url'     => Config::getSiteUrl(),
@@ -40,9 +44,9 @@ abstract class Controller extends BaseController
                 'now'          => $now,
                 'today'        => $now,
                 'locale'       => site_locale(),
-                'get'          => $this->request->query->all(),
-                'post'         => ($this->request->isMethod('post')) ? $this->request->request->all() : [],
-                'get_post'     => $this->request->all(),
+                'get'          => $get,
+                'post'         => $post,
+                'get_post'     => $get_post,
                 'response_code' => 200,
                 'logged_in'    => \Auth::check(),
                 'logged_out'   => !\Auth::check(),

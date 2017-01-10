@@ -19,6 +19,7 @@
 	<li>
 		<input type="text" class="form-control new-item" v-model="newItem"
 		       @keydown.enter.prevent="addItem"
+               @blur="addItem"
 			   @keyup.up="goUp"
 		/>
 	</li>

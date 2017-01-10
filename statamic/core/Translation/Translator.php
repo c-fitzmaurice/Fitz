@@ -115,13 +115,13 @@ class Translator extends \Illuminate\Translation\Translator
     {
         return collect(Folder::getFolders(site_path('addons')))
             ->filter(function ($item) {
-                return Folder::exists(root_path() . $item . '/resources/lang/' . site_locale());
+                return Folder::exists(root_path() . $item . '/resources/lang/' . $this->locale());
             })
             ->keyBy(function ($item) {
                 return pathinfo($item, PATHINFO_BASENAME);
             })
             ->map(function ($item) {
-                return root_path() . $item . '/resources/lang/' . site_locale();
+                return root_path() . $item . '/resources/lang/' . $this->locale();
             })
             ->map(function ($item) {
                 return Folder::getFiles($item);

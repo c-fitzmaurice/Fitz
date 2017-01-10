@@ -985,9 +985,9 @@ class Parser
 
         // <statamic>
         // expand allowed characters in variable regex
-        $this->variableRegex = "\b(?!if|unless\s)[a-zA-Z0-9_][|a-zA-Z\-\+\*%\^\@\/,0-9_\.'".$glue.']*';
+        $this->variableRegex = "\b(?!if|unless\s)[a-zA-Z0-9_][|a-zA-Z\-\+\*%\#\^\@\/,0-9_\.'".$glue.']*';
         // Allow spaces after the variable name so you can do modifiers like | this | and_that
-        $this->looseVariableRegex = "\b(?!if|unless\s)[a-zA-Z0-9_][|a-zA-Z\-\+\*%\^\@\/,0-9_\.(\s.*)?'".$glue.']*';
+        $this->looseVariableRegex = "\b(?!if|unless\s)[a-zA-Z0-9_][|a-zA-Z\-\+\*%\#\^\@\/,0-9_\.(\s.*)?'".$glue.']*';
         // </statamic>
         $this->callbackNameRegex = '\b(?!if|unless\s)[a-zA-Z0-9_][|a-zA-Z\-\+\*%\^\/,0-9_\.(\s.*?)'.$glue.']*'.$glue.$this->variableRegex;
         $this->variableLoopRegex = '/\{\{\s*('.$this->looseVariableRegex.')\s*\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
