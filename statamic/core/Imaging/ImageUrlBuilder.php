@@ -24,10 +24,10 @@ abstract class ImageUrlBuilder implements UrlBuilder
             return 'asset';
         } elseif (Str::startsWith($this->item, ['http://', 'https://'])) {
             return 'url';
-        } elseif (Str::startsWith($this->item, '/')) {
-            return 'path';
-        } else {
+        } elseif (Str::contains($this->item, '::')) {
             return 'id';
         }
+
+        return 'path';
     }
 }

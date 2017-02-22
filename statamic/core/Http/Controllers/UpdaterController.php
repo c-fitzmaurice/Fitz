@@ -12,6 +12,8 @@ use Statamic\API\Event;
 use Statamic\API\Config;
 use Statamic\API\Folder;
 use Statamic\API\Stache;
+use Statamic\Events\SystemUpdated;
+use Statamic\Updater\Housekeeper;
 
 class UpdaterController extends CpController
 {
@@ -242,9 +244,8 @@ class UpdaterController extends CpController
         //     $errors[] = ['message' => "Couldn't delete the zip.", 'e' => $e]);
         // }
 
-        // Fire the event, devs can do their thang
         try {
-            Event::fire('system.updated');
+            (new Housekeeper)->clean($version);
         } catch (\Exception $e) {
             $errors[] = ['message' => "There was a problem while running the system.updated event.", 'e' => $e];
         }

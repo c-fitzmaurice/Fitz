@@ -15,6 +15,13 @@ interface Taxonomy extends DataFolder, HasFieldset
     public function terms();
 
     /**
+     * Get the terms that have been associated with data
+     *
+     * @return \Statamic\Data\Taxonomies\TermCollection
+     */
+    public function associatedTerms();
+
+    /**
      * Add a taxonomy term
      *
      * @param string $key

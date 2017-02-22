@@ -2,6 +2,8 @@
 
 @section('content')
 
-    <asset-container-form :is-new="true"></asset-container-form>
+    <asset-container-wizard>
+
+    </asset-container-wizard>
 
 @endsection

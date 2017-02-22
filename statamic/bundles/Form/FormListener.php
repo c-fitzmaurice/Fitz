@@ -15,7 +15,7 @@ use Illuminate\Support\MessageBag;
 use Illuminate\Http\RedirectResponse;
 use Statamic\Contracts\Forms\Submission;
 use Statamic\Exceptions\PublishException;
-use Statamic\Exceptions\HoneypotException;
+use Statamic\Exceptions\SilentFormFailureException;
 
 class FormListener extends Listener
 {
@@ -44,15 +44,15 @@ class FormListener extends Listener
         try {
             $submission->data($fields);
             $submission->uploadFiles();
+
+            // Allow addons to prevent the submission of the form, return
+            // their own errors, and modify the submission.
+            list($errors, $submission) = $this->runCreatingEvent($submission);
         } catch (PublishException $e) {
             return $this->formFailure($params, $e->getErrors(), $formset);
-        } catch (HoneypotException $e) {
+        } catch (SilentFormFailureException $e) {
             return $this->formSuccess($params, $submission);
         }
-
-        // Allow addons to prevent the submission of the form, return
-        // their own errors, and modify the submission.
-        list($errors, $submission) = $this->runCreatingEvent($submission);
 
         if ($errors) {
             return $this->formFailure($params, $errors, $formset);
@@ -88,7 +88,7 @@ class FormListener extends Listener
 
         $response = ($redirect) ? redirect($redirect) : back();
 
-        $this->flash->put('success', true);
+        $this->flash->put("form.{$submission->formset()->name()}.success", true);
         $this->flash->put('submission', $submission);
 
         return $response;

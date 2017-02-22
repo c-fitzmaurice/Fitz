@@ -18,10 +18,6 @@ table .ui-sortable-helper {
 }
 
 .drag-handle {
-    // cursor: move;
-	// cursor: grab !important;
-    padding: 2px;
-
 	&:active {
         cursor: move;
 		cursor: grabbing !important;

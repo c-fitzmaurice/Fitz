@@ -2,19 +2,15 @@
 
 namespace Statamic\Assets;
 
-use Statamic\API\AssetContainer as AssetContainerAPI;
 use Statamic\API\Path;
 use Statamic\API\YAML;
-use Statamic\API\Str;
-use Statamic\API\Folder;
-use Statamic\API\Storage;
-use Statamic\Assets\AssetCollection;
-use Statamic\Data\Services\AssetsService;
+use Statamic\Data\DataFolder;
 use Illuminate\Contracts\Support\Arrayable;
-use Statamic\Contracts\Assets\AssetFolder as AssetFolderContract;
 use Statamic\Events\Data\AssetFolderDeleted;
+use Statamic\API\AssetContainer as AssetContainerAPI;
+use Statamic\Contracts\Assets\AssetFolder as AssetFolderContract;
 
-class AssetFolder implements AssetFolderContract, Arrayable
+class AssetFolder extends DataFolder implements AssetFolderContract, Arrayable
 {
     /**
      * @var string
@@ -22,85 +18,28 @@ class AssetFolder implements AssetFolderContract, Arrayable
     protected $container;
 
     /**
-     * @var string
-     */
-    protected $path;
-
-    /**
-     * @var \Carbon\Carbon
-     */
-    protected $last_modified;
-
-    /**
-     * @var array
-     */
-    protected $data;
-
-    /**
+     * Create a new asset folder instance
+     *
      * @param string     $path
      * @param array|null $data
      */
-    public function __construct($container_uuid, $path, $data = [])
+    public function __construct($container_id, $path, $data = [])
     {
-        $this->container = $container_uuid;
+        $this->container = $container_id;
         $this->path   = $path;
         $this->data   = $data;
     }
 
     /**
-     * @param string     $key
-     * @param mixed|null $default
-     * @return mixed
+     * @inheritdoc
      */
-    public function get($key, $default = null)
+    public function disk($type = 'folder')
     {
-        return array_get($this->data, $key, $default);
+        return $this->container()->disk($type);
     }
 
     /**
-     * @param string $key
-     * @param mixed  $value
-     */
-    public function set($key, $value)
-    {
-        $this->data[$key] = $value;
-    }
-
-    /**
-     * Get or set the data
-     *
-     * @param array|null $data
-     * @return mixed
-     */
-    public function data($data = null)
-    {
-        if (! $data) {
-            return $this->data;
-        }
-
-        $this->data = $data;
-    }
-
-    public function id()
-    {
-        return 'assets/' . $this->container()->id() . '/' . $this->path();
-    }
-
-    /**
-     * @param string|null $path
-     * @return string
-     */
-    public function path($path = null)
-    {
-        if (is_null($path)) {
-            return $this->path;
-        }
-
-        $this->path = $path;
-    }
-
-    /**
-     * @return string
+     * @inheritdoc
      */
     public function resolvedPath()
     {
@@ -108,67 +47,31 @@ class AssetFolder implements AssetFolderContract, Arrayable
     }
 
     /**
-     * Get the basename of the folder
-     *
-     * @return string
+     * @inheritdoc
      */
-    public function basename()
+    public function computedTitle()
     {
-        return basename($this->path());
+        return pathinfo($this->path())['filename'];
     }
 
     /**
-     * @return string
-     */
-    public function title()
-    {
-        return $this->get('title', pathinfo($this->path())['filename']);
-    }
-
-    /**
-     * @return int
+     * @inheritdoc
      */
     public function count()
     {
-        return count($this->get('assets', []));
+        return $this->assets()->count();
     }
 
     /**
-     * @return \Statamic\Assets\AssetCollection
+     * @inheritdoc
      */
-    public function assets()
+    public function assets($recursive = false)
     {
-        return app(AssetsService::class)->folder($this->container, $this->path());
+        return $this->container()->assets($this->path(), $recursive);
     }
 
     /**
-     * @param string                         $key
-     * @param \Statamic\Contracts\Data\Asset $asset
-     */
-    public function addAsset($key, $asset)
-    {
-        $assets = $this->get('assets', []);
-
-        $assets[$key] = $asset->data();
-        $assets[$key]['file'] = $asset->basename();
-
-        $this->set('assets', $assets);
-    }
-
-    /**
-     * @param string $key
-     */
-    public function removeAsset($key)
-    {
-        $assets = $this->get('assets', []);
-
-        unset($assets[$key]);
-
-        $this->set('assets', $assets);
-    }
-
-    /**
-     * @return \Carbon\Carbon
+     * @inheritdoc
      */
     public function lastModified()
     {
@@ -190,44 +93,63 @@ class AssetFolder implements AssetFolderContract, Arrayable
     }
 
     /**
-     * @return mixed
+     * @inheritdoc
      */
     public function save()
     {
-        $path = 'assets/' . $this->container()->uuid() . '/' . $this->path() . '/folder.yaml';
-
         $data = $this->data();
 
-        // Put the assets at the end of the array for no other reason than it looks nicer.
-        $assets = array_get($data, 'assets', []);
-        unset($data['assets']);
-        $data['assets'] = $assets;
+        // If there's a title set, and it's the same as what the default would be
+        // (ie. the folder name) then we'll just remove it. It's not needed.
+        if ($title = array_get($data, 'title')) {
+            if ($title === $this->computedTitle()) {
+                unset($data['title']);
+            }
+        }
 
-        Storage::put($path, YAML::dump($data));
+        // Make sure there's a folder
+        $this->disk('folder')->make($this->path());
+
+        $path = $this->path() . '/folder.yaml';
+
+        // If there's no data to be saved, and there's already an existing folder.yaml,
+        // we'll delete the file now. There's no reason for it to be hanging around.
+        if (empty($data) && $this->disk('file')->exists($path)) {
+            $this->disk('file')->delete($path);
+        }
+
+        // Only bother saving a file if there's data to save.
+        if (! empty($data)) {
+            $this->disk('file')->put($path, YAML::dump($data));
+        }
 
         event('assetfolder.saved', $this);
     }
 
     /**
-     * Delete the folder
-     *
-     * @return mixed
+     * @inheritdoc
      */
     public function delete()
     {
-        $storage_folder = 'assets/' . $this->container()->uuid() . '/' . $this->path();
+        $paths = [];
 
-        Folder::disk('storage')->delete($storage_folder);
+        // Iterate over all the assets in the folder, recursively.
+        foreach ($this->assets(true) as $asset) {
+            // Keep track of the paths for the event
+            $paths[] = $asset->path();
 
-        Folder::delete($this->resolvedPath());
+            // Delete the asset. It'll remove its own data.
+            $asset->delete();
+        }
 
-        event(new AssetFolderDeleted($this->id(), [$storage_folder]));
+        // Delete the actual folder that'll be leftover. It'll include any empty subfolders.
+        $this->disk('folder')->delete($this->path());
+
+        event(new AssetFolderDeleted($this->container(), $this->path(), $paths));
     }
 
     /**
-     * Get the container where this folder is located
-     *
-     * @return \Statamic\Contracts\Assets\AssetContainer
+     * @inheritdoc
      */
     public function container()
     {
@@ -235,50 +157,7 @@ class AssetFolder implements AssetFolderContract, Arrayable
     }
 
     /**
-     * Get the nested folders
-     *
-     * @param int $depth
-     * @return \Statamic\Contracts\Assets\AssetFolder[]
-     */
-    public function folders($depth = 1)
-    {
-        return collect($this->container()->folders())->reject(function($folder) use ($depth) {
-            // We don't want the current folder in the list.
-            if ($folder->path() === $this->path()) {
-                return true;
-            }
-
-            // From here, we'll keep track of whether we want to reject.
-            $reject = false;
-
-            // Only keep nested pages.
-            if ($this->path() !== '/') {
-                if (! Str::startsWith($folder->path(), $this->path())) {
-                    $reject = true;
-                }
-            }
-
-            // Keep pages that meet the depth requirement
-            if ($this->path() === '/') {
-                $reject = substr_count($folder->path(), '/') >= $depth;
-            } else {
-                $slash_diff = substr_count($folder->path(), '/') - substr_count($this->path(), '/');
-                if ($slash_diff > $depth) {
-                    $reject = true;
-                }
-            }
-
-            return $reject;
-
-        })->values()->all();
-
-        return $folders;
-    }
-
-    /**
-     * Get the parent folder
-     *
-     * @return null|\Statamic\Contracts\Assets\AssetFolder
+     * @inheritdoc
      */
     public function parent()
     {
@@ -289,24 +168,14 @@ class AssetFolder implements AssetFolderContract, Arrayable
         $path = Path::popLastSegment($this->path());
         $path = ($path === '') ? '/' : $path;
 
-        return $this->container()->folder($path);
+        return $this->container()->assetFolder($path);
     }
 
     /**
-     * Create a nested folder
+     * Get the folder represented as an array
      *
-     * @param string $basename
-     * @return \Statamic\Contracts\Assets\AssetFolder
+     * @return array
      */
-    public function createFolder($basename)
-    {
-        $path = ltrim(Path::assemble($this->path(), $basename), '/');
-
-        $folder = new AssetFolder($this->container()->uuid(), $path);
-
-        return $folder;
-    }
-
     public function toArray()
     {
         return [
@@ -317,12 +186,10 @@ class AssetFolder implements AssetFolderContract, Arrayable
     }
 
     /**
-     * Get the URL to edit this in the CP
-     *
-     * @return string
+     * @inheritdoc
      */
     public function editUrl()
     {
-        //
+        // A folder is currently only editable within a AJAX based modal.
     }
 }

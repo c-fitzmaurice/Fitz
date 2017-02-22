@@ -24,17 +24,9 @@
 
 }(this, function() {
 
-    // Default options //
-
-    var defaults = {
-        defaultLocale: 'en' /** The default locale if not set. */
-    };
-
     // Constructor //
 
-    var Lang = function(options) {
-        options = options || {};
-        this.defaultLocale = options.defaultLocale || defaults.defaultLocale;
+    var Lang = function() {
     };
 
     // Methods //
@@ -153,26 +145,6 @@
     };
 
     /**
-     * Set the current locale.
-     *
-     * @param locale {string} The locale to set.
-     *
-     * @return void
-     */
-    Lang.prototype.setLocale = function(locale) {
-        this.locale = locale;
-    };
-
-    /**
-     * Get the current locale.
-     *
-     * @return {string} The current locale.
-     */
-    Lang.prototype.getLocale = function() {
-        return this.locale || this.defaultLocale;
-    };
-
-    /**
      * Parse a message key into components.
      *
      * @param key {string} The message key to parse.
@@ -199,13 +171,13 @@
          */
         if (key.includes('::')) {
             return {
-                source: this.getLocale() + '.' + segments.splice(0, segments.length - 1).join('.'),
+                source: segments.splice(0, segments.length - 1).join('.'),
                 entries: segments.slice(segments.length - 1)
             };
         }
 
         return {
-            source: this.getLocale() + '.' + segments[0],
+            source: segments[0],
             entries: segments.slice(1)
         };
     };

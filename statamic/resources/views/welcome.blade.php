@@ -27,7 +27,7 @@
 	<body>
 		<div class="container">
             <div class="content">
-                {!! svg('statamic-mark') !!}
+                {!! inline_svg('statamic-mark') !!}
                 <h1>Statamic 2</h1>
             </div>
 		</div>

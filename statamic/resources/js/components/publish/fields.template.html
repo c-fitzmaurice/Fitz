@@ -24,7 +24,8 @@
 						:name="field.name"
 						:data.sync="fieldData[field.name]"
 						:config="fields[$index]"
-                        :autofocus="this.focus && $index == 0">
+						:autofocus="focus && $index == 0"
+						v-focus="$index == 0">
 			</component>
 
 			<div class="field-mask" v-if="editingFieldset">

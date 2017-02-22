@@ -143,6 +143,10 @@ class Config
      */
     public static function getDefaultLocale()
     {
+        if (env('APP_ENV') === 'testing') {
+            return 'en';
+        }
+
         $locales = self::get('system.locales');
 
         return key($locales);
@@ -188,5 +192,22 @@ class Config
     public static function getRoutes()
     {
         return self::get('routes');
+    }
+
+    /**
+     * Get the image manipulation presets
+     *
+     * @return array
+     */
+    public static function getImageManipulationPresets()
+    {
+        $user_presets = self::get('assets.image_manipulation_presets', []);
+
+        // If the CP is disabled, we don't need to bother merging in our presets.
+        if (! CP_ROUTE) {
+            return $user_presets;
+        }
+
+        return array_merge($user_presets, Image::getCpImageManipulationPresets());
     }
 }

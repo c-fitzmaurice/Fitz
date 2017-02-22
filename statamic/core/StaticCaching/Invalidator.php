@@ -3,9 +3,12 @@
 namespace Statamic\StaticCaching;
 
 use Statamic\API\Config;
+use Statamic\Contracts\Data\Pages\Page;
 use Statamic\Contracts\Data\Entries\Entry;
 use Statamic\Contracts\Data\Content\Content;
 use Statamic\Contracts\Data\Taxonomies\Term;
+use Statamic\Events\Stache\RepositoryItemRemoved;
+use Statamic\Events\Stache\RepositoryItemInserted;
 
 class Invalidator
 {
@@ -28,14 +31,38 @@ class Invalidator
     }
 
     /**
+     * Register the listeners for the subscriber
+     *
+     * @param \Illuminate\Events\Dispatcher $events
+     */
+    public function subscribe($events)
+    {
+        $events->listen(RepositoryItemInserted::class, self::class.'@handle');
+        $events->listen(RepositoryItemRemoved::class, self::class.'@handle');
+    }
+
+    /**
      * Handle the event and invalidate the appropriate urls
      *
-     * @param \Statamic\Contracts\Data\Content\Content $content
+     * @param RepositoryItemInserted|RepositoryItemRemoved $event
+     * @return void
      */
-    public function handle(Content $content)
+    public function handle($event)
     {
+        $content = $event->item;
+
+        if (! $content instanceof Content) {
+            return;
+        }
+
         // Get the invalidation rule scheme
         $this->rules = Config::get('caching.static_caching_invalidation');
+
+        // If we've opted to clear all items, we'll just flush it all and call it a day.
+        if ($this->rules === 'all') {
+            $this->cacher->flush();
+            return;
+        }
 
         // Invalidate the content's own URL.
         $this->invalidateUrl($content->url());
@@ -81,6 +108,15 @@ class Invalidator
         $taxonomy = $term->taxonomyName();
 
         $urls = array_get($this->rules, "taxonomies.$taxonomy.urls", []);
+
+        $this->cacher->invalidateUrls($urls);
+    }
+
+    protected function invalidatePageUrls(Page $page)
+    {
+        $url = $page->url();
+
+        $urls = array_get($this->rules, "pages.$url.urls", []);
 
         $this->cacher->invalidateUrls($urls);
     }

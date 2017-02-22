@@ -266,6 +266,10 @@ class User extends Data implements UserContract, Authenticatable, PermissibleCon
         foreach ($this->groups() as $group) {
             $this->supplements['in_'.Str::slug($group->title(), '_')] = true;
         }
+
+        if ($this->supplement_taxonomies) {
+            $this->addTaxonomySupplements();
+        }
     }
 
     /**

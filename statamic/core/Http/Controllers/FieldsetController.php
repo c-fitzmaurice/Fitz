@@ -8,6 +8,7 @@ use Statamic\API\Folder;
 use Statamic\API\Helper;
 use Statamic\API\Str;
 use Statamic\API\Pattern;
+use Statamic\API\Taxonomy;
 use Statamic\CP\FieldtypeFactory;
 use Illuminate\Support\Collection;
 
@@ -92,9 +93,14 @@ class FieldsetController extends CpController
             list($type, $fieldset) = explode('.', $fieldset);
         }
 
-        $fieldset = Fieldset::get($fieldset, $type);
+        // Create a temporary fieldset for when creating.
+        if ($fieldset === 'create' && $this->request->creating) {
+            $fieldset = Fieldset::create('temporary');
+        } else {
+            $fieldset = Fieldset::get($fieldset, $type);
+        }
 
-        $fieldset->locale($this->request->input('locale'));
+        $fieldset->locale($this->request->input('locale', default_locale()));
 
         try {
             $array = $fieldset->toArray($this->request->input('partials', true));
@@ -111,7 +117,70 @@ class FieldsetController extends CpController
             }
         }
 
+        // Default types of fieldsets should have their taxonomies formatted ready for the fields builder
+        if ($fieldset->type() === 'default' && $this->request->editing) {
+            $array['taxonomies'] = $this->formatTaxonomiesForEditing(
+                array_get($array, 'taxonomies')
+            );
+        }
+
         return $array;
+    }
+
+    /**
+     * Format taxonomies for editing
+     *
+     * Taxonomies exist in the fieldset file in one format, but the Vue component used
+     * for editing them requires them in another format.
+     *
+     * @param array $array
+     * @return array
+     */
+    private function formatTaxonomiesForEditing($array)
+    {
+        $taxonomies = collect();
+
+        foreach (Taxonomy::all() as $handle => $taxonomy) {
+            // Since we're adding all the taxonomies to the response, we'll
+            // need another way to know which should and shouldn't be there.
+            $hidden = false;
+
+            // If *any* taxonomies have been defined, *and* the currently iterated taxonomy is not found,
+            // we want to mark it as hidden. We check for *any* taxonomies being defined because if it's
+            // completely empty, then *all* taxonomies should be shown.
+            if (! is_null($array) && ! isset($array[$handle])) {
+                $hidden = true;
+            }
+
+            $config = array_get($array, $handle, []);
+
+            // Taxonomies can be defined by simply adding "true".
+            $config = ($config === true) ? [] : $config;
+
+            $defaults = [
+                'taxonomy' => $handle,
+                'display' => $taxonomy->title(),
+                'hidden' => $hidden
+            ];
+
+            $taxonomies[$handle] = array_merge($defaults, $config);
+        }
+
+        // Sort the fields by the order in which they were provided.
+        if (! empty($array)) {
+            $taxonomies = $taxonomies->sortBy(function ($arr) use ($array, $taxonomies) {
+                $handle = $arr['taxonomy'];
+
+                // If the taxonomy was not provided, put it at the end.
+                if (! isset($array[$handle])) {
+                    return count($taxonomies);
+                }
+
+                return array_search($handle, array_keys($array));
+            });
+        }
+
+        return $taxonomies->values()->all();
     }
 
     public function fieldtypes()
@@ -193,17 +262,22 @@ class FieldsetController extends CpController
         ];
     }
 
-    private function process($fields)
+    private function process($fields, $fallback_type = 'text')
     {
         // Go through each field in the fieldset
         foreach ($fields as $field_name => $field_config) {
             // Get the config fieldset for that field's fieldtype. Still with me?
-            $type = $field_config['type'];
+            $type = array_get($field_config, 'type', $fallback_type);
             $fieldtype = FieldtypeFactory::create($type);
             $fieldtypes = $fieldtype->getConfigFieldset()->fieldtypes();
 
             // Go through each fieldtype in the config fieldset and process the values.
-            foreach ($fieldtypes as $field) {
+            foreach ($fieldtypes as $k => $field) {
+                // If a non-array is encountered, it's probably a "handle: true" used in the "taxonomies" section.
+                if (! is_array($field_config)) {
+                    continue;
+                }
+
                 if (! in_array($field->getName(), array_keys($field_config))) {
                     continue;
                 }
@@ -276,6 +350,27 @@ class FieldsetController extends CpController
         ];
     }
 
+    /**
+     * Quickly create a new barebones fieldset from within the fieldtype
+     *
+     * @return array
+     */
+    public function quickStore()
+    {
+        $title = $this->request->name;
+        $name = Str::slug($title, '_');
+
+        if (Fieldset::exists($name)) {
+            return ['success' => true];
+        }
+
+        $fieldset = Fieldset::create($name);
+        $fieldset->title($title);
+        $fieldset->save();
+
+        return ['success' => true];
+    }
+
     private function prepareFieldset($slug, $contents)
     {
         // We need to key the array by name
@@ -288,8 +383,48 @@ class FieldsetController extends CpController
 
         $contents['fields'] = $this->process($fields);
 
+        $contents['taxonomies'] = $this->processTaxonomies($contents['taxonomies']);
+
         $fieldset = Fieldset::create($slug, $contents);
 
         return $fieldset;
+    }
+
+    /**
+     * Process taxonomies
+     *
+     * The "taxonomies" key of the fieldset will be submitted differently than
+     * should be saved. It also needs to be ran through the fieldtype processor.
+     *
+     * @param array $taxonomies
+     * @return array
+     */
+    private function processTaxonomies($taxonomies)
+    {
+        $taxonomies = collect($taxonomies)->reject(function ($item) {
+            return $item['hidden'] === true;
+        })->keyBy('taxonomy')->map(function ($item, $handle) {
+            unset($item['hidden'], $item['taxonomy']);
+
+            if ($item['display'] === Taxonomy::whereHandle($handle)->title()) {
+                unset($item['display']);
+            }
+
+            $item = array_filter($item);
+
+            // Visible taxonomy fields with no configuration are specified by "true"
+            if (empty($item)) {
+                return true;
+            }
+
+            return $item;
+        });
+
+        // If everything should be hidden, we specify that with "false"
+        if ($taxonomies->isEmpty()) {
+            return false;
+        }
+
+        return $this->process($taxonomies->all(), 'taxonomy');
     }
 }

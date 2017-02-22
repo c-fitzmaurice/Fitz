@@ -5,7 +5,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    border: 5px solid white;
+    border: 5px solid #394045;
 }
 
 .focal-point-toolbox {
@@ -14,7 +14,7 @@
     left: 20px;
     z-index: 120;
     width: 360px;
-    padding: 22px 30px;
+    padding: 15px;
 
     .form-group {
         margin-bottom: 15px;
@@ -26,8 +26,25 @@
     }
 }
 
-.focal-point-values {
-    margin-top: 6px;
+.focal-point-coordinates {
+    display: flex;
+    flex-direction: column;
+    font-family: $font_monospace;
+
+    .pair {
+        display: flex;
+        align-items: center;
+    }
+    .axis {
+        font-weight: bold;
+        font-size: 12px;
+        margin-right: 5px;
+        color: $color_dark_blue;
+    }
+    .value {
+        display: block;
+        font-size: 14px;
+    }
 }
 
 .focal-point-image {
@@ -69,7 +86,7 @@
     background-size: cover;
     position: absolute;
     margin: -5px 0 0 -5px;
-    border: 5px solid white;
+    border: 10px solid #394045;
     box-sizing: content-box;
     transition: background-position 0.5s ease;
 }

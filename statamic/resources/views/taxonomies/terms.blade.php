@@ -11,7 +11,6 @@
             <div id="publish-controls" class="head sticky">
                 <h1 id="publish-title">{{ $group_title }}</h1>
                 <div class="controls">
-                    <search v-model="keyword"></search>
                     @can("taxonomies:{$group}:create")
                         <div class="btn-group">
                             <a href="{{ route('term.create', $group) }}" class="btn btn-primary">
@@ -32,7 +31,12 @@
                         @endcan
                     </div>
                 </template>
-                <dossier-table v-if="hasItems" :keyword.sync="keyword" :options="tableOptions"></dossier-table>
+
+                <div class="loading" v-if="loading">
+                    <span class="icon icon-circular-graph animation-spin"></span> {{ translate('cp.loading') }}
+                </div>
+
+                <dossier-table v-if="hasItems" :items="items" :keyword.sync="keyword" :options="tableOptions"></dossier-table>
             </div>
         </div>
 

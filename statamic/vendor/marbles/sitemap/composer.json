@@ -1,7 +1,0 @@
-{
-    "name": "marbles/sitemap",
-    "description": "Automatically add a Sitemap.xml to your website",
-    "license": "MIT",
-    "require": {
-    }
-}

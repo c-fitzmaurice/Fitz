@@ -89,20 +89,17 @@ class CollectionTags extends Tags
      */
     private function collect($collection)
     {
-        if (! $collection instanceof ContentCollection) {
-            $collections = Helper::ensureArray($collection);
-
-            foreach ($collections as $collection) {
-                if (! Collection::handleExists($collection)) {
-                    throw new \Exception("Collection [$collection] doesn't exist.");
-                }
-            }
-
-            $collection = Entry::whereCollection($collections);
-        }
+        $collection = $this->getCollection($collection);
 
         // Swap to the appropriate locale. By default it's the site locale.
         $this->collection = $collection->localize($this->get('locale', site_locale()));
+
+        // Convert taxonomy fields to actual taxonomy terms.
+        // This will allow taxonomy term data to be available in the template without additional tags.
+        // If terms are not needed, there's a slight performance benefit in disabling this.
+        if ($this->getBool('supplement_taxonomies', true)) {
+            $this->collection = $this->collection->supplementTaxonomies();
+        }
 
         $this->filter();
 
@@ -111,6 +108,147 @@ class CollectionTags extends Tags
         }
 
         return $this->output();
+    }
+
+    private function getCollection($collection)
+    {
+        // If a content collection has been passed in directly, we already have what we need.
+        if ($collection instanceof ContentCollection) {
+            return $collection;
+        }
+
+        // If filtering by taxonomy has been requested, we can simply get the
+        // associated content. We don't actually need to "filter" anything.
+        if ($taxonomyCollection = $this->getTaxonomyCollection($collection)) {
+            return $taxonomyCollection;
+        }
+
+        // Otherwise, we'll get all the entries in the specified collection name(s).
+        return $this->getEntryCollection($collection);
+    }
+
+    private function getEntryCollection($collection)
+    {
+        $collections = Helper::ensureArray($collection);
+
+        foreach ($collections as $collection) {
+            if (! Collection::handleExists($collection)) {
+                throw new \Exception("Collection [$collection] doesn't exist.");
+            }
+        }
+
+        return Entry::whereCollection($collections);
+    }
+
+    private function getTaxonomyCollection($collection)
+    {
+        // If a boolean taxonomy parameter has been provided, retrieve the collection
+        // associated with the URI. Otherwise, get it from any taxonomy parameters.
+        $taxonomyCollection = ($this->getBool('taxonomy', false))
+            ? $this->getTaxonomyCollectionFromUri()
+            : $this->getTaxonomyCollectionFromParams($collection);
+
+        // If neither option returns a collection, then a taxonomy option
+        // wasn't selected. We'll just stop right here and move along.
+        if (! $taxonomyCollection) {
+            return false;
+        }
+
+        // Make sure the entries belong to the specified collection(s)
+        $collections = Helper::ensureArray($collection);
+
+        return $taxonomyCollection->filter(function ($entry) use ($collections) {
+            return in_array($entry->collectionName(), $collections);
+        });
+    }
+
+    private function getTaxonomyCollectionFromUri()
+    {
+        return Term::whereSlug(
+            array_get($this->context, 'page.default_slug'),
+            array_get($this->context, 'page.taxonomy')
+        )->collection();
+    }
+
+    private function getTaxonomyCollectionFromParams($collection)
+    {
+        // Gather any parameters that match `taxonomy:[handle]`.
+        $params = collect($this->parameters)->filterWithKey(function ($value, $key) {
+            return Str::startsWith($key, 'taxonomy:');
+        });
+
+        // No taxonomy parameters? We're done here.
+        if ($params->isEmpty()) {
+            return false;
+        }
+
+        $collections = $params->map(function ($terms, $param) {
+            // The parameter key will denote the taxonomy handle, as well as an optional way of
+            // specifying how to treat the parameter values (OR/any or AND/all).
+            $parts = explode(':', $param);
+            $taxonomy = $parts[1];
+
+            // If any value apart from 'all' or 'and' is specified, 'any' will be used.
+            $method = Helper::ensureInArray(array_get($parts, 2), ['any', 'all']);
+
+            // Term slugs may be provided as a string, which may be pipe delimited.
+            // They may also reference a field, which means at this point the value may already be an array.
+            $terms = (is_string($terms)) ? Helper::explodeOptions($terms) : $terms;
+            $terms = array_filter($terms);
+
+            return compact('taxonomy', 'method', 'terms');
+        });
+
+        // Remove any parameters with no terms. This may happen if the terms are coming from a
+        // variable such an empty/non-existent query parameter, or just a non-existing field.
+        $collections = $collections->reject(function ($arr) {
+            return empty($arr['terms']);
+        });
+
+        $collections = $collections->map(function ($arr) use ($collection) {
+            // Grab the collection using the appropriate method
+            $entries = ($arr['method'] === 'any')
+                ? $this->getAnyTaxonomyCollection($arr['taxonomy'], $arr['terms'])
+                : $this->getAllTaxonomyCollection($arr['taxonomy'], $arr['terms'], $collection);
+
+            // Return the array of entries keyed by the IDs, in preparation for the intersection.
+            return $entries->keyBy(function ($entry) {
+                return $entry->id();
+            })->all();
+        });
+
+        // If we're dealing with a single collection, just grab that. Otherwise, we want to get the intersection of
+        // all the entries, by their key. Anything returned means that they exist in all of the collections.
+        if ($collections->count() === 1) {
+            $entries = $collections->first();
+        } else {
+            $entries = call_user_func_array('array_intersect_key', $collections->values()->all());
+        }
+
+        return collect_entries($entries);
+    }
+
+    private function getAllTaxonomyCollection($taxonomy, $slugs, $collection)
+    {
+        return $this
+            ->getEntryCollection($collection)
+            ->filter(function ($entry) use ($taxonomy, $slugs) {
+                $values = $entry->get($taxonomy, []);
+                return $slugs->diff($values)->isEmpty();
+            });
+    }
+
+    private function getAnyTaxonomyCollection($taxonomy, $slugs)
+    {
+        $entryCollection = collect_content();
+
+        foreach ($slugs as $slug) {
+            $term = Term::whereSlug(Term::normalizeSlug($slug), $taxonomy);
+            $collection = ($term) ? $term->collection() : [];
+            $entryCollection = $entryCollection->merge($collection);
+        }
+
+        return $entryCollection;
     }
 
     protected function output()
@@ -168,7 +306,6 @@ class CollectionTags extends Tags
     protected function filter($limit = true)
     {
         $this->filterUnpublished();
-        $this->filterTaxonomy();
         $this->filterFuture();
         $this->filterPast();
         $this->filterSince();
@@ -190,23 +327,6 @@ class CollectionTags extends Tags
     {
         if (! $this->getBool('show_unpublished', false)) {
             $this->collection = $this->collection->removeUnpublished();
-        }
-    }
-
-    private function filterTaxonomy()
-    {
-        if ($this->getBool('taxonomy', false)) {
-            $slug = array_get($this->context, 'page:slug');
-            $group = array_get($this->context, 'page:taxonomy_group');
-
-            // If there's no matching term, we can safely say that there
-            // will be no matching entries. Don't bother filtering.
-            if (! $term = Term::whereSlug($slug, $group)) {
-                $this->collection = collect_content();
-                return;
-            }
-
-            $this->collection = $this->collection->filterByTaxonomy($term->id());
         }
     }
 
@@ -368,7 +488,7 @@ class CollectionTags extends Tags
 
         // Filter by condition parameters
         $conditions = array_filter_key($this->parameters, function ($key) {
-            return Str::contains($key, ':');
+            return Str::contains($key, ':') && !Str::contains($key, 'taxonomy:');
         });
 
         if (! empty($conditions)) {

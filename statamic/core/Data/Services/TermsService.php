@@ -2,42 +2,77 @@
 
 namespace Statamic\Data\Services;
 
-use Statamic\API\Helper;
+use Statamic\API\Str;
 use Statamic\Contracts\Data\Taxonomies\Term;
+use Statamic\API\Data;
 use Statamic\Data\Taxonomies\TermCollection;
-use Statamic\Stache\Repository;
+use Statamic\Stache\Stache;
 
-class TermsService extends AbstractService
+class TermsService
 {
     /**
-     * The repo key
-     *
-     * @var string
+     * @var \Statamic\Stache\Stache
      */
-    protected $repo = 'terms';
+    protected $stache;
+
+    protected $taxonomyStache;
 
     /**
-     * Get a term by ID
-     *
-     * @param string $id
-     * @return Term
+     * @param \Statamic\Stache\Stache $stache
      */
-    public function id($id)
+    public function __construct(Stache $stache)
     {
-        return $this->repo()->getRepoById($id)->getItem($id);
+        $this->stache = $stache;
+        $this->taxonomyStache = $stache->taxonomies;
     }
 
     /**
-     * Check if a term exists by ID
+     * Get all the terms
      *
-     * @param string $id
-     * @return bool
+     * @param bool $includeUnassociated  Whether to include unassociated terms.
+     * @return TermCollection
      */
-    public function exists($id)
+    public function all($includeUnassociated = true)
     {
-        return ! $this->repo()->repos()->map(function (Repository $repo) use ($id) {
-            return $repo->getIds()->has($id);
-        })->filter()->isEmpty();
+        return $this->sort(
+            $this->taxonomyStache->getTerms($includeUnassociated)
+        );
+    }
+
+    /**
+     * Get all the terms in a taxonomy
+     *
+     * @param string $taxonomy             The taxonomy handle
+     * @param bool   $includeUnassociated  Whether to include unassociated terms.
+     * @return TermCollection
+     */
+    public function taxonomy($taxonomy, $includeUnassociated = true)
+    {
+        $collection = ($includeUnassociated)
+            ? $this->taxonomyStache->getTermsInTaxonomy($taxonomy)
+            : $this->taxonomyStache->getAssociatedTermsInTaxonomy($taxonomy);
+
+        return $this->sort($collection);
+    }
+
+    private function sort($collection)
+    {
+        $collection = $collection->all();
+
+        ksort($collection);
+
+        return collect_terms($collection);
+    }
+
+    public function id($id)
+    {
+        if (! Str::contains($id, '/')) {
+            return;
+        }
+
+        list($taxonomy, $slug) = explode('/', $id);
+
+        return $this->taxonomyStache->getTermBySlug($slug, $taxonomy);
     }
 
     /**
@@ -46,28 +81,11 @@ class TermsService extends AbstractService
      * @param string      $slug
      * @param string|null $taxonomy  Optionally restrict to a taxonomy
      * @return Term
+     * @todo get a term by slug without specifying the taxonomy.
      */
     public function slug($slug, $taxonomy = null)
     {
-        $items = ($taxonomy)
-            ? $this->taxonomy($taxonomy)
-            : $this->repo()->getItems();
-
-        return $items->first(function ($id, $term) use ($slug, $taxonomy) {
-            return $term->slug() === $slug;
-        });
-    }
-
-    /**
-     * Check if a term exists with a given slug
-     *
-     * @param string $slug
-     * @param string|null $taxonomy
-     * @return bool
-     */
-    public function slugExists($slug, $taxonomy = null)
-    {
-        return $this->slug($slug, $taxonomy) !== null;
+        return $this->taxonomyStache->getTermBySlug($slug, $taxonomy);
     }
 
     /**
@@ -78,52 +96,48 @@ class TermsService extends AbstractService
      */
     public function uri($uri)
     {
-        $id = $this->repo()->repos()->map(function (Repository $repo) use ($uri) {
-            return $repo->getIdByUri($uri);
-        })->filter()->first();
+        $stache = $this->taxonomyStache;
 
-        return $this->id($id);
+        if (! $key = $stache->uris(default_locale())->filter()->flip()->get($uri)) {
+            return null;
+        }
+
+        list($taxonomy, $slug) = explode('/', $key);
+
+        return $this->slug($slug, $taxonomy);
     }
 
-    /**
-     * Get all terms
-     *
-     * @return TermCollection
-     */
-    public function all()
+    public function collection(Term $term)
     {
-        return collect_terms($this->repo()->repos()->flatMap(function ($repo) {
-            return $repo->getItems();
+        return collect_content($this->taxonomyStache->getAssociations($term)->unique()->map(function ($id) {
+            return Data::find($id);
         }));
     }
 
-    /**
-     * Get all the terms in a taxonomy
-     *
-     * @param string $taxonomy
-     * @return TermCollection
-     */
-    public function taxonomy($taxonomy)
+    public function getDefaultTermUri($locale, $uri)
     {
-        return $this->taxonomies(Helper::ensureArray($taxonomy));
-    }
+        $stache = $this->taxonomyStache;
 
-    /**
-     * Get all the terms in multiple taxonomies
-     *
-     * @param array $taxonomies
-     * @return TermCollection
-     */
-    public function taxonomies($taxonomies)
-    {
-        $terms = collect_terms();
-
-        foreach ($taxonomies as $taxonomy) {
-            $terms = $terms->merge(
-                $this->repo()->repo($taxonomy)->getItems()
-            );
+        // Attempt to get the term key of a localized URI. If a key is found, it means
+        // a localized version exists. We'll then need to get the default version.
+        if ($key = $stache->uris($locale)->filter()->flip()->get($uri)) {
+            return $stache->uris(default_locale())->get($key);
         }
 
-        return $terms;
+        // If there's no localized version, we'll check if there's a default one. If there is,
+        // great, we must have been supplied with one. If not, the supplied URI is invalid.
+        return $stache->uris(default_locale())->filter()->flip()->has($uri) ? $uri : null;
+    }
+
+    public function exists($id, $includeUnassociated = true)
+    {
+        list($taxonomy, $slug) = explode('/', $id);
+
+        return $this->taxonomyStache->slugExists($slug, $taxonomy, $includeUnassociated);
+    }
+
+    public function slugExists($slug, $taxonomy, $includeUnassociated = true)
+    {
+        return $this->taxonomyStache->slugExists($slug, $taxonomy, $includeUnassociated);
     }
 }

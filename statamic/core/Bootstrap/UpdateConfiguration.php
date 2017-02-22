@@ -67,6 +67,8 @@ class UpdateConfiguration
             $config[$file] = Arr::combineRecursive($default, $site_config);
         }
 
+        $config = $this->ensureLocales($config);
+
         $this->settings->hydrate($config);
 
         $this->mergeIntoLaravel();
@@ -171,6 +173,31 @@ class UpdateConfiguration
         }
 
         return $addon_config;
+    }
+
+    /**
+     * Ensure there is a locales array in the config
+     *
+     * Since we recursively merge settings from the defaults, there was *always* an English locale.
+     * There was no way to remove English completely. This way, we make sure a default (en) is
+     * merged in, but only when a locales array has not been specifically defined in YAML.
+     *
+     * @param array $config
+     * @return array
+     */
+    private function ensureLocales($config)
+    {
+        if (array_has($config, 'system.locales')) {
+            return $config;
+        }
+
+        array_set($config, 'system.locales.en', [
+            'name' => 'English',
+            'full' => 'en_US',
+            'url' => '/'
+        ]);
+
+        return $config;
     }
 
     /**

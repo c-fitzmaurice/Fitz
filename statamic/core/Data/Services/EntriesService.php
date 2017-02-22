@@ -24,7 +24,12 @@ class EntriesService extends AbstractService
      */
     public function id($id)
     {
-        return $this->repo()->getRepoById($id)->getItem($id);
+        // If the provided ID doesn't exist, return nothing.
+        if (! $repo = $this->repo()->getRepoById($id)) {
+            return null;
+        }
+
+        return $repo->getItem($id);
     }
 
     /**
@@ -81,6 +86,10 @@ class EntriesService extends AbstractService
         $id = $this->repo()->repos()->map(function (Repository $repo) use ($uri) {
             return $repo->getIdByUri($uri);
         })->filter()->first();
+
+        if (is_null($id)) {
+            return;
+        }
 
         return $this->id($id);
     }

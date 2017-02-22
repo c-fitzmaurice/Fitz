@@ -113,11 +113,9 @@
 
                 <a v-if="updated" href="{{ route('dashboard') }}" class="btn btn-lg">{{ t('return_to_dashboard') }}</a>
 
-                <template v-if="updated">
-                    <audio autoplay="true">
-                        <source src="{{ cp_resource_url('audio/1up.mp3') }}" type="audio/mp3">
-                    </audio>
-                </template>
+                <audio v-el:audio>
+                    <source src="{{ cp_resource_url('audio/1up.mp3') }}" type="audio/mp3">
+                </audio>
 
         </div>
     </div>

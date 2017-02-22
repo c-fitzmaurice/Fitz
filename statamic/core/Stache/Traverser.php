@@ -99,7 +99,7 @@ class Traverser
     private function setAllFiles()
     {
         $this->files = collect(
-            $this->filesystem->listContents($this->driver->getFilesystemRoot(), true)
+            $this->filesystem->listContents($this->driver->getFilesystemRoot(), $this->driver->traverseRecursively())
         )->filter(function ($file) {
             // Always ignore these annoying files.
             if (in_array($file['basename'], ['.DS_Store'])) {

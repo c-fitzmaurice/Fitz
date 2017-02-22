@@ -65,6 +65,10 @@ module.exports = {
         isActive: function (index) {
             return this.current == index;
         },
+        
+        focus: function() {
+            $('#global-search').focus();
+        },
 
         hit: function () {
             if (this.hasItems) {

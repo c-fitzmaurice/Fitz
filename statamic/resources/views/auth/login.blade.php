@@ -27,6 +27,8 @@
         <form method="POST" v-show="showEmailLogin" class="email-login">
             {!! csrf_field() !!}
 
+            <input type="hidden" name="referer" value="{{ $referer }}" />
+
             <div class="form-group">
                 <label>
                 @if (\Statamic\API\Config::get('users.login_type') === 'email')

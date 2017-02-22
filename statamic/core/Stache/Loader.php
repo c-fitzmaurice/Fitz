@@ -53,6 +53,8 @@ class Loader
                      ->setUris(array_get($data, 'uris', []));
             }
         });
+
+        $this->stache->taxonomies->load($this->fetch('taxonomies/data'));
     }
 
     /**

@@ -1,5 +1,9 @@
 module.exports = {
 
+    components: {
+        TaxonomyFieldsBuilder: require('./TaxonomyFieldsBuilder.vue')
+    },
+
     template: require('./builder.template.html'),
 
     props: {
@@ -16,8 +20,14 @@ module.exports = {
             loading: true,
             errorMessage: null,
             slug: null,
-            fieldset: { fields: [] },
+            fieldset: { title: '', fields: [] },
             fieldtypes: []
+        }
+    },
+
+    computed: {
+        canSave() {
+            return this.fieldset.title !== '';
         }
     },
 
@@ -29,27 +39,20 @@ module.exports = {
                     self.fieldtypes.push(fieldtype);
                 });
 
-                if (self.create) {
-                    self.getBlankFieldset();
-                } else {
-                    self.getFieldset();
-                }
+                self.getFieldset();
             });
-        },
-
-        getBlankFieldset: function() {
-            this.fieldset = {
-                title: '',
-                fields: []
-            };
-
-            this.loading = false;
         },
 
         getFieldset: function() {
             var self = this;
-            var url = cp_url('/fieldsets/' + get_from_segment(3) + '/get?partials=0');
-            self.$http.get(url).success(function (data) {
+
+            var url = cp_url('/fieldsets/' + get_from_segment(3) + '/get');
+
+            self.$http.get(url, {
+                partials: false,
+                editing: true,
+                creating: this.create
+            }).success(function (data) {
                 var fieldset = this.registerFieldKeys(data);
 
                 // Delete keys we dont need.

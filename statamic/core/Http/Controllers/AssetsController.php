@@ -2,21 +2,29 @@
 
 namespace Statamic\Http\Controllers;
 
+use Exception;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Statamic\API\Arr;
 use Statamic\API\Asset;
 use Statamic\API\AssetContainer;
+use Statamic\API\Config;
+use Statamic\API\File;
 use Statamic\API\Helper;
+use Statamic\API\Path;
 use Statamic\API\Stache;
+use Statamic\API\Str;
 use Statamic\Assets\AssetCollection;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Statamic\Imaging\ImageGenerator;
+use Statamic\Imaging\ThumbnailUrlBuilder;
+use Statamic\Contracts\Imaging\UrlBuilder;
+use Statamic\Presenters\PaginationPresenter;
 
-/**
- * Controller for the snippets area
- */
 class AssetsController extends CpController
 {
+    private static $thumb_builder;
+
     /**
-     * The main assets routes, which either browses the first
-     * container or redirects to the container listing.
+     * The main assets routes, which redirects to the browse the first container.
      *
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -26,11 +34,7 @@ class AssetsController extends CpController
 
         $containers = AssetContainer::all();
 
-        if ($containers->count() === 1) {
-            return redirect()->route('assets.browse', $containers->first()->uuid());
-        }
-
-        return redirect()->route('assets.containers');
+        return redirect()->route('assets.browse', $containers->first()->uuid());
     }
 
     /**
@@ -46,30 +50,49 @@ class AssetsController extends CpController
 
         $title = translate('cp.browsing_assets');
 
-        $container = AssetContainer::find($container);
-
         return view('assets.browse', compact('title', 'container', 'folder'));
     }
 
+    /**
+     * Get asset data for a particular page in the asset browser Vue component
+     *
+     * @return array
+     */
     public function json()
     {
-        $container = AssetContainer::find($this->request->input('container'));
+        // Get the path from the request, and normalize it.
+        $path = $this->request->path;
+        $path = ($path === '') ? '/' : $path;
 
-        $folder = $container->folder($this->request->input('folder'));
+        // Find the requested container.
+        $container = AssetContainer::find($this->request->container);
 
-        $assets = $folder->assets();
+        // Grab all the assets from the container.
+        $assets = $container->assets($path);
+
+        // Set up the paginator, since we don't want to display all the assets.
+        $totalAssetCount = $assets->count();
+        $perPage = Config::get('cp.pagination_size');
+        $currentPage = (int) $this->request->page ?: 1;
+        $offset = ($currentPage - 1) * $perPage;
+        $assets = $assets->slice($offset, $perPage);
+        $paginator = new LengthAwarePaginator($assets, $totalAssetCount, $perPage, $currentPage);
 
         foreach ($assets as &$asset) {
+            // Add thumbnails to all image assets.
             if ($asset->isImage()) {
-                $asset->set('thumbnail', $asset->manipulate()->square(200)->fit('crop_focal')->build());
-                $asset->set('toenail', $asset->manipulate()->width(1000)->fit('crop_focal')->build());
+                $asset->set('thumbnail', $this->thumbnail($asset, 'small'));
+                $asset->set('toenail', $this->thumbnail($asset, 'large'));
             }
+
+            // Set some values for better listing formatting.
+            $asset->set('size_formatted', Str::fileSizeForHumans($asset->size(), 0));
+            $asset->set('last_modified_formatted', $asset->lastModified()->format(Config::get('cp.date_format')));
         }
 
-        $assets = $assets->toArray();
-
+        // Get data about the subfolders in the requested asset folder.
         $folders = [];
-        foreach ($folder->folders() as $f) {
+        foreach ($container->assetFolders($path) as $f) {
             $folders[] = [
                 'path' => $f->path(),
                 'title' => $f->title()
@@ -77,28 +100,43 @@ class AssetsController extends CpController
         }
 
         return [
-            'container' => $container->uuid(),
-            'folder' => $folder->toArray(),
-            'assets' => $assets,
-            'folders' => $folders
+            'container' => Arr::except($container->toArray(), 'assets'),
+            'containers' => AssetContainer::all()->toArray(),
+            'assets' => $assets->toArray(),
+            'folders' => $folders,
+            'folder' => $container->assetFolder($path)->toArray(),
+            'pagination' => [
+                'totalItems' => $totalAssetCount,
+                'itemsPerPage' => $perPage,
+                'totalPages'    => $paginator->lastPage(),
+                'currentPage'   => $paginator->currentPage(),
+                'prevPage'      => $paginator->previousPageUrl(),
+                'nextPage'      => $paginator->nextPageUrl(),
+                'segments'      => array_get($paginator->render(new PaginationPresenter($paginator)), 'segments')
+            ]
         ];
     }
 
+    /**
+     * Get asset data for specifically requested assets, for use in a fieldtype.
+     *
+     * @return AssetCollection
+     */
     public function get()
     {
         $assets = new AssetCollection;
 
-        foreach ($this->request->input('uuids') as $uuid) {
-            if (! $asset = Asset::find($uuid)) {
+        foreach ($this->request->assets as $url) {
+            if (! $asset = Asset::find($url)) {
                 continue;
             }
 
             if ($asset->isImage()) {
-                $asset->set('thumbnail', $asset->manipulate()->square(200)->fit('crop_focal')->build());
-                $asset->set('toenail', $asset->manipulate()->width(1000)->fit('crop_focal')->build());
+                $asset->set('thumbnail', $this->thumbnail($asset, 'small'));
+                $asset->set('toenail', $this->thumbnail($asset, 'large'));
             }
 
-            $assets->put($uuid, $asset);
+            $assets->put($url, $asset);
         }
 
         return $assets;
@@ -110,22 +148,25 @@ class AssetsController extends CpController
             return response()->json($this->request->file('file')->getErrorMessage(), 400);
         }
 
-        $asset = Asset::create()
-                      ->container($this->request->input('container'))
-                      ->folder($this->request->input('folder'))
-                      ->get();
-
         try {
-            $asset->upload($this->request->file('file'));
-        } catch (FileException $e) {
+            $container = AssetContainer::find($this->request->input('container'));
+
+            $file = $this->request->file('file');
+
+            $asset = $container->createAsset(
+                Path::tidy($this->request->input('folder') . '/' . $file->getClientOriginalName())
+            );
+
+            $asset->upload($file);
+
+            if ($asset->isImage()) {
+                $asset->set('thumbnail', $this->thumbnail($asset, 'small'));
+                $asset->set('toenail', $this->thumbnail($asset, 'large'));
+            }
+
+        } catch (Exception $e) {
+            \Log::error($e);
             return response()->json($e->getMessage(), 400);
-        }
-
-        $asset->save();
-
-        if ($asset->isImage()) {
-            $asset->set('thumbnail', $asset->manipulate()->square(200)->fit('crop_focal')->build());
-            $asset->set('toenail', $asset->manipulate()->width(1000)->fit('crop_focal')->build());
         }
 
         return response()->json([
@@ -134,31 +175,37 @@ class AssetsController extends CpController
         ]);
     }
 
-    public function edit($uuid)
+    public function edit($container_id, $path)
     {
-        $asset = Asset::find($uuid);
+        $container = AssetContainer::find($container_id);
 
-        $this->authorize('assets:'.Asset::find($uuid)->container()->uuid().':edit');
+        $asset = $this->supplementAssetForEditing($container->asset($path));
+
+        $this->authorize("assets:{$container_id}:edit");
 
         $fields = $this->populateWithBlanks($asset);
-
-        $asset->set('thumbnail', $asset->manipulate()->square(200)->fit('crop_focal')->build());
 
         return ['asset' => $asset->toArray(), 'fields' => $fields];
     }
 
-    public function update($uuid)
+    public function update($container_id, $path)
     {
-        /** @var \Statamic\Assets\File\Asset $asset */
-        $asset = Asset::find($uuid);
+        $container = AssetContainer::find($container_id);
 
-        $this->authorize('assets:'.$asset->container()->uuid().':edit');
+        $asset = $container->asset($path);
+
+        $this->authorize("assets:{$container_id}:edit");
 
         $fields = $this->processFields($asset, $this->request->all());
 
         $asset->data($fields);
 
         $asset->save();
+
+        if ($asset->isImage()) {
+            $asset->set('thumbnail', $this->thumbnail($asset, 'small'));
+            $asset->set('toenail', $this->thumbnail($asset, 'large'));
+        }
 
         return ['success' => true, 'message' => 'Asset updated', 'asset' => $asset->toArray()];
     }
@@ -211,10 +258,157 @@ class AssetsController extends CpController
         $ids = Helper::ensureArray($this->request->input('ids'));
 
         foreach ($ids as $id) {
-            $this->authorize('assets:'.Asset::find($id)->container()->uuid().':delete');
-            Asset::find($id)->delete();
+            list($container_id, $path) = explode('::', $id, 2);
+
+            $container = AssetContainer::find($container_id);
+
+            $this->authorize("assets:{$container_id}:delete");
+
+            $container->asset($path)->delete();
         }
 
         return ['success' => true];
+    }
+
+    private function thumbnail($asset, $preset = null)
+    {
+        $params = ($preset) ? ['p' => "cp_thumbnail_$preset"] : [];
+
+        $url = $this->thumbnailBuilder()->build($asset, $params);
+
+        return Str::ensureLeft($url, '/');
+    }
+
+    private function thumbnailBuilder()
+    {
+        if (self::$thumb_builder) {
+            return self::$thumb_builder;
+        }
+
+        self::$thumb_builder = (Config::get('assets.image_manipulation_cached'))
+            ? app(UrlBuilder::class)
+            : new ThumbnailUrlBuilder(app(ImageGenerator::class));
+
+        return self::$thumb_builder;
+    }
+
+    public function replaceEditedImage()
+    {
+        $asset = Asset::find($this->request->id);
+
+        $handle = fopen($this->request->new_url, 'rb');
+        $contents = stream_get_contents($handle);
+        fclose($handle);
+
+        $asset->replace($contents);
+
+        return [
+            'success' => true,
+            'thumbnail' => $this->thumbnail($asset, 'large')
+        ];
+    }
+
+    public function editorAuth()
+    {
+        $apiKey = '';
+        $apiSecret = '';
+        $salt = rand(0, 1000);
+        $time = time();
+        $sig = sha1($apiKey . $apiSecret . $time . $salt);
+
+        return [
+            'timestamp' => $time,
+            'salt' => $salt,
+            'encryptionMethod' => 'sha1',
+            'signature' => $sig
+        ];
+    }
+
+    public function download($container_id, $path)
+    {
+        $container = AssetContainer::find($container_id);
+        $asset = $container->asset($path);
+
+        $file = $asset->path();
+
+        $filesystem = $asset->disk()->filesystem()->getDriver();
+        $stream = $filesystem->readStream($file);
+
+        return response()->stream(function () use ($stream) {
+            fpassthru($stream);
+        }, 200, [
+            "Content-Type" => $filesystem->getMimetype($file),
+            "Content-Length" => $filesystem->getSize($file),
+            "Content-disposition" => "attachment; filename=\"" . basename($file) . "\"",
+        ]);
+    }
+
+    /**
+     * Rename the file associated with an asset
+     *
+     * @param string $container_id
+     * @param string $path
+     * @return array
+     */
+    public function rename($container_id, $path)
+    {
+        $this->validate($this->request, [
+            'filename' => 'required|alpha_dash'
+        ]);
+
+        $container = AssetContainer::find($container_id);
+        $asset = $this->supplementAssetForEditing($container->asset($path));
+
+        $asset->rename($this->request->filename);
+
+        return $asset->toArray();
+    }
+
+    /**
+     * An asset requested to be used within the editor should have some additional data.
+     *
+     * @param \Statamic\Contracts\Assets\Asset $asset
+     * @return \Statamic\Contracts\Assets\Asset
+     */
+    private function supplementAssetForEditing($asset)
+    {
+        if ($asset->isImage()) {
+            $asset->setSupplement('preview', $this->thumbnail($asset));
+            $asset->setSupplement('width', $asset->width());
+            $asset->setSupplement('height', $asset->height());
+        }
+
+        $asset->setSupplement('last_modified_relative', $asset->lastModified()->diffForHumans());
+        $asset->setSupplement('download_url', route('asset.download', [$asset->containerId(), $asset->path()]));
+
+        return $asset;
+    }
+
+    /**
+     * Move one or more assets to another folder
+     *
+     * Accepts a payload with a folder path and an array of asset IDs.
+     * For example:
+     * [
+     *   folder: 'foo/bar',
+     *   assets: ['main::one.jpg', 'main::two.jpg']
+     * ]
+     *
+     * @return mixed
+     */
+    public function move()
+    {
+        $container = AssetContainer::find($this->request->container);
+        $folder = $this->request->folder;
+
+        return collect($this->request->assets)->map(function ($asset) use ($container, $folder) {
+            $path = explode('::', $asset)[1];
+
+            $asset = $container->asset($path);
+
+            $asset->move($folder);
+
+            return $asset;
+        });
     }
 }

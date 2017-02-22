@@ -61,7 +61,9 @@ class NavFactory
         }
 
         if ($this->access('assets:*:edit')) {
-            $nav->add($this->buildAssetsNav());
+            if (! AssetContainer::all()->isEmpty()) {
+                $nav->add($this->item('assets')->route('assets')->title(t('nav_assets')));
+            }
         }
 
         if ($this->access('globals:*:edit')) {
@@ -120,27 +122,6 @@ class NavFactory
                     ->route('terms.show', $slug)
                     ->title($taxonomy->title())
             );
-        }
-
-        return $nav;
-    }
-
-    private function buildAssetsNav()
-    {
-        $nav = $this->item('assets')->route('assets')->title(t('nav_assets'));
-
-        $containers = collect(AssetContainer::all())->filter(function ($container) {
-            return $this->access("assets:{$container->id()}:edit");
-        });
-
-        if (count($containers) > 1) {
-            foreach ($containers as $id => $container) {
-                $nav->add(
-                    $this->item("assets:$id")
-                         ->route('assets.browse', $id)
-                         ->title($container->title())
-                );
-            }
         }
 
         return $nav;

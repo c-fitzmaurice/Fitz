@@ -5,3 +5,6 @@ date_format: Y/n/d
 # in a different locale, set this value. Users can set their own locale
 # preference by adding `locale: whatever` to their respective files.
 locale: null
+
+# The number of items to show on each paginated page.
+pagination_size: 25

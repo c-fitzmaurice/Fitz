@@ -1,8 +1,6 @@
 title: Default
 fields:
-  title:
-    type: title
-    display: Title
   content:
     type: markdown
     display: The content
+    localizable: true

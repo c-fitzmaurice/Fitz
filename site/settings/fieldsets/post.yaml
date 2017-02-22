@@ -1,5 +1,8 @@
 title: Blog Post
 hide: true
+taxonomies:
+  tags:
+    display: Tags
 fields:
   title:
     type: title
@@ -21,10 +24,6 @@ fields:
     container: main
     folder: img
     max_files: 1
-  tags:
-    type: taxonomy
-    taxonomy: tags
-    display: Tags
   content:
     type: markdown
     display: Content

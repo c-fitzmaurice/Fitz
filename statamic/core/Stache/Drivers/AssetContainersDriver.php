@@ -13,7 +13,7 @@ class AssetContainersDriver extends AbstractDriver
 
     public function getFilesystemDriver()
     {
-        return Folder::disk('storage')->filesystem()->getDriver();
+        return Folder::disk('content')->filesystem()->getDriver();
     }
 
     public function getFilesystemRoot()
@@ -25,15 +25,16 @@ class AssetContainersDriver extends AbstractDriver
     {
         $data = YAML::parse($contents);
 
-        $id = explode('/', $path)[1];
+        // The path would be `assets/id.yaml` so we'll remove the directory and extension to get the ID.
+        $id = substr($path, 7, -5);
+
         $driver = array_get($data, 'driver', 'local');
 
         $container = AssetContainer::create();
         $container->id($id);
         $container->driver($driver);
         $container->path(array_get($data, 'path'));
-        $container->title(array_get($data, 'title'));
-        $container->fieldset(array_get($data, 'fieldset'));
+        $container->data(YAML::parse($contents));
         $container->url($this->getUrl($id, $driver, $data));
 
         return $container;
@@ -41,20 +42,27 @@ class AssetContainersDriver extends AbstractDriver
 
     private function getUrl($id, $driver, $data)
     {
-        switch ($driver) {
-            case 'local':
-                return array_get($data, 'url');
-                break;
-            case 's3':
-                $adapter = File::disk("assets:$id")->filesystem()->getAdapter();
-                return rtrim($adapter->getClient()->getObjectUrl($adapter->getBucket(), array_get($data, 'path', '/')), '/');
-                break;
-        }
+        $method = 'get'.ucfirst($driver).'Url';
+
+        return $this->$method($id, $data);
+    }
+
+    private function getLocalUrl($id, $data)
+    {
+        return array_get($data, 'url');
+    }
+
+    private function getS3Url($id, $data)
+    {
+        // Double getAdapter since we're using CachedAdapter for s3.
+        $adapter = File::disk("assets:$id")->filesystem()->getAdapter()->getAdapter();
+
+        return rtrim($adapter->getClient()->getObjectUrl($adapter->getBucket(), array_get($data, 'path', '/')), '/');
     }
 
     public function isMatchingFile($file)
     {
-        return $file['basename'] === 'container.yaml';
+        return $file['extension'] === 'yaml';
     }
 
     public function toPersistentArray($repo)

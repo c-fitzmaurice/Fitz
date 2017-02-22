@@ -8,6 +8,9 @@ class TranslationComposer
 {
     public function compose(View $view)
     {
-        $view->with('translations', app('translator')->all());
+        $translator = app('translator');
+
+        $view->with('translations', $translator->all())
+            ->with('cp_locale', $translator->locale());
     }
 }

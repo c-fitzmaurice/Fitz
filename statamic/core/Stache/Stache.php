@@ -7,6 +7,7 @@ use Statamic\API\Str;
 use Statamic\API\File;
 use Statamic\API\Config;
 use Statamic\Stache\Drivers\AggregateDriver;
+use Statamic\Stache\Staches\TaxonomyStache;
 
 class Stache
 {
@@ -66,11 +67,17 @@ class Stache
      */
     const TEMP_WARM = 1;
 
+    public $taxonomies;
+
     /**
      * Stache constructor.
+     *
+     * @param TaxonomyStache $taxonomyStache
      */
-    public function __construct()
+    public function __construct(TaxonomyStache $taxonomyStache)
     {
+        $this->taxonomies = $taxonomyStache;
+
         $this->drivers = collect();
         $this->repositories = collect();
 

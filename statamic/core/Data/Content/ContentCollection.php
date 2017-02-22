@@ -167,4 +167,22 @@ class ContentCollection extends DataCollection
             return in_array($id, $taxonomies);
         });
     }
+
+    /**
+     * Cause taxonomies to be supplemented
+     *
+     * @return static
+     */
+    public function supplementTaxonomies()
+    {
+        return $this->map(function ($entry) {
+            if (!method_exists($entry, 'supplementTaxonomies')) {
+                return $entry;
+            }
+
+            $entry->supplementTaxonomies();
+
+            return $entry;
+        });
+    }
 }

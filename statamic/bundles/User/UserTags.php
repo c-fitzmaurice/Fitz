@@ -6,6 +6,7 @@ use Statamic\API\User;
 use Statamic\API\Request;
 use Statamic\Extend\Tags;
 use Statamic\Exceptions\RedirectException;
+use Statamic\Contracts\Data\Users\User as UserContract;
 
 class UserTags extends Tags
 {
@@ -20,9 +21,11 @@ class UserTags extends Tags
     {
         $id = array_get($this->context, $method);
 
-        if ($user = User::find($id)) {
-            return $this->parse($user->toArray());
+        if (! $user = User::find($id)) {
+            return;
         }
+
+        return $this->parseUser($user);
     }
 
     /**
@@ -64,7 +67,7 @@ class UserTags extends Tags
             }
         }
 
-        return $this->parse($user->toArray());
+        return $this->parseUser($user);
     }
 
     /**
@@ -389,5 +392,12 @@ class UserTags extends Tags
         }
 
         return $return;
+    }
+
+    private function parseUser(UserContract $user)
+    {
+        $user->supplementTaxonomies();
+
+        return $this->parse($user->toArray());
     }
 }

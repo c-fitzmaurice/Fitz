@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Colin Fitz-Maurice is a Laravel Developer with a Frontend Focus, working for @Goodworld and living in Philadelphia.">
     <meta name="format-detection" content="telephone=no">
-    <title>{{ title }} | {{ site_name }}</title>
+    <title>{{ title }} | {{ site_name.site_name }}</title>
     <!-- Styles -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ theme:css }}">
@@ -29,7 +29,7 @@
     <meta property="og:description" content="{{ description|safe_truncate:140:... }}">
     <meta property="og:site_name" content="Colin Fitz-Maurice">
     <meta property="og:url" content="{{ current_url }}">
-    <meta property="og:image" content="http://fitz-maurice.com/assets/img/fitz_social_media.png">
+    <meta property="og:image" content="https://fitz-maurice.com/assets/img/fitz_social_media.png">
     <meta property="article:published_time" content="{{ date }}">
     <meta property="article:author" content="https://www.facebook.com/colin.fitz.maurice">
     <!-- Twitter Cards -->
@@ -37,7 +37,7 @@
     <meta name="twitter:site" content="@c_fitzmaurice">
     <meta name="twitter:title" content="{{ date }}">
     <meta name="twitter:description" content="{{ description|safe_truncate:140:... }}">
-    <meta name="twitter:image" content="http://fitz-maurice.com/assets/img/fitz_social_media.png">
+    <meta name="twitter:image" content="https://fitz-maurice.com/assets/img/fitz_social_media.png">
 </head>
 
 <body class="{{ title }}">

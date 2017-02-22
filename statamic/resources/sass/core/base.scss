@@ -4,6 +4,9 @@ body {
     padding-left: 180px;
 }
 
+// svg sprite
+body > svg { display: none; }
+
 a { cursor: pointer; }
 
 .relative { position: relative; }
@@ -38,6 +41,13 @@ a { cursor: pointer; }
 			margin: -2px 5px 0 0;
 		}
 	}
+}
+
+.flexy {
+    display: flex;
+    align-items: center;
+
+    .fill { flex: 1; }
 }
 
 .loading-blocker {
@@ -118,6 +128,11 @@ a:focus {
 
 .mt { margin-top: 30px; }
 .mb { margin-bottom: 30px; }
+
+.full-height { height: 100%; }
+.full-width { width: 100%; }
+
+.pad { padding: 15px; }
 
 [v-cloak] { display: none; }
 

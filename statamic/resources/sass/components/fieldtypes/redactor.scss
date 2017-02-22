@@ -2,7 +2,6 @@
 	@extend .form-control;
     -webkit-font-smoothing: antialiased;
     padding: 24px 32px;
-    min-height: 250px !important; // javascript inline styles are the devil
 }
 
 .redactor-toolbar {

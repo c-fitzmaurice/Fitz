@@ -2,10 +2,7 @@
 
 namespace Statamic\Console\Commands;
 
-use Statamic\API\Pattern;
 use Illuminate\Console\Command;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Artisan;
 
 class ShowCommand extends Command
 {
@@ -14,14 +11,14 @@ class ShowCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'show';
+    protected $signature = 'show {--all : Include native Laravel commands in the list.}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Shows Statamic commands';
+    protected $description = 'Lists commands (alias of list)';
 
     /**
      * Execute the console command.
@@ -30,43 +27,8 @@ class ShowCommand extends Command
      */
     public function handle()
     {
-        $commands = $this->getCommands();
-
-        $headers = ['Command', 'Description'];
-        $rows = [];
-
-        foreach ($commands as $command) {
-            $rows[] = [$command->getName(), $command->getDescription()];
-        }
-
-        $this->comment("\nType `php please <command> --help` for more information about that command.\n");
-
-        $this->table($headers, $rows);
-    }
-
-    /**
-     * Get all the Statamic commands
-     *
-     * @return array
-     */
-    private function getCommands()
-    {
-        $commands = new Collection(Artisan::all());
-
-        $commands = $commands->filter(function($command) {
-            return Pattern::startsWith(get_class($command), 'Statamic');
-        })->sortBy(function($command) {
-            return $command->getName();
-        });
-
-        $namespaced_commands = $commands->reject(function($command) {
-            return str_contains($command->getName(), ':');
-        });
-
-        $root_commands = $commands->filter(function($command) {
-            return str_contains($command->getName(), ':');
-        });
-
-        return $namespaced_commands->merge($root_commands);
+        $this->call('list', [
+            '--all' => $this->option('all')
+        ]);
     }
 }

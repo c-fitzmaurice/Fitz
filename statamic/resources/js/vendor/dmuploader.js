@@ -266,7 +266,7 @@
                 widget.settings.onUploadSuccess.call(widget.element, widget.queuePos, data);
             },
             error: function (xhr, status, errMsg){
-                widget.settings.onUploadError.call(widget.element, widget.queuePos, xhr.responseText);
+                widget.settings.onUploadError.call(widget.element, widget.queuePos, errMsg, xhr);
             },
             complete: function(xhr, textStatus){
                 widget.processQueue();

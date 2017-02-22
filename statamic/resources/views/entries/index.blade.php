@@ -9,7 +9,7 @@
         reorder="{{ route('entries.reorder') }}"
         sort="{{ $sort }}"
         sort-order="{{ $sort_order }}"
-        :reorderable="{{ bool_str($collection->order() === 'number') }}"
+        :reorderable="{{ $reorderable }}"
         :can-delete="{{ bool_str(\Statamic\API\User::getCurrent()->can('collections:'.$collection->path().':delete')) }}">
 
         <div class="listing entry-listing">
@@ -19,7 +19,6 @@
                 <div class="controls">
                     @can("collections:{$collection->path()}:create")
                         <template v-if="! reordering">
-                            <search v-model="keyword"></search>
                             <div class="btn-group">
                                 <button type="button" @click="enableReorder" class="btn btn-secondary" v-if="reorderable">
                                     {{ translate('cp.reorder') }}
@@ -55,7 +54,12 @@
                         @endcan
                     </div>
                 </template>
-                <dossier-table v-if="hasItems" :keyword.sync="keyword" :options="tableOptions"></dossier-table>
+
+                <div class="loading" v-if="loading">
+                    <span class="icon icon-circular-graph animation-spin"></span> {{ translate('cp.loading') }}
+                </div>
+
+                <dossier-table v-if="hasItems" :items="items" :keyword.sync="keyword" :options="tableOptions"></dossier-table>
             </div>
         </div>
 

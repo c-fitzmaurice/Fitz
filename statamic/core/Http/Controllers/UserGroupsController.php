@@ -82,7 +82,13 @@ class UserGroupsController extends CpController
         $group->title($title);
         $group->slug($this->request->input('slug', Str::slug($title)));
 
-        $group->roles($this->request->input('roles', []));
+        if ($roles = $this->request->input('roles')) {
+            $roles = json_decode($roles);
+        } else {
+            $roles = [];
+        }
+
+        $group->roles($roles);
 
         if ($users = $this->request->input('users')) {
             $users = json_decode($users);
@@ -117,6 +123,12 @@ class UserGroupsController extends CpController
 
         $title = $this->request->input('title');
 
+        if ($roles = $this->request->input('roles')) {
+            $roles = json_decode($roles);
+        } else {
+            $roles = [];
+        }
+
         if ($users = $this->request->input('users')) {
             $users = json_decode($users);
         } else {
@@ -125,7 +137,7 @@ class UserGroupsController extends CpController
 
         $data = [
             'title' => $title,
-            'roles' => $this->request->input('roles', []),
+            'roles' => $roles,
             'users' => $users
         ];
 

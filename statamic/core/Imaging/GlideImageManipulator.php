@@ -19,13 +19,6 @@ class GlideImageManipulator implements ImageManipulator
     protected $builder;
 
     /**
-     * Whether the static image cache method is used
-     *
-     * @var bool
-     */
-    protected $static;
-
-    /**
      * The item to be manipulated
      *
      * @var Asset|string $item
@@ -53,7 +46,7 @@ class GlideImageManipulator implements ImageManipulator
      */
     private $api = [
         'or', 'crop', 'w', 'h', 'fit', 'dpr', 'bri', 'con', 'gam', 'sharp', 'blur', 'pixel', 'filt',
-        'mark', 'markw', 'markx', 'marky', 'markpad', 'markpos', 'bg', 'border', 'q', 'fm'
+        'mark', 'markw', 'markx', 'marky', 'markpad', 'markpos', 'bg', 'border', 'q', 'fm', 'p'
     ];
 
     /**
@@ -65,12 +58,10 @@ class GlideImageManipulator implements ImageManipulator
 
     /**
      * @param UrlBuilder $builder
-     * @param bool       $static
      */
-    public function __construct(UrlBuilder $builder, $static = false)
+    public function __construct(UrlBuilder $builder)
     {
         $this->builder = $builder;
-        $this->static = $static;
     }
 
     /**
@@ -328,6 +319,17 @@ class GlideImageManipulator implements ImageManipulator
     public function quality($value)
     {
         $this->params['q'] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     * @return $this
+     */
+    public function preset($value)
+    {
+        $this->params['p'] = $value;
 
         return $this;
     }

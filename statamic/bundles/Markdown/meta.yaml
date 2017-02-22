@@ -6,3 +6,5 @@ fieldtype_fields:
     allow_blank: true
   folder:
     type: asset_folder
+  restrict_assets:
+    type: toggle

@@ -20,7 +20,7 @@ class UserMakeCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Generate a user. {username}';
+    protected $description = 'Generate a user.';
 
     /**
      * Execute the console command.

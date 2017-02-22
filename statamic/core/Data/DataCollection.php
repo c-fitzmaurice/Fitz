@@ -136,18 +136,41 @@ abstract class DataCollection extends IlluminateCollection
     /**
      * Add a new key to each item of the collection
      *
-     * @param string   $key New key to add
-     * @param callable $callable Function to return the new value
+     * @param string|callable $key       New key to add, or a function to return an array of new values
+     * @param callable        $callable  Function to return the new value when specifying a key
      * @return \Statamic\Data\DataCollection
      */
-    public function supplement($key, callable $callable)
+    public function supplement($key, callable $callable = null)
     {
+        // If a callable is specified as the first parameter, we'll expect that it'll
+        // return an associative array of values to be merged into the supplements.
+        if (is_callable($key)) {
+            return $this->supplementMany($key);
+        }
+
         if (! is_callable($callable, false)) {
             return $this;
         }
 
         foreach ($this->items as $i => $item) {
             $this->items[$i]->setSupplement($key, call_user_func($callable, $item));
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add a new set of keys to each item of the collection
+     *
+     * @param callable $callable  Function to return an array of new values
+     * @return static
+     */
+    public function supplementMany(callable $callable)
+    {
+        foreach ($this->items as $i => $item) {
+            foreach (call_user_func($callable, $item) as $key => $value) {
+                $this->items[$i]->setSupplement($key, $value);
+            }
         }
 
         return $this;

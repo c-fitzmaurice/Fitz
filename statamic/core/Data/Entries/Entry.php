@@ -3,15 +3,16 @@
 namespace Statamic\Data\Entries;
 
 use Carbon\Carbon;
-use Statamic\API\Collection as CollectionAPI;
-use Statamic\API\Config;
-use Statamic\API\Fieldset;
 use Statamic\API\File;
 use Statamic\API\Path;
-use Statamic\Contracts\Data\Entries\Entry as EntryContract;
+use Statamic\API\Config;
+use Statamic\API\Fieldset;
 use Statamic\Data\Content\Content;
+use League\Flysystem\FileNotFoundException;
+use Statamic\API\Collection as CollectionAPI;
 use Statamic\Data\Content\HasLocalizedSlugsInData;
 use Statamic\Exceptions\InvalidEntryTypeException;
+use Statamic\Contracts\Data\Entries\Entry as EntryContract;
 
 class Entry extends Content implements EntryContract
 {
@@ -331,6 +332,11 @@ class Entry extends Content implements EntryContract
         $this->supplements['collection'] = $this->collectionName();
         $this->supplements['is_entry'] = true;
 
-        $this->supplements = array_merge($this->cascadingData(), $this->supplements);
+        // If the file isn't found, it's probably temporary content created during a sneak peek.
+        try {
+            $this->supplements['last_modified'] = File::disk('content')->lastModified($this->path());
+        } catch (FileNotFoundException $e) {
+            $this->supplements['last_modified'] = time();
+        }
     }
 }

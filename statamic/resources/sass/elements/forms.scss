@@ -152,6 +152,9 @@ label .required {
             &:hover { color: #000; }
         }
 	}
+    .input-with-loader + .help-block {
+        margin-top: 0px;
+    }
 
 	.list-group .list-group-item { padding: 10px 15px 5px 15px; }
 
@@ -177,7 +180,7 @@ label .required {
     // .major { flex: 3; }
     .minor { flex: 1; }
     > div {
-        min-width: 100px;
+        // min-width: 100px;
     }
 }
 
@@ -306,7 +309,10 @@ input.slug {
 .filter-control {
     background: #fff;
     border: 1px solid rgba(0,0,0,.15);
-    font-size: 16px;
-    line-height: 1;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 7px 10px 8px;
+    top: 2px;
+    position: relative;
     padding: 5px 10px 7px;
 }

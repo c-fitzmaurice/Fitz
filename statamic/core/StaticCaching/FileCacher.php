@@ -3,6 +3,7 @@
 namespace Statamic\StaticCaching;
 
 use Statamic\API\File;
+use Statamic\API\Path;
 use Statamic\API\Config;
 use Statamic\API\Folder;
 use Illuminate\Http\Request;
@@ -80,7 +81,7 @@ class FileCacher extends AbstractCacher
         }
 
         try {
-            File::delete($this->cachePath() . $url . 'index.html');
+            File::delete(Path::assemble($this->cachePath(), $url, 'index.html'));
         } catch (FileNotFoundException $e) {
             //
         }
