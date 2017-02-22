@@ -11,10 +11,11 @@ fields:
   hero_image:
     type: assets
     display: Hero Image
-    instructions: '**Hero image to be determined**'
+    instructions: Main image thumbnail on Projects page
     container: main
-    folder: projects
+    folder: /
     width: 50
+    restrict: false
   description:
     type: markdown
     display: Project Description
@@ -23,9 +24,11 @@ fields:
     container: main
     folder: projects
     validate: required
+    restrict_assets: false
   images:
     type: assets
     display: Images of the project
     instructions: 'Images cropped to **1280 x 775 @ 72 DPI**'
     container: main
-    folder: projects
+    folder: /
+    restrict: false

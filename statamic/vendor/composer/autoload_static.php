@@ -2526,8 +2526,6 @@ class ComposerStaticInitda9b816925044ecf6836b17d821bf29f
         'Statamic\\Addons\\Section\\SectionFieldtype' => __DIR__ . '/../..' . '/bundles/Section/SectionFieldtype.php',
         'Statamic\\Addons\\Section\\SectionTags' => __DIR__ . '/../..' . '/bundles/Section/SectionTags.php',
         'Statamic\\Addons\\Select\\SelectFieldtype' => __DIR__ . '/../..' . '/bundles/Select/SelectFieldtype.php',
-        'Statamic\\Addons\\Sitemap\\SitemapController' => __DIR__ . '/../..' . '/../site/addons/Sitemap/SitemapController.php',
-        'Statamic\\Addons\\Sitemap\\SitemapServiceProvider' => __DIR__ . '/../..' . '/../site/addons/Sitemap/SitemapServiceProvider.php',
         'Statamic\\Addons\\Suggest\\Mode' => __DIR__ . '/../..' . '/bundles/Suggest/Mode.php',
         'Statamic\\Addons\\Suggest\\Modes\\AbstractMode' => __DIR__ . '/../..' . '/bundles/Suggest/Modes/AbstractMode.php',
         'Statamic\\Addons\\Suggest\\Modes\\CollectionMode' => __DIR__ . '/../..' . '/bundles/Suggest/Modes/CollectionMode.php',

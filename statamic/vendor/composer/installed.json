@@ -3816,25 +3816,5 @@
             "lucene",
             "zf2"
         ]
-    },
-    {
-        "name": "marbles/sitemap",
-        "version": "dev-feature/uprade-to-2.5.3",
-        "version_normalized": "dev-feature/uprade-to-2.5.3",
-        "dist": {
-            "type": "path",
-            "url": "../site/addons/Sitemap",
-            "reference": "4777f45f06d54171aef1d2f46c5d387be2b69e21",
-            "shasum": null
-        },
-        "type": "library",
-        "installation-source": "dist",
-        "license": [
-            "MIT"
-        ],
-        "description": "Automatically add a Sitemap.xml to your website",
-        "transport-options": {
-            "symlink": false
-        }
     }
 ]
