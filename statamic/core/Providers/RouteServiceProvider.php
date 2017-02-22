@@ -2,6 +2,7 @@
 
 namespace Statamic\Providers;
 
+use Statamic\API\Page;
 use Statamic\API\Str;
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;

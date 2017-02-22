@@ -3,25 +3,33 @@
 namespace Statamic\Assets;
 
 use Carbon\Carbon;
-use Statamic\API\AssetContainer as AssetContainerAPI;
 use Statamic\API\Str;
 use Statamic\API\URL;
+use Statamic\API\File;
 use Statamic\API\Path;
-use Statamic\API\YAML;
+use Statamic\API\Cache;
 use Statamic\API\Event;
 use Statamic\API\Image;
 use Statamic\Data\Data;
 use Statamic\API\Config;
-use Statamic\API\Helper;
-use Statamic\API\Storage;
 use Statamic\API\Fieldset;
-use Statamic\API\File;
-use Statamic\Exceptions\UuidExistsException;
+use Statamic\Events\Data\AssetReplaced;
+use Statamic\Events\Data\AssetUploaded;
+use Statamic\API\AssetContainer as AssetContainerAPI;
 use Statamic\Contracts\Assets\Asset as AssetContract;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Statamic\Contracts\Assets\AssetContainer as AssetContainerContract;
 
 class Asset extends Data implements AssetContract
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function id($id = null)
+    {
+        return $this->containerId() . '::' . $this->path();
+    }
+
     /**
      * Get the driver this asset's container uses
      *
@@ -35,69 +43,48 @@ class Asset extends Data implements AssetContract
     /**
      * Get the container's filesystem disk instance
      *
-     * @return \Statamic\Filesystem\FileAccessor
+     * @param string $type  The type of disk instance to get
+     * @return \Statamic\Filesystem\FileAccessor|\Statamic\Filesystem\FolderAccessor;
      */
-    public function disk()
+    public function disk($type = 'file')
     {
-        return File::disk('assets:' . $this->container()->uuid());
+        return $this->container()->disk($type);
     }
 
     /**
-     * Get or set the ID
+     * Get the filename of the asset
      *
-     * @param mixed $id
-     * @return mixed
-     * @throws \Statamic\Exceptions\UuidExistsException
-     */
-    public function id($id = null)
-    {
-        if (is_null($id)) {
-            return array_get($this->attributes, 'id');
-        }
-
-        if ($this->id()) {
-            throw new UuidExistsException('Data already has an ID');
-        }
-
-        // If true is passed in, we'll generate a UUID. Otherwise just use what was passed.
-        $id = ($id === true) ? Helper::makeUuid() : $id;
-        $this->attributes['id'] = $id;
-
-        return $this;
-    }
-
-    /**
-     * @param string|null $folder
-     * @return \Statamic\Contracts\Assets\AssetFolder
-     */
-    public function folder($folder = null)
-    {
-        if (is_null($folder)) {
-            return $this->container()->folder($this->attributes['folder']);
-        }
-
-        $this->attributes['folder'] = $folder;
-    }
-
-    /**
+     * Eg. For a path of foo/bar/baz.jpg, the filename will be "baz"
+     *
      * @return string
      */
     public function filename()
     {
-        return pathinfo($this->basename())['filename'];
+        return pathinfo($this->path())['filename'];
     }
 
     /**
-     * @param string|null $basename
+     * Get the basename of the asset
+     *
+     * Eg. for a path of foo/bar/baz.jpg, the basename will be "baz.jpg"
+     *
      * @return string
      */
-    public function basename($basename = null)
+    public function basename()
     {
-        if (is_null($basename)) {
-            return $this->attributes['basename'];
-        }
+        return pathinfo($this->path())['basename'];
+    }
 
-        $this->attributes['basename'] = $basename;
+    /**
+     * Get the folder (or directory) of the asset
+     *
+     * Eg. for a path of foo/bar/baz.jpg, the folder will be "foo/bar"
+     *
+     * @return mixed
+     */
+    public function folder()
+    {
+        return pathinfo($this->path())['dirname'];
     }
 
     /**
@@ -109,22 +96,10 @@ class Asset extends Data implements AssetContract
     public function path($path = null)
     {
         if (is_null($path)) {
-            return $this->getPath();
-        }
-
-        $this->attributes['path'] = $path;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getPath()
-    {
-        if (isset($this->attributes['path'])) {
             return $this->attributes['path'];
         }
 
-        return ltrim(Path::assemble($this->folder()->path(), $this->basename()), '/');
+        $this->attributes['path'] = $path;
     }
 
     /**
@@ -139,9 +114,17 @@ class Asset extends Data implements AssetContract
         dd('todo asset@localizedpath');
     }
 
+    /**
+     * Get the resolved path to the asset
+     *
+     * This is the "actual" path to the asset.
+     * It combines the container path with the asset path.
+     *
+     * @return string
+     */
     public function resolvedPath()
     {
-        return Path::tidy($this->folder()->resolvedPath() . '/' . $this->basename());
+        return Path::tidy($this->container()->resolvedPath() . '/' . $this->path());
     }
 
     /**
@@ -151,17 +134,25 @@ class Asset extends Data implements AssetContract
      */
     public function uri()
     {
+        // Assets located in a location that cannot be accessed on the web
+        // cannot have URI/URLs so we'll just return an identifing string.
+        if (! $this->container()->accessible()) {
+            return $this->id();
+        }
+
         return URL::assemble($this->container()->url(), $this->path());
     }
 
     /**
-     * Get the asset's URL, and encode it
+     * Get the asset's URL
+     *
+     * Intentionally left un-encoded
      *
      * @return string
      */
     public function url()
     {
-        return URL::encode($this->uri());
+        return $this->uri();
     }
 
     /**
@@ -184,7 +175,39 @@ class Asset extends Data implements AssetContract
      */
     public function manipulate($params = null)
     {
-        return Image::manipulate($this->id(), $params);
+        return Image::manipulate($this, $params);
+    }
+
+    /**
+     * Is this asset an audio file?
+     *
+     * @return bool
+     */
+    public function isAudio()
+    {
+        return $this->extensionIsOneOf(['aac', 'flac', 'm4a', 'mp3', 'ogg', 'wav']);
+    }
+
+    /**
+     * Is this asset a Google Docs previewable file?
+     * https://gist.github.com/izazueta/4961650
+     *
+     * @return bool
+     */
+    public function isPreviewable()
+    {
+        return $this->extensionIsOneOf([
+            'doc', 'docx', 'pages', 'txt',
+            'ai', 'psd', 'eps', 'ps',
+            'css', 'html', 'php', 'c', 'cpp', 'h', 'hpp', 'js',
+            'ppt', 'pptx',
+            'flv',
+            'tiff',
+            'ttf',
+            'dxf', 'xps',
+            'zip', 'rar',
+            'xls', 'xlsx'
+        ]);
     }
 
     /**
@@ -194,10 +217,22 @@ class Asset extends Data implements AssetContract
      */
     public function isImage()
     {
-        return (in_array(strtolower($this->extension()), ['jpg', 'jpeg', 'png', 'gif']));
+        return $this->extensionIsOneOf(['jpg', 'jpeg', 'png', 'gif']);
     }
 
     /**
+     * Is this asset a video file?
+     *
+     * @return bool
+     */
+    public function isVideo()
+    {
+        return $this->extensionIsOneOf(['h264', 'mp4', 'm4v', 'ogv', 'webm']);
+    }
+
+    /**
+     * Get the file extension of the asset
+     *
      * @return string
      */
     public function extension()
@@ -206,6 +241,8 @@ class Asset extends Data implements AssetContract
     }
 
     /**
+     * Get the last modified time of the asset
+     *
      * @return \Carbon\Carbon
      */
     public function lastModified()
@@ -214,30 +251,29 @@ class Asset extends Data implements AssetContract
     }
 
     /**
-     * Save the file
+     * Save the asset
+     *
+     * @return void
      */
     public function save()
     {
-        $this->ensureId();
+        $this->container()->addAsset($this);
 
-        $this->folder()->addAsset($this->id(), $this);
-
-        $this->folder()->save();
+        $this->container()->save();
 
         event('asset.saved', $this);
     }
 
     /**
-     * Delete the data
+     * Delete the asset
      *
      * @return mixed
      */
     public function delete()
     {
-        // First we need to remove the asset from the array in folder.yaml
-        // and the corresponding localized versions, if applicable.
-        $this->folder()->removeAsset($this->id());
-        $this->folder()->save();
+        // Delete the data from the container, if any is in there.
+        $this->container()->removeAsset($this);
+        $this->container()->save();
 
         // Also, delete the actual file
         $this->disk()->delete($this->path());
@@ -246,24 +282,78 @@ class Asset extends Data implements AssetContract
     /**
      * Get or set the container where this asset is located
      *
-     * @param string $id  ID of the container
-     * @return \Statamic\Contracts\Assets\AssetContainer
+     * @param string|AssetContainerContract $container  ID of the container
+     * @return AssetContainerContract
      */
-    public function container($id = null)
+    public function container($container = null)
     {
-        if (is_null($id)) {
+        if (is_null($container)) {
             return AssetContainerAPI::find($this->attributes['container']);
         }
 
-        $this->attributes['container'] = $id;
+        if ($container instanceof AssetContainerContract) {
+            $container = $container->id();
+        }
+
+        $this->attributes['container'] = $container;
     }
 
     /**
-     * Rename the data
+     * Get or set the container by ID
+     *
+     * @param null|string $id  ID of the container, if setting.
+     * @return string
      */
-    protected function rename()
+    public function containerId($id = null)
     {
-        // TODO: Implement delete() method.
+        if (is_null($id)) {
+            return $this->attributes['container'];
+        }
+
+        $this->container($id);
+    }
+
+    /**
+     * Rename the asset
+     *
+     * @param string $filename
+     * @return void
+     */
+    public function rename($filename)
+    {
+        $this->move($this->folder(), $filename);
+    }
+
+    /**
+     * Move the asset to a different location
+     *
+     * @param string      $folder   The folder relative to the container.
+     * @param string|null $filename The new filename, if renaming.
+     * @return void
+     */
+    public function move($folder, $filename = null)
+    {
+        $filename = $filename ?: $this->filename();
+
+        // Remove the asset definition from the container.
+        // It'll be re-added in a moment under its new path.
+        $this->container()->removeAsset($this);
+
+        $oldPath = $this->path();
+
+        $pi = pathinfo($oldPath);
+
+        $newPath = $folder . '/' . $filename . '.' . $pi['extension'];
+
+        // Actually rename the file.
+        $this->disk()->rename($oldPath, $newPath);
+
+        // Update the reference the path.
+        $this->path($newPath);
+
+        // Re-add the asset definition to the container.
+        $this->container()->addAsset($this);
+        $this->container()->save();
     }
 
     /**
@@ -273,16 +363,7 @@ class Asset extends Data implements AssetContract
      */
     public function dimensions()
     {
-        if (! $this->isImage()) {
-            return [null, null];
-        }
-
-        if ($this->driver() === 'local') {
-            $path = Path::assemble($this->disk()->filesystem()->getAdapter()->getPathPrefix(), $this->path());
-            return getimagesize($path);
-        } elseif ($this->driver() === 's3') {
-            return getimagesize($this->url());
-        }
+        return (new DimensionBuilder($this))->dimensions();
     }
 
     /**
@@ -292,7 +373,7 @@ class Asset extends Data implements AssetContract
      */
     public function width()
     {
-        return array_get($this->dimensions(), 0);
+        return (new DimensionBuilder($this))->width();
     }
 
     /**
@@ -302,7 +383,17 @@ class Asset extends Data implements AssetContract
      */
     public function height()
     {
-        return array_get($this->dimensions(), 1);
+        return (new DimensionBuilder($this))->height();
+    }
+
+    /**
+     * Get the asset's file size
+     *
+     * @return int
+     */
+    public function size()
+    {
+        return $this->disk()->size($this->path());
     }
 
     /**
@@ -317,22 +408,27 @@ class Asset extends Data implements AssetContract
         unset($array['content'], $array['content_raw']);
 
         $extra = [
-            'uuid'      => $this->id(), // @todo remove
-            'id'        => $this->id(),
-            'title'     => $this->get('title', $this->filename()),
-            'url'       => $this->url(),
-            'permalink' => $this->absoluteUrl(),
-            'path'      => $this->path(),
-            'filename'  => $this->filename(),
-            'basename'  => $this->basename(),
-            'extension' => $this->extension(),
-            'is_image'  => $this->isImage(),
-            'is_asset'  => true,
-            'fieldset' => $this->fieldset()->name()
+            'id'             => $this->id(),
+            'title'          => $this->get('title', $this->filename()),
+            'url'            => $this->url(),
+            'permalink'      => $this->absoluteUrl(),
+            'path'           => $this->path(),
+            'filename'       => $this->filename(),
+            'basename'       => $this->basename(),
+            'extension'      => $this->extension(),
+            'is_asset'       => true,
+            'is_audio'       => $this->isAudio(),
+            'is_previewable' => $this->isPreviewable(),
+            'is_image'       => $this->isImage(),
+            'is_video'       => $this->isVideo(),
+            'fieldset'       => $this->fieldset()->name(),
+            'edit_url'       => $this->editUrl(),
+            'container'      => $this->container()->id(),
+            'folder'         => $this->folder(),
         ];
 
         if ($exists = $this->disk()->exists($this->path())) {
-            $size = $this->disk()->size($this->path());
+            $size = $this->size();
             $kb = number_format($size / 1024, 2);
             $mb = number_format($size / 1048576, 2);
             $gb = number_format($size / 1073741824, 2);
@@ -347,8 +443,6 @@ class Asset extends Data implements AssetContract
                 'size_kb'        => $kb,
                 'size_mb'        => $mb,
                 'size_gb'        => $gb,
-                'width'          => $this->width(),
-                'height'          => $this->height(),
                 'last_modified'  => (string) $this->lastModified(),
                 'last_modified_timestamp' => $this->lastModified()->timestamp,
                 'last_modified_instance'  => $this->lastModified(),
@@ -381,7 +475,7 @@ class Asset extends Data implements AssetContract
         $filename  = pathinfo($basename)['filename'];
         $ext       = $file->getClientOriginalExtension();
 
-        $directory = $this->folder()->path();
+        $directory = $this->folder();
         $path      = Path::tidy($directory . '/' . $filename . '.' . $ext);
 
         // If the file exists, we'll append a timestamp to prevent overwriting.
@@ -392,9 +486,12 @@ class Asset extends Data implements AssetContract
 
         $this->performUpload($file, $path);
 
-        Event::fire('asset.uploaded', $path);
+        $this->path($path);
 
-        $this->basename($basename);
+        event(new AssetUploaded($this));
+
+        // Legacy/Deprecated. @todo: Remove in 2.3
+        event('asset.uploaded', $path);
     }
 
     /**
@@ -407,6 +504,7 @@ class Asset extends Data implements AssetContract
      *
      * @param UploadedFile $file
      * @param string $path
+     * @return void
      */
     private function performUpload(UploadedFile $file, $path)
     {
@@ -428,6 +526,18 @@ class Asset extends Data implements AssetContract
 
         // Delete the temporary file
         $temp_disk->delete($temp);
+    }
+
+    /**
+     * Replace the file
+     *
+     * @param string|resource $contents  Either raw contents of a file, or a resource stream
+     */
+    public function replace($contents)
+    {
+        $this->disk()->put($this->path(), $contents);
+
+        event(new AssetReplaced($this));
     }
 
     /**
@@ -483,6 +593,16 @@ class Asset extends Data implements AssetContract
      */
     public function editUrl()
     {
-        return cp_route('asset.edit', $this->id());
+        return cp_route('asset.edit', [$this->container()->id(), $this->path()]);
+    }
+
+    /**
+     * Check if asset's file extension is one of a given list
+     *
+     * @return bool
+     */
+    public function extensionIsOneOf($filetypes = [])
+    {
+        return (in_array(strtolower($this->extension()), $filetypes));
     }
 }

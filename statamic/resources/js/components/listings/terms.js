@@ -6,12 +6,14 @@ module.exports = {
 
     data: function() {
         return {
+            sort: 'title',
+            sortOrder: 'asc',
             ajax: {
                 get: this.get,
                 delete: this.delete
             },
             tableOptions: {
-                sort: 'title',
+                sort: this.sort,
                 sortOrder: 'asc',
                 partials: {}
             }

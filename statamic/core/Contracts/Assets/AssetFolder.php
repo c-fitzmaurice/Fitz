@@ -2,6 +2,8 @@
 
 namespace Statamic\Contracts\Assets;
 
+use Statamic\Filesystem\FileAccessor;
+use Statamic\Filesystem\FolderAccessor;
 use Statamic\Contracts\Data\DataFolder;
 
 interface AssetFolder extends DataFolder
@@ -9,46 +11,25 @@ interface AssetFolder extends DataFolder
     /**
      * Get the container where this folder is located
      *
-     * @return \Statamic\Contracts\Assets\AssetContainer
+     * @return AssetContainer
      */
     public function container();
 
     /**
+     * Get the container's filesystem disk instance
+     *
+     * @param string $type  The type of disk instance to get
+     * @return FileAccessor|FolderAccessor;
+     */
+    public function disk($type = 'folder');
+
+    /**
      * Get the assets in the folder
      *
+     * @param bool $recursive Whether to look for assets recursively
      * @return \Statamic\Assets\AssetCollection
      */
-    public function assets();
-
-    /**
-     * Add an asset to the folder
-     *
-     * @param string $key
-     * @param \Statamic\Contracts\Assets\Asset $asset
-     */
-    public function addAsset($key, $asset);
-
-    /**
-     * Remove an asset from the folder
-     *
-     * @param string $key
-     */
-    public function removeAsset($key);
-
-    /**
-     * Get the nested folders
-     *
-     * @return \Statamic\Contracts\Assets\AssetFolder[]
-     */
-    public function folders();
-
-    /**
-     * Create a nested folder
-     *
-     * @param string $basename
-     * @return \Statamic\Contracts\Assets\AssetFolder
-     */
-    public function createFolder($basename);
+    public function assets($recursive = false);
 
     /**
      * Get the parent folder
@@ -65,7 +46,10 @@ interface AssetFolder extends DataFolder
     public function count();
 
     /**
-     * Get the full resolved path, including the container
+     * Get the resolved path to the folder
+     *
+     * This is the "actual" path to the folder.
+     * It combines the container path with the folder path.
      *
      * @return string
      */

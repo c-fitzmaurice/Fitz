@@ -2,6 +2,7 @@
 
 namespace Statamic\Addons\Asset;
 
+use Statamic\API\Asset;
 use Statamic\API\Helper;
 use Statamic\Addons\Assets\AssetsTags;
 
@@ -26,10 +27,21 @@ class AssetTags extends AssetsTags
     public function __call($method, $arguments)
     {
         $value = array_get($this->context, explode(':', $this->tag, 2)[1]);
-
         $value = Helper::ensureArray($value);
         $value = current($value);
 
         return $this->assets($value);
+    }
+
+    /**
+     * Gets a single Asset's data from a URL
+     *
+     * @return mixed
+     */
+    public function index()
+    {
+        $asset = Asset::find($this->get('url'));
+
+        return $asset ? $asset->toArray() : $asset;
     }
 }

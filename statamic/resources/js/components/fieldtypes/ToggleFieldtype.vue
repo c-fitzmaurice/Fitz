@@ -13,12 +13,25 @@ module.exports = {
     props: ['name', 'data', 'config'],
     computed: {
         isOn: function () {
-            return this.data === true;
+            let match = true;
+
+            // Allow the "on" state to be on when it's falsey.
+            // Useful for example if the variable is "hidden" but the label is "visible".
+            if (this.config && this.config.reverse) {
+                match = false;
+            }
+
+            return this.data === match;
         }
     },
     methods: {
         toggle: function () {
             this.data = !this.data;
+        }
+    },
+    ready() {
+        if (this.data === null) {
+            this.data = false;
         }
     }
 };

@@ -25,7 +25,7 @@
                         <a href="{{ route('user.group.create') }}" class="btn btn-default btn-lg">{{ trans('cp.create_usergroup_button') }}</a>
                     </div>
                 </template>
-                <dossier-table v-if="hasItems" :keyword.sync="keyword" :options="tableOptions"></dossier-table>
+                <dossier-table v-if="hasItems" :items="items" :keyword.sync="keyword" :options="tableOptions"></dossier-table>
             </div>
         </div>
 

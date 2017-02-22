@@ -1,7 +1,8 @@
 var $ = require('jquery');
 var Mousetrap = require('mousetrap');
 
-Vue.config.debug = true;
+Vue.config.debug = false;
+Vue.config.silent = true;
 
 require('./plugins');
 require('./filters');
@@ -11,6 +12,16 @@ require('./fieldtypes');
 require('./directives');
 
 Vue.http.headers.common['X-CSRF-TOKEN'] = document.querySelector('#csrf-token').getAttribute('value');
+
+Vue.http.interceptors.push({
+    response: function (response) {
+        if (response.status === 401) {
+            window.location = response.data.redirect;
+        }
+
+        return response;
+    }
+});
 
 var vm = new Vue({
     el: '#statamic',
@@ -22,7 +33,8 @@ var vm = new Vue({
         navVisible: false,
         version: Statamic.version,
         flashSuccess: false,
-        flashError: false
+        flashError: false,
+        draggingNonFile: false
     },
 
     computed: {
@@ -73,6 +85,26 @@ var vm = new Vue({
 
         toggleNav: function () {
             this.navVisible = !this.navVisible;
+        },
+
+        /**
+         * When the dragstart event is triggered.
+         *
+         * This event doesn't get triggered when dragging something from outside the browser,
+         * so we can determine that something other than a file is being dragged.
+         */
+        dragStart() {
+            this.draggingNonFile = true;
+        },
+
+        /**
+         * When the dragend event is triggered.
+         *
+         * This event doesn't get triggered when dragging something from outside the browser,
+         * so we can determine that something other than a file is being dragged.
+         */
+        dragEnd() {
+            this.draggingNonFile = false;
         }
     },
 
@@ -86,8 +118,16 @@ var vm = new Vue({
         }.bind(this), 'keyup');
 
         Mousetrap.bind('escape', function(e) {
-            this.$broadcast('modal.close')
+            this.$broadcast('close-modal');
+            this.$broadcast('close-editor');
+            this.$broadcast('close-selector');
+            this.$broadcast('close-dropdown', null);
         }.bind(this), 'keyup');
+
+        // Keep track of whether something other than a file is being dragged
+        // so that components can tell when a file is being dragged.
+        window.addEventListener('dragstart', this.dragStart);
+        window.addEventListener('dragend', this.dragEnd);
     },
 
     events: {

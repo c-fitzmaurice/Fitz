@@ -2,374 +2,145 @@
 
 namespace Statamic\Http\Controllers;
 
-use Carbon\Carbon;
-use Statamic\API\Collection;
+use Illuminate\Http\Request;
 use Statamic\API\Fieldset;
-use Statamic\API\GlobalSet;
-use Statamic\API\Taxonomy;
-use Statamic\API\Term;
-use Statamic\API\URL;
-use Statamic\API\Page;
-use Statamic\API\Entry;
 use Statamic\API\Config;
-use Statamic\API\Str;
 use Statamic\API\Content;
-use Stringy\StaticStringy as Stringy;
+use Statamic\API\Taxonomy;
+use Statamic\CP\Publish\Publisher;
+use Statamic\Contracts\CP\Fieldset as FieldsetContract;
 use Statamic\Exceptions\PublishException;
 
-/**
- * Controller for the publish page
- */
-class PublishController extends CpController
+abstract class PublishController extends CpController
 {
     /**
-     * This "page"
-     * @var \Statamic\Data\Page|\Statamic\Data\Entry
+     * Abstract publisher.
+     *
+     * @var Publisher
      */
-    private $content;
+    protected $publisher;
 
     /**
-     * Create a new page
+     * In the parent controller, the locale is being set up, which might be
+     * possible to just refactor out into a middleware to keep the constructor
+     * just about the dependencies (will have to look into that.)
      *
-     * @param string $parent_url
-     * @return \Illuminate\View\View
+     * @param  Publisher  $publisher
+     * @return PublishController
      */
-    public function createPage($parent_url = '/')
+    public function __construct(Publisher $publisher)
     {
-        $this->authorize('pages:create');
+        $this->publisher = $publisher;
 
-        $parent_url = Str::ensureLeft($parent_url, '/');
-
-        if (! $parent = Page::whereUri($parent_url)) {
-            return redirect(route('pages'))->withErrors("Page [$parent_url] doesn't exist.");
-        }
-
-        $fieldset = $this->request->query('fieldset', $parent->fieldset()->name());
-
-        $data = $this->populateWithBlanks($fieldset);
-
-        $extra = [
-            'parent_url' => $parent_url
-        ];
-
-        return view('publish', [
-            'extra'             => $extra,
-            'is_new'            => true,
-            'content_data'      => $data,
-            'content_type'      => 'page',
-            'fieldset'          => $fieldset,
-            'title'             => translate('cp.create_page'),
-            'uuid'              => null,
-            'uri'               => null,
-            'url'               => null,
-            'slug'              => null,
-            'status'            => true,
-            'locale'            => default_locale(),
-            'is_default_locale' => true,
-            'locales'           => $this->getLocales()
-        ]);
+        parent::__construct(app('request'));
     }
 
     /**
-     * Edit an existing page
+     * Build the unique redirect for the specific controller.
      *
-     * @param string $uri  URI of the page to edit. No URI indicates the home page.
-     * @return \Illuminate\View\View
+     * @param  Request  $request
+     * @param  \Statamic\Contracts\Data\Content\Content  $content
+     * @return string
      */
-    public function editPage($uri = '/')
+    abstract protected function redirect(Request $request, $content);
+
+    /**
+     * Save the content.
+     *
+     * This can also be implemented to the child components so an event can be
+     * triggered specific to that content.
+     *
+     * @todo We can refactor this out to `update()` and `post()` later on but
+     *       we'll need to refactor `publish.js` as well since it only targets
+     *       POST requests.
+     *
+     *       We'll end up doing something like `<publish method="put">` or
+     *       something to make everything just a tad bit more RESTful.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function save(Request $request)
     {
-        $this->authorize('pages:edit');
+        try {
+            /**
+             * Maybe refactor to take in the fields so we don't have to depend
+             * on the construct?
+             *
+             *      $publisher->publish($request->fields);
+             *
+             * Also try to find a way not to depend on a try catch. Maybe a
+             * return false or null.
+             *
+             *      if (! $publisher->publish($request->fields)) {
+             *          return ['success' => false];
+             *      }
+             *
+             *      return ['success' => true];
+             *
+             * Validation idea can be:
+             *
+             *      $publisher->validates();
+             *
+             * Although, accessing the error messages would be a pickle.
+             */
+            $content = $this->publisher->publish();
 
-        $uri = URL::format($uri);
-
-        $locale = $this->request->query('locale', default_locale());
-
-        if (! $page = Page::whereUri($uri)) {
-            return redirect()->route('pages')->withErrors('No page found.');
+        } catch (PublishException $e) {
+            return [
+                'success' => false,
+                'errors'  => $e->getErrors()
+            ];
         }
 
-        $id = $page->id();
+        $this->success(translate('cp.thing_saved', ['thing' => ucwords($request->type)]));
 
-        $page = $page->in($locale)->get();
-
-        $slug = $page->slug();
-        $status = $page->published();
-
-        $extra = [
-            'is_home' => $page->uri() === '/',
-            'parent_url' => URL::parent($uri)
+        return [
+            'success'  => true,
+            'redirect' => $this->buildRedirect($request, $content),
         ];
-
-        $data = $this->populateWithBlanks($page);
-
-        return view('publish', [
-            'extra'             => $extra,
-            'is_new'            => false,
-            'content_data'      => $data,
-            'content_type'      => 'page',
-            'fieldset'          => $page->fieldset()->name(),
-            'title'             => array_get($data, 'title', $uri),
-            'uuid'              => $id,
-            'uri'               => $page->uri(),
-            'url'               => $page->url(),
-            'slug'              => $slug,
-            'status'            => $status,
-            'locale'            => $locale,
-            'is_default_locale' => $page->isDefaultLocale(),
-            'locales'           => $this->getLocales($id)
-        ]);
     }
 
     /**
-     * Create a new entry
+     * Do some post processing with the redirect.
      *
-     * @param string $collection  The collection the entry will belong to
-     * @return \Illuminate\View\View
+     * Include here the previous query parameters that were added and the
+     * localization might be included here as well.
+     *
+     * @param  Request  $request
+     * @param  \Statamic\Contracts\Data\Content\Content  $content
+     * @return string
      */
-    public function createEntry($collection)
+    private function buildRedirect(Request $request, $content)
     {
-        $this->authorize("collections:$collection:create");
-
-        if (! $collection = Collection::whereHandle($collection)) {
-            return redirect(route('collections'))->withErrors("Collection [$collection->path()] doesn't exist.");
+        if (! $query = parse_url($request->header('referer'), PHP_URL_QUERY)) {
+            return $this->redirect($request, $content);
         }
 
-        $fieldset = $collection->fieldset();
-
-        $data = $this->populateWithBlanks($fieldset->name());
-
-        $extra = [
-            'collection' => $collection->path(),
-            'order_type' => $collection->order(),
-            'route'      => $collection->route()
-        ];
-
-        if ($collection->order() === 'date') {
-            $extra['datetime'] = Carbon::now()->format('Y-m-d');
+        if (! $query = $this->buildQueryString($query)) {
+            return $this->redirect($request, $content);
         }
 
-        $title = array_get(
-                $fieldset->contents(),
-                'create_title',
-                t('create_entry', ['noun' => $fieldset->title()])
+        return $this->redirect($request, $content) . '?' . $this->buildQueryString($query);
+    }
+
+    /**
+     * Build the http query.
+     *
+     * @param  string  $query
+     * @return string
+     */
+    private function buildQueryString($query)
+    {
+        parse_str($query, $query);
+
+        if (array_get($query, 'locale') === default_locale()) {
+            unset($query['locale']);
+        }
+
+        return http_build_query(
+            collect($query)->except('fieldset', 'slug')->all()
         );
-
-        return view('publish', [
-            'extra'             => $extra,
-            'is_new'            => true,
-            'content_data'      => $data,
-            'content_type'      => 'entry',
-            'fieldset'          => $fieldset->name(),
-            'title'             => $title,
-            'uuid'              => null,
-            'uri'               => null,
-            'url'               => null,
-            'slug'              => null,
-            'status'            => true,
-            'locale'            => default_locale(),
-            'is_default_locale' => true,
-            'locales'           => $this->getLocales()
-        ]);
-    }
-
-    /**
-     * Edit an existing entry
-     *
-     * @param string $collection
-     * @param string $slug
-     * @return \Illuminate\View\View
-     */
-    public function editEntry($collection, $slug)
-    {
-        $this->authorize("collections:$collection:edit");
-
-        $locale = $this->request->query('locale', site_locale());
-
-        if (! $entry = Entry::whereSlug($slug, $collection)) {
-            return redirect()->route('entries.show', $collection)->withErrors('No entry found.');
-        }
-
-        $id = $entry->id();
-
-        $entry = $entry->in($locale)->get();
-
-        $status = $entry->published();
-
-        $extra = [
-            'collection' => $collection,
-            'default_slug' => $entry->slug(),
-            'default_order' => $entry->order(),
-            'order_type' => $entry->orderType()
-        ];
-
-        if ($entry->orderType() === 'date') {
-            // Get the datetime without milliseconds
-            $datetime = substr($entry->date()->toDateTimeString(), 0, 16);
-            // Then strip off the time, if it's not supposed to be there.
-            $datetime = ($entry->hasTime()) ? $datetime : substr($datetime, 0, 10);
-
-            $extra['datetime'] = $datetime;
-        }
-
-        $data = $this->populateWithBlanks($entry);
-
-        return view('publish', [
-            'extra'              => $extra,
-            'is_new'             => false,
-            'content_data'       => $data,
-            'content_type'       => 'entry',
-            'fieldset'           => $entry->fieldset()->name(),
-            'title'              => array_get($data, 'title', $slug),
-            'title_display_name' => array_get($entry->fieldset()->fields(), 'title.display', t('title')),
-            'uuid'               => $id,
-            'uri'                => $entry->uri(),
-            'url'                => $entry->url(),
-            'slug'               => $slug,
-            'status'             => $status,
-            'locale'             => $locale,
-            'is_default_locale'  => $entry->isDefaultLocale(),
-            'locales'            => $this->getLocales($id)
-        ]);
-    }
-
-
-    /**
-     * Create a new taxonomy
-     *
-     * @param string $group_name  The group the taxonomy will belong to
-     * @return \Illuminate\View\View
-     */
-    public function createTaxonomy($group_name)
-    {
-        $this->authorize("taxonomies:$group_name:create");
-
-        if (! $group = Taxonomy::whereHandle($group_name)) {
-            return redirect(route('collections'))->withErrors("Taxonomy [$group->path()] doesn't exist.");
-        }
-
-        $fieldset = $group->fieldset()->name();
-
-        $data = $this->populateWithBlanks($fieldset);
-
-        $title = translate(
-            'cp.create_taxonomy_term',
-            ['term' => str_singular(Stringy::toTitleCase($group->title()))]
-        );
-
-        $extra = [
-            'group' => $group_name,
-            'route' => $group->route()
-        ];
-
-        return view('publish', [
-            'extra'             => $extra,
-            'is_new'            => true,
-            'content_data'      => $data,
-            'content_type'      => 'taxonomy',
-            'fieldset'          => $fieldset,
-            'title'             => $title,
-            'uuid'              => null,
-            'url'               => null,
-            'uri'               => null,
-            'slug'              => null,
-            'status'            => true,
-            'locale'            => default_locale(),
-            'is_default_locale' => true,
-            'locales'           => $this->getLocales()
-        ]);
-    }
-
-    /**
-     * Edit an existing taxonomy term
-     *
-     * @param string $taxonomy
-     * @param string $slug
-     * @return \Illuminate\View\View
-     */
-    public function editTaxonomy($taxonomy, $slug)
-    {
-        $this->authorize("taxonomies:$taxonomy:edit");
-
-        $locale = $this->request->query('locale', site_locale());
-
-        if (! $term = Term::whereSlug($slug, $taxonomy)) {
-            return redirect()->route('term.show', $taxonomy)->withErrors('No taxonomy found.');
-        }
-
-        $id = $term->id();
-
-        $term = $term->in($locale)->get();
-
-        $status = $term->published();
-
-        $extra = [
-            'taxonomy' => $taxonomy,
-            'default_slug' => $slug
-        ];
-
-        $data = $this->populateWithBlanks($term);
-
-        return view('publish', [
-            'extra'             => $extra,
-            'is_new'            => false,
-            'content_data'      => $data,
-            'content_type'      => 'taxonomy',
-            'fieldset'          => $term->fieldset()->name(),
-            'title'             => array_get($data, 'title', $slug),
-            'uuid'              => $id,
-            'uri'               => $term->uri(),
-            'url'               => $term->url(),
-            'slug'              => $slug,
-            'status'            => $status,
-            'locale'            => $locale,
-            'is_default_locale' => $term->isDefaultLocale(),
-            'locales'           => $this->getLocales($id)
-        ]);
-    }
-
-    /**
-     * Edit an existing global set
-     *
-     * @param string $slug
-     * @return \Illuminate\View\View
-     */
-    public function editGlobal($slug)
-    {
-        $this->authorize("globals:$slug:edit");
-
-        $locale = $this->request->query('locale', site_locale());
-
-        if (! $global = GlobalSet::whereHandle($slug)) {
-            return redirect()->route('globals.index')->withErrors('No content found.');
-        }
-
-        $id = $global->id();
-
-        $global = $global->in($locale)->get();
-
-        $extra = [
-            'default_slug' => $slug,
-            'env' => datastore()->getEnvInScope('globals.'.$slug)
-        ];
-
-        $data = $this->populateWithBlanks($global);
-
-        return view('publish', [
-            'extra'             => $extra,
-            'is_new'            => false,
-            'content_data'      => $data,
-            'content_type'      => 'global',
-            'fieldset'          => $global->fieldset()->name(),
-            'title'             => array_get($data, 'title', $global->slug()),
-            'uuid'              => $id,
-            'uri'               => null,
-            'url'               => null,
-            'slug'              => $slug,
-            'status'            => true,
-            'locale'            => $locale,
-            'is_default_locale' => $global->isDefaultLocale(),
-            'locales'           => $this->getLocales($id)
-        ]);
     }
 
     /**
@@ -378,12 +149,12 @@ class PublishController extends CpController
      * @param string|null $uuid
      * @return array
      */
-    private function getLocales($uuid = null)
+    protected function getLocales($uuid = null)
     {
         $locales = [];
 
         foreach (Config::getLocales() as $locale) {
-            $url = $this->request->url();
+            $url = app('request')->url();
 
             if ($locale !== Config::getDefaultLocale()) {
                 $url .= '?locale=' . $locale;
@@ -398,139 +169,12 @@ class PublishController extends CpController
                 'name'        => $locale,
                 'label'       => Config::getLocaleName($locale),
                 'url'         => $url,
-                'is_active'   => $locale === $this->request->query('locale', Config::getDefaultLocale()),
+                'is_active'   => $locale === app('request')->query('locale', Config::getDefaultLocale()),
                 'has_content' => $has_content
             ];
         }
 
         return $locales;
-    }
-
-    /**
-     * Save a page.
-     *
-     * The POST request from /cp/publish
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function save()
-    {
-        $content_type = $this->request->input('type');
-
-        if ($content_type == 'page') {
-            $publisher = app('Statamic\CP\Publish\PagePublisher');
-        } elseif ($content_type == 'entry') {
-            $publisher = app('Statamic\CP\Publish\EntryPublisher');
-        } elseif ($content_type == 'taxonomy') {
-            $publisher = app('Statamic\CP\Publish\TaxonomyPublisher');
-        } elseif ($content_type == 'global') {
-            $publisher = app('Statamic\CP\Publish\GlobalsPublisher');
-        } elseif ($content_type == 'user') {
-            $publisher = app('Statamic\CP\Publish\UserPublisher');
-        }
-
-        try {
-            $this->content = $publisher->publish();
-        } catch (PublishException $e) {
-            return [
-                'success' => false,
-                'errors' => $e->getErrors()
-            ];
-        }
-
-        $this->success(translate('cp.thing_saved', ['thing' => ucwords($content_type)]));
-
-        return [
-            'success' => true,
-            'redirect' => $this->redirectSave()->getTargetUrl()
-        ];
-    }
-
-    /**
-     * Return the redirect after the page has been saved
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    private function redirectSave()
-    {
-        $locale = $this->request->input('locale');
-        $localized = $locale !== default_locale();
-        $continue = $this->request->input('continue', false);
-
-        if ($this->content instanceof \Statamic\Contracts\Data\Pages\Page) {
-            $params = ['url' => ltrim($this->content->url(), '/')];
-
-            if ($localized) {
-                $params['locale'] = $locale;
-            }
-
-            $redirect = ($continue) ? route('page.edit', $params) : route('pages');
-
-        } elseif ($this->content instanceof \Statamic\Contracts\Data\Taxonomies\Term) {
-            $group = $this->content->taxonomyName();
-            $slug = $this->content->slug();
-            $params = compact('group', 'slug');
-
-            if ($localized) {
-                $params['locale'] = $locale;
-            }
-
-            $redirect = ($continue) ? route('term.edit', $params) : route('terms.show', $group);
-
-        } elseif ($this->content instanceof \Statamic\Contracts\Data\Entries\Entry) {
-            $collection = $this->content->collectionName();
-            $slug = $this->content->slug();
-            $params = compact('collection', 'slug');
-
-            if ($localized) {
-                $params['locale'] = $locale;
-            }
-
-            $redirect = ($continue) ? route('entry.edit', $params) : route('entries.show', $collection);
-
-        } elseif ($this->content instanceof \Statamic\Contracts\Data\Globals\GlobalSet) {
-            $slug = $this->content->slug();
-            $params = compact('slug');
-
-            if ($localized) {
-                $params['locale'] = $locale;
-            }
-
-
-            $redirect = ($continue) ? route('globals.edit', $params) : route('globals');
-
-        } elseif ($this->content instanceof \Statamic\Contracts\Data\Users\User) {
-            $continue_route = route('user.edit', $this->content->username());
-
-            if ($continue) {
-                $redirect = $continue_route;
-
-            } else {
-                $redirect = route('users');
-
-                // If they havent chose to continue, but they dont have manage
-                // permissions, just keep them on this page.
-                $user = \Statamic\API\User::getCurrent();
-                if ($this->content === $user && !$user->hasPermission('user:manage')) {
-                    $redirect = $continue_route;
-                }
-            }
-        }
-
-        // Maintain any query parameters that were added
-        if ($referrer_params = array_get(parse_url($this->request->header('referer')), 'query')) {
-            parse_str($referrer_params, $query);
-
-            // However, don't maintain these query parameters
-            unset($query['slug'], $query['locale'], $query['fieldset']);
-
-            if ($query) {
-                $glue = strpos($redirect, '?') ? '&' : '?';
-                $redirect .= $glue . http_build_query($query);
-            }
-        }
-
-        return redirect($redirect);
     }
 
     /**
@@ -540,7 +184,7 @@ class PublishController extends CpController
      * @param string|\Statamic\Data\Content $arg Either a content object, or the name of a fieldset.
      * @return array
      */
-    private function populateWithBlanks($arg)
+    protected function populateWithBlanks($arg)
     {
         // Get a fieldset and data
         if ($arg instanceof \Statamic\Contracts\Data\Content\Content) {
@@ -591,5 +235,70 @@ class PublishController extends CpController
         }
 
         return array_merge($blanks, $data);
+    }
+
+    /**
+     * Get the taxonomies that should be used.
+     *
+     * @param FieldsetContract $fieldset  The fieldset being used on the the content.
+     * @return array                      An array of taxonomy configurations suitable for taxonomy fieldtypes.
+     */
+    protected function getTaxonomies($fieldset)
+    {
+        // Get the taxonomy configuration from the fieldset.
+        $taxonomies = array_get($fieldset->contents(), 'taxonomies');
+
+        // If the user has explicitly asked for no taxonomies, that's what they'll get.
+        if ($taxonomies === false) {
+            return [];
+        }
+
+        // Get all the taxonomies in the system and convert them to fieldtype configurations.
+        $configurations = Taxonomy::all()->map(function ($taxonomy) {
+            return [
+                'type' => 'taxonomy',
+                'taxonomy' => $taxonomy->path(),
+                'title' => $taxonomy->title(),
+                'create' => true
+            ];
+        })->sortBy('title')->values();
+
+        // If there are no taxonomies configured, we'll just display them all.
+        if (! $taxonomies) {
+            return $configurations->all();
+        }
+
+        // If a plain ol' list of taxonomy handles was provided, reformat it to empty arrays.
+        if (array_keys($taxonomies)[0] === 0) {
+            $ts = [];
+            foreach ($taxonomies as $t) {
+                $ts[$t] = [];
+            }
+            $taxonomies = $ts;
+        }
+
+        // If taxonomies are configured, we only want to display those, and we'll
+        // merge the config for each one into the existing collection.
+        $configurations = $configurations->filter(function ($config) use ($taxonomies) {
+            return in_array($config['taxonomy'], array_keys($taxonomies));
+        })->map(function ($config) use ($taxonomies) {
+            $handle = $config['taxonomy'];
+
+            // Get the custom config. It may be an array, or just "true" if no
+            // configuration was required, but still wanted it to be visible.
+            $custom = $taxonomies[$handle];
+            $custom = is_array($custom) ? $custom : [];
+
+            return array_merge($config, $custom);
+        });
+
+        // Sort the fields by the order in which they were provided.
+        if ($taxonomies) {
+            $configurations = $configurations->sortBy(function ($arr) use ($taxonomies) {
+                return array_search($arr['taxonomy'], array_keys($taxonomies));
+            });
+        }
+
+        return $configurations->values()->all();
     }
 }

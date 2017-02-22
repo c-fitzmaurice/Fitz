@@ -5,10 +5,11 @@ namespace Statamic\Http\Controllers;
 use Statamic\API\Str;
 use Statamic\API\Form;
 use Statamic\API\File;
-use Statamic\API\YAML;
-use Statamic\API\Folder;
-use Statamic\API\Metrics;
+use Statamic\API\Config;
+use Statamic\API\Helper;
 use Statamic\Exceptions\FatalException;
+use Statamic\Presenters\PaginationPresenter;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Statamic\Forms\Presenters\UploadedFilePresenter;
 
 class FormsController extends CpController
@@ -58,26 +59,78 @@ class FormsController extends CpController
             'field' => 'datestamp'
         ])->reverse();
 
-        $items = collect($form->submissions()->each(function ($submission) {
-            $this->replaceFileUploadFields($submission);
+        $submissions = collect($form->submissions()->each(function ($submission) {
+            return $this->sanitizeSubmission($submission);
         })->toArray())->map(function ($submission) use ($form) {
-            $submission['datestring'] = (string) $submission['date'];
+            $submission['datestring'] = $submission['date']->format($form->dateFormat());
             $submission['datestamp'] = $submission['date']->timestamp;
             $submission['edit_url'] = route('form.submission.show', [$form->name(), $submission['id']]);
             $submission['delete_url'] = route('form.submission.delete', [$form->name(), $submission['id']]);
             return $submission;
         });
 
-        return compact('columns', 'items');
+        // Set the default/fallback sort order
+        $sort = 'datestamp';
+        $sortOrder = 'asc';
+
+        // Custom sorting will override anything predefined.
+        if ($customSort = $this->request->sort) {
+            $sort = $customSort;
+        }
+        if ($customOrder = $this->request->order) {
+            $sortOrder = $customOrder;
+        }
+
+        // Perform the sort!
+        if ($customSort !== 'datestamp' || $sortOrder !== 'desc') {
+            $submissions = $submissions->sortBy($sort, null, $sortOrder === 'desc');
+        }
+
+        // Set up the paginator, since we don't want to display all the entries.
+        $totalSubmissionCount = $submissions->count();
+        $perPage = Config::get('cp.pagination_size');
+        $currentPage = (int) $this->request->page ?: 1;
+        $offset = ($currentPage - 1) * $perPage;
+        $submissions = $submissions->slice($offset, $perPage);
+        $paginator = new LengthAwarePaginator($submissions, $totalSubmissionCount, $perPage, $currentPage);
+
+        return [
+            'columns' => $columns,
+            'items' => $submissions,
+            'pagination' => [
+                'totalItems' => $totalSubmissionCount,
+                'itemsPerPage' => $perPage,
+                'totalPages'    => $paginator->lastPage(),
+                'currentPage'   => $paginator->currentPage(),
+                'prevPage'      => $paginator->previousPageUrl(),
+                'nextPage'      => $paginator->nextPageUrl(),
+                'segments'      => array_get($paginator->render(new PaginationPresenter($paginator)), 'segments')
+            ]
+        ];
     }
 
-    private function replaceFileUploadFields($submission)
+    private function sanitizeSubmission($submission)
     {
         collect($submission->data())->each(function ($value, $field) use ($submission) {
-            if ($submission->formset()->isUploadableField($field)) {
-                $submission->set($field, UploadedFilePresenter::render($submission, $field));
-            }
+            $sanitized = ($submission->formset()->isUploadableField($field))
+                ? UploadedFilePresenter::render($submission, $field)
+                : $this->sanitizeField($value);
+
+            $submission->set($field, $sanitized);
         });
+    }
+
+    private function sanitizeField($value)
+    {
+        $is_arr = is_array($value);
+
+        $values = Helper::ensureArray($value);
+
+        foreach ($values as &$value) {
+            $value = htmlspecialchars($value);
+        }
+
+        return ($is_arr) ? $values : $values[0];
     }
 
     public function getForm($form)

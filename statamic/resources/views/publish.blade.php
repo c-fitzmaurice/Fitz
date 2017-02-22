@@ -3,16 +3,24 @@
 
 @section('content')
 
+    <script>
+        <?php $taxonomies = isset($taxonomies) ? $taxonomies : []; ?>
+        Statamic.Publish = {
+            contentData: {!! json_encode($content_data) !!},
+            taxonomies: {!! json_encode($taxonomies) !!}
+        };
+    </script>
+
     <publish title="{{ $title }}"
              extra="{{ json_encode($extra) }}"
              :is-new="{{ bool_str($is_new) }}"
              content-type="{{ $content_type }}"
              uuid="{{ $uuid }}"
-             content-data="{{ json_encode($content_data) }}"
              fieldset-name="{{ $fieldset }}"
              slug="{{ $slug }}"
              uri="{{ $uri }}"
              url="{{ $url }}"
+             submit-url="{{ route("{$content_type}.save") }}"
              :status="{{ bool_str($status) }}"
              locale="{{ $locale }}"
              locales="{{ json_encode($locales) }}"

@@ -138,13 +138,9 @@ class ThemeTags extends Tags
         $variables = array_get($parsed, 'data', []);
         $template = array_get($parsed, 'content');
 
-        // Allow parameters to be variable names and retrieve them from
-        // context. If they don't exist, they fall back to the string.
-        foreach ($this->parameters as $key => $param) {
-            $variables[$key] = array_get($this->context, $param, $param);
-        }
-
-        $variables = array_merge($variables, $this->context);
+        // Front-matter, tag parameters, and the context is all passed through to the partial.
+        // Since 2.5, parameters need to be prefixed with a colon in order to read from the field.
+        $variables = array_merge($this->context, $this->parameters, $variables);
 
         return Parse::template($template, $variables);
     }

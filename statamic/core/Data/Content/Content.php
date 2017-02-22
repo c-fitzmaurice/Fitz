@@ -83,6 +83,7 @@ abstract class Content extends Data implements ContentContract
      */
     public function supplement()
     {
+        $this->supplements['id']        = $this->id();
         $this->supplements['slug']      = $this->slug();
         $this->supplements['url']       = $this->url();
         $this->supplements['uri']       = $this->uri();
@@ -92,11 +93,8 @@ abstract class Content extends Data implements ContentContract
         $this->supplements['published'] = $this->published();
         $this->supplements['order']     = $this->order();
 
-        // If the file isn't found, it's probably temporary content created during a sneak peek.
-        try {
-            $this->supplements['last_modified'] = File::disk('content')->lastModified($this->path());
-        } catch (FileNotFoundException $e) {
-            $this->supplements['last_modified'] = time();
+        if ($this->supplement_taxonomies) {
+            $this->addTaxonomySupplements();
         }
     }
 
@@ -198,7 +196,7 @@ abstract class Content extends Data implements ContentContract
      *
      * @return void
      */
-    private function writeFiles()
+    protected function writeFiles()
     {
         $files = collect($this->locales())->map(function ($locale) {
             // Get the before and after paths so we can rename if necessary.
@@ -210,16 +208,7 @@ abstract class Content extends Data implements ContentContract
 
             // Remove any localized data that's the same as the default locale
             if ($locale !== default_locale()) {
-                $default = $this->defaultData();
-                foreach ($data as $key => $value) {
-                    if ($key === 'id') {
-                        continue;
-                    }
-
-                    if ($value === array_get($default, $key)) {
-                        unset($data[$key]);
-                    }
-                }
+                $data = $this->removeLocalizedDataIdenticalToDefault($data, $this->defaultData());
             }
 
             // Ensure there's an ID. The default locale will have one, but
@@ -235,7 +224,7 @@ abstract class Content extends Data implements ContentContract
             return [
                 'path'          => $path,
                 'original_path' => $original_path,
-                'front_matter'  => $data,
+                'front_matter'  => $this->normalizeFrontMatter($data),
                 'content'       => $content
             ];
         });
@@ -256,6 +245,39 @@ abstract class Content extends Data implements ContentContract
                 }
             }
         });
+    }
+
+    /**
+     * Remove any localized data keys that are the identical to the default locale's data.
+     *
+     * @param array $localized
+     * @param array $default
+     * @return array
+     */
+    protected function removeLocalizedDataIdenticalToDefault($localized, $default)
+    {
+        foreach ($localized as $key => $value) {
+            if ($key === 'id') {
+                continue;
+            }
+
+            if ($value === array_get($default, $key)) {
+                unset($localized[$key]);
+            }
+        }
+
+        return $localized;
+    }
+
+    /**
+     * Normalize the front-matter before saving
+     *
+     * @param array $data
+     * @return array
+     */
+    protected function normalizeFrontMatter($data)
+    {
+        return $data;
     }
 
     /**
@@ -322,7 +344,12 @@ abstract class Content extends Data implements ContentContract
 
         // Iterate over the paths and perform the actual deletions. Goodbye, files.
         $paths->each(function ($path) {
-            File::disk('content')->delete($path);
+            try {
+                File::disk('content')->delete($path);
+            } catch (FileNotFoundException $e) {
+                // Prevent an error if the file doesn't exist.
+                // For example, taxonomy terms can exist without a file existing.
+            }
         });
 
         // Subclasses will be able to perform any post-save functionality. For example,

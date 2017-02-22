@@ -5,20 +5,18 @@ namespace Statamic\Assets;
 class AssetFactory
 {
     protected $data = [];
-    protected $uuid;
-    protected $locale;
     protected $container;
-    protected $folder;
     protected $file;
+    protected $path;
 
     /**
-     * @param string|null $uuid
+     * @param null $path
      * @return $this
      */
-    public function create($uuid = null)
+    public function create($path = null)
     {
-        if ($uuid) {
-            $this->uuid($uuid);
+        if ($path) {
+            $this->path($path);
         }
 
         return $this;
@@ -35,15 +33,16 @@ class AssetFactory
         return $this;
     }
 
-    /**
-     * @param string $folder
-     * @return $this
-     */
-    public function folder($folder)
+    public function path($path)
     {
-        $this->folder = $folder;
+        $this->path = $path;
 
         return $this;
+    }
+
+    public function folder($folder)
+    {
+        throw new \Exception('Cannot set a folder. Instead, set a path to the file..');
     }
 
     /**
@@ -53,17 +52,6 @@ class AssetFactory
     public function file($file)
     {
         $this->file = $file;
-
-        return $this;
-    }
-
-    /**
-     * @param $uuid
-     * @return $this
-     */
-    public function uuid($uuid)
-    {
-        $this->uuid = $uuid;
 
         return $this;
     }
@@ -80,27 +68,20 @@ class AssetFactory
     }
 
     /**
-     * @param string $locale
-     * @return $this
-     */
-    public function locale($locale)
-    {
-        $this->locale = $locale;
-
-        return $this;
-    }
-
-    /**
      * @return \Statamic\Assets\Asset
      */
     public function get()
     {
         $asset = new Asset;
 
-        $asset->id($this->uuid);
-        $asset->basename($this->file);
+        if ($this->path) {
+            $asset->path($this->path);
+        } else {
+            dd('AssetFactory@get. path wasnt provided.');
+//            $asset->basename($this->file);
+        }
+
         $asset->container($this->container);
-        $asset->folder($this->folder);
         $asset->data($this->data);
 
         $asset->syncOriginal();

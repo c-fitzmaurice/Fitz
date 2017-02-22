@@ -5,6 +5,7 @@ namespace Statamic\Forms;
 use Statamic\API\Str;
 use Statamic\API\YAML;
 use Statamic\API\File;
+use Statamic\API\Config;
 use Statamic\API\Folder;
 use Statamic\Exceptions\FatalException;
 use Statamic\Contracts\Forms\Form as FormContract;
@@ -158,6 +159,16 @@ class Form implements FormContract
         $this->formset()->name($this->name());
 
         $this->formset()->save();
+    }
+
+    /**
+     * Get the date format
+     *
+     * @return string
+     */
+    public function dateFormat()
+    {
+        return $this->formset()->get('date_format', Config::get('cp.date_format'));
     }
 
     /**

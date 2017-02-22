@@ -24,6 +24,22 @@ interface DataFolder extends Editable
     public function set($key, $value);
 
     /**
+     * Remove a key from the data
+     *
+     * @param string $key
+     * @return void
+     */
+    public function remove($key);
+
+    /**
+     * Check if the given key exists in the folder's data
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function has($key);
+
+    /**
      * Get or set all of the folder's data
      *
      * @param array|null $data
@@ -52,6 +68,15 @@ interface DataFolder extends Editable
      * @return string
      */
     public function title();
+
+    /**
+     * Get the computed title of the folder
+     *
+     * This will be used for the title when one hasn't been explicitly set.
+     *
+     * @return string
+     */
+    public function computedTitle();
 
     /**
      * Get the last modified date

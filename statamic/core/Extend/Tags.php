@@ -3,6 +3,7 @@
 namespace Statamic\Extend;
 
 use Statamic\API\Arr;
+use Statamic\API\Str;
 use Statamic\API\Parse;
 use Statamic\Data\DataCollection;
 
@@ -73,15 +74,35 @@ abstract class Tags
      */
     public function __construct($properties)
     {
-        $this->parameters  = $properties['parameters'];
         $this->content     = $properties['content'];
         $this->context     = $properties['context'];
+        $this->parameters  = $this->setUpParameters($properties['parameters']);
         $this->isPair      = $this->content !== '';
         $this->tag         = array_get($properties, 'tag');
         $this->tag_method  = array_get($properties, 'tag_method');
 
         $this->bootstrap();
         $this->init();
+    }
+
+    /**
+     * Perform set-up on any parameters
+     *
+     * @param array $params
+     * @return array
+     */
+    private function setUpParameters($params)
+    {
+        // Values in parameters prefixed with a colon should be treated as the corresponding
+        // field's value in the context. If it doesn't exist, the value remains the literal.
+        foreach ($params as $param => $value) {
+            if (Str::startsWith($param, ':')) {
+                $params[substr($param, 1)] = array_get($this->context, $value, $value);
+                unset($params[$param]);
+            }
+        }
+
+        return $params;
     }
 
     /**

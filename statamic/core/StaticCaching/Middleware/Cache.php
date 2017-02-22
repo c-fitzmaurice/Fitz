@@ -43,6 +43,10 @@ class Cache
             return;
         }
 
+        if ($response->getStatusCode() !== 200) {
+            return;
+        }
+
         $this->cacher->cachePage($request, $response);
     }
 }

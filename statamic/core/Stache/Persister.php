@@ -56,7 +56,10 @@ class Persister
             $arr = $this->stache->driver($key)->toPersistentArray($repo);
 
             $this->meta->put($key, $arr['meta']);
-            $this->items->put($key, $arr['items']);
+
+            if (isset($arr['items'])) {
+                $this->items->put($key, $arr['items']);
+            }
         });
 
         // Store meta data separately. This will be simple data that can
@@ -65,6 +68,10 @@ class Persister
 
         // Keep track of the keys that will be persisting.
         $this->keys = collect(Cache::get('stache::keys', []));
+
+        // Persist the taxonomies
+        $this->store('taxonomies/data', $this->stache->taxonomies->toPersistableArray());
+        $this->keys[] = 'taxonomies/data';
 
         // Loop through all the item objects which each driver has organized
         // into folders. These are separate because it has the potential to

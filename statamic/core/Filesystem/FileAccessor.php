@@ -2,6 +2,7 @@
 
 namespace Statamic\Filesystem;
 
+use Statamic\API\Str;
 use Statamic\API\Path;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
@@ -86,6 +87,25 @@ class FileAccessor
     }
 
     /**
+     * Move a file
+     *
+     * @param string $src  Path to source file
+     * @param string $dest Path to destination
+     * @param bool   $overwrite Should the destination be overwritten if already exists?
+     * @return bool
+     */
+    public function move($src, $dest, $overwrite = false)
+    {
+        $dest = Path::makeRelative($dest);
+
+        if ($overwrite && $this->exists($dest)) {
+            $this->delete($dest);
+        }
+
+        return $this->filesystem->move(Path::makeRelative($src), $dest);
+    }
+
+    /**
      * Delete a file
      *
      * @param string $file Path to file
@@ -163,28 +183,12 @@ class FileAccessor
     /**
      * Get the human file size of a given file.
      *
-     * @param string $file  Path to file
+     * @param string $file Path to file
      * @return string
      */
     public function sizeHuman($file)
     {
-        $bytes = $this->size($file);
-
-        if ($bytes >= 1073741824) {
-            $bytes = number_format($bytes / 1073741824, 2) . ' GB';
-        } elseif ($bytes >= 1048576) {
-            $bytes = number_format($bytes / 1048576, 2) . ' MB';
-        } elseif ($bytes >= 1024) {
-            $bytes = number_format($bytes / 1024, 2) . ' KB';
-        } elseif ($bytes > 1) {
-            $bytes = $bytes . ' bytes';
-        } elseif ($bytes == 1) {
-            $bytes = $bytes . ' byte';
-        } else {
-            $bytes = '0 bytes';
-        }
-
-        return $bytes;
+        return Str::fileSizeForHumans($this->size($file), 2);
     }
 
     /**

@@ -7,7 +7,7 @@
     <body id="statamic" class="outside installer">
 
         <div class="container">
-            <div class="logo">{!! svg('statamic-mark') !!}</div>
+            <div class="logo">{!! inline_svg('statamic-mark') !!}</div>
 
             <installer cp-url="{{ route('cp') }}" inline-template>
 

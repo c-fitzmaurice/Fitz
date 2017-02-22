@@ -24,7 +24,7 @@ if (CP_ROUTE !== false) {
  * On-the-fly URL-based image transforms.
  */
 Route::group(['prefix' => Config::get('assets.image_manipulation_route')], function () {
-    get('/id/{id}/{filename?}', 'GlideController@generateByAsset');
+    get('/asset/{container}/{path?}', 'GlideController@generateByAsset')->where('path', '.*');
     get('/http/{url}/{filename?}', 'GlideController@generateByUrl');
     get('/{path?}', 'GlideController@generateByPath')->where('path', '.*');
 });

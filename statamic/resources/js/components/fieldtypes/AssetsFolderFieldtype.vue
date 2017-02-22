@@ -30,23 +30,53 @@ module.exports = {
 
         allowBlank: function() {
             return false;
-        },
-
-        containerField: function() {
-            return this.config.container || 'container';
         }
     },
 
     methods: {
+
+        /**
+         * This fieldtype can be used as a sibling to a container field.
+         * It will refresh itself when the container field value changes.
+         */
+        bootstrapForContainerField() {
+            var self = this;
+
+            // When the asset container is modified, we want to either get the appropriate folders or reset the folders.
+            this.$parent.$watch('field', function (field) {
+                // Other changes in the field will trigger this. We want to
+                // ignore everything except a modifier asset container value
+                if (field.container === self.container) {
+                    return false;
+                }
+
+                if (field.container) {
+                    self.loading = true;
+                    self.container = field.container;
+                    self.getFolders();
+                } else {
+                    self.container = null;
+                    self.data = null;
+                }
+            }, { deep: true });
+
+            if (this.$parent.field.container) {
+                this.container = this.$parent.field.container;
+                this.getFolders();
+            }
+        },
+
         getFolders: function() {
             this.$http.get(cp_url('assets/containers/' + this.container + '/folders'), function(data) {
                 var options = (this.allowBlank) ? [{ value: null, text: '', }] : [];
 
-                _.each(data, function (title, folder) {
-                    var text = (title) ? title + ' (' + folder + ')' : folder;
+                _.each(data, function (folder) {
+                    const text = (folder.path === folder.title)
+                        ? folder.path
+                        : folder.path + ' (' + folder.title + ')';
 
                     options.push({
-                        value: folder,
+                        value: folder.path,
                         text: text
                     });
                 });
@@ -62,29 +92,13 @@ module.exports = {
     },
 
     ready: function() {
-        var self = this;
-
-        // When the asset container is modified, we want to either get the appropriate folders or reset the folders.
-        this.$parent.$watch('field', function (field) {
-            // Other changes in the field will trigger this. We want to
-            // ignore everything except a modifier asset container value
-            if (field[self.containerField] === self.container) {
-                return false;
-            }
-
-            if (field[self.containerField]) {
-                self.loading = true;
-                self.container = field[self.containerField];
-                self.getFolders();
-            } else {
-                self.container = null;
-                self.data = null;
-            }
-        }, { deep: true });
-
-        if (this.$parent.field[this.containerField]) {
-            this.container = this.$parent.field[this.containerField];
+        // If a container prop has been provided, we simply need to get the folders.
+        // Otherwise, bootstrap this field so it will work with a sibling container field.
+        if (this.config.container) {
+            this.container = this.config.container;
             this.getFolders();
+        } else {
+            this.bootstrapForContainerField();
         }
     }
 

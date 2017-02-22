@@ -3,20 +3,74 @@
 namespace Statamic\API;
 
 use Statamic\Assets\AssetCollection;
-use Statamic\Data\Services\AssetsService;
 use Statamic\Contracts\Assets\AssetFactory;
 
 class Asset
 {
     /**
-     * Get an asset by ID
+     * Get an asset by a URL or ID
      *
-     * @param string $id
+     * @param string $asset
      * @return \Statamic\Contracts\Assets\Asset
      */
-    public static function find($id)
+    public static function find($asset)
     {
-        return app(AssetsService::class)->id($id);
+        if (Str::contains($asset, '::')) {
+            return self::whereId($asset);
+        }
+
+        return self::whereUrl($asset);
+    }
+
+    /**
+     * Get an asset by ID
+     *
+     * @param string $id  An asset ID in the form of "container_id::asset_path""
+     * @return \Statamic\Contracts\Assets\Asset
+     */
+    public static function whereId($id)
+    {
+        list($container_id, $path) = explode('::', $id);
+
+        // If a container can't be found, we'll assume there's no asset.
+        if (! $container = AssetContainer::find($container_id)) {
+            return null;
+        }
+
+        return $container->asset($path);
+    }
+
+    /**
+     * Get an asset by url
+     *
+     * @param string $url
+     * @return \Statamic\Contracts\Assets\Asset
+     */
+    private static function whereUrl($url)
+    {
+        // If a container can't be resolved, we'll assume there's no asset.
+        if (! $container = self::resolveContainerFromUrl($url)) {
+            return null;
+        }
+
+        $path = trim(Str::removeLeft($url, $container->url()), '/');
+
+        return $container->asset($path);
+    }
+
+    /**
+     * Find an asset container given an asset URL
+     *
+     * @param string $url
+     * @return \Statamic\Contracts\Assets\AssetContainer
+     */
+    private static function resolveContainerFromUrl($url)
+    {
+        return AssetContainer::all()->sortBy(function ($container) {
+            return strlen($container->url());
+        })->first(function ($id, $container) use ($url) {
+            return Str::startsWith($url, $container->url());
+        });
     }
 
     /**
@@ -26,7 +80,9 @@ class Asset
      */
     public static function all()
     {
-        return app(AssetsService::class)->all();
+        return collect_assets(AssetContainer::all()->flatMap(function ($container) {
+            return $container->assets();
+        }));
     }
 
     /**
@@ -38,7 +94,7 @@ class Asset
      */
     public static function whereFolder($folder, $container)
     {
-        return app(AssetsService::class)->folder($container, $folder);
+        return AssetContainer::find($container)->assets($folder);
     }
 
     /**
@@ -49,7 +105,7 @@ class Asset
      */
     public static function whereContainer($container)
     {
-        return app(AssetsService::class)->container($container);
+        return AssetContainer::find($container)->assets();
     }
 
     /**
@@ -66,12 +122,12 @@ class Asset
     }
 
     /**
-     * @param string|null $uuid
+     * @param string|null $path
      * @return \Statamic\Contracts\Assets\AssetFactory
      */
-    public static function create($uuid = null)
+    public static function create($path = null)
     {
-        return app(AssetFactory::class)->create($uuid);
+        return app(AssetFactory::class)->create($path);
     }
 
     /**

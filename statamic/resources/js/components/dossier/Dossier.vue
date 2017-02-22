@@ -1,13 +1,18 @@
 <script>
 import DossierTable from './DossierTable.vue'
+import Paginates from '../Paginates'
 
 module.exports = {
+
+    mixins: [Paginates],
 
     data: function () {
         return {
             loading: true,
             items: [],
             columns: [],
+            sort: null,
+            sortOrder: null,
             search: null,
             reordering: false
         }
@@ -45,13 +50,24 @@ module.exports = {
 
     methods: {
         getItems: function () {
-            this.$http.get(this.ajax.get, function(data, status, request) {
+            this.$http.get(this.ajax.get, {
+                sort: this.sort,
+                order: this.sortOrder,
+                page: this.selectedPage
+            }, function(data, status, request) {
                 this.items = data.items;
                 this.columns = data.columns;
                 this.loading = false;
+                this.pagination = data.pagination;
             }).error(function() {
                 alert('There was a problem retrieving data. Check your logs for more details.');
             });
+        },
+
+        sortBy(sort, order) {
+            this.sort = sort;
+            this.sortOrder = order;
+            this.getItems();
         },
 
         removeItemFromList: function(id) {
@@ -121,7 +137,7 @@ module.exports = {
                 this.getItems();
                 this.reordering = false;
             });
-        },
+        }
     }
 
 };

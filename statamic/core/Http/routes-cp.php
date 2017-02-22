@@ -25,7 +25,6 @@ Route::group(['prefix' => CP_ROUTE, 'middleware' => ['auth']], function () {
 
     // Content
     get('content', 'PagesController@index')->name('content');
-    post('publish', 'PublishController@save')->name('publish');
 
     // Pages
     Route::group(['prefix' => 'pages'], function () {
@@ -33,8 +32,11 @@ Route::group(['prefix' => CP_ROUTE, 'middleware' => ['auth']], function () {
         post('/', 'PagesController@save')->name('pages.post');
         get('/get', 'PagesController@get')->name('pages.get');
         post('/delete', 'PagesController@delete')->name('page.delete');
-        get('create/{url?}', 'PublishController@createPage')->where('url', '.*')->name('page.create');
-        get('edit/{url?}', ['uses' => 'PublishController@editPage', 'as' => 'page.edit'])->where('url', '.*');
+
+        post('publish', 'PublishPageController@save')->name('page.save');
+        get('create/{parent?}', 'PublishPageController@create')->name('page.create')->where('parent', '.*');
+        get('edit/{url?}', ['uses' => 'PublishPageController@edit', 'as' => 'page.edit'])->where('url', '.*');
+
         post('mount', ['uses' => 'PagesController@mountCollection', 'as' => 'page.mount']);
     });
 
@@ -50,8 +52,11 @@ Route::group(['prefix' => CP_ROUTE, 'middleware' => ['auth']], function () {
         delete('delete', 'EntriesController@delete')->name('entries.delete');
         get('/{collection}/get', 'EntriesController@get')->name('entries.get');
         post('reorder', 'EntriesController@reorder')->name('entries.reorder');
-        get('/{collection}/create', 'PublishController@createEntry')->name('entry.create');
-        get('/{collection}/{slug}', ['uses' => 'PublishController@editEntry', 'as' => 'entry.edit']);
+
+        get('/{collection}/create', 'PublishEntryController@create')->name('entry.create');
+        get('/{collection}/{slug}', ['uses' => 'PublishEntryController@edit', 'as' => 'entry.edit']);
+        post('publish', 'PublishEntryController@save')->name('entry.save');
+
         get('/{collection}', 'EntriesController@show')->name('entries.show');
     });
 
@@ -67,8 +72,12 @@ Route::group(['prefix' => CP_ROUTE, 'middleware' => ['auth']], function () {
         delete('delete', 'TaxonomyTermsController@delete')->name('terms.delete');
         get('/{collection}/get', 'TaxonomyTermsController@get')->name('terms.get');
         post('reorder', 'TaxonomyTermsController@reorder')->name('terms.reorder');
-        get('/{collection}/create', 'PublishController@createTaxonomy')->name('term.create');
-        get('/{collection}/{slug}', ['uses' => 'PublishController@editTaxonomy', 'as' => 'term.edit']);
+
+        get('/{collection}/create', 'PublishTaxonomyController@create')->name('term.create');
+        get('/{collection}/{slug}', 'PublishTaxonomyController@edit')->name('term.edit');
+        post('publish', 'PublishTaxonomyController@save')->name('taxonomy.save');
+        // get('/{collection}/create', 'PublishController@createTaxonomy')->name('term.create');
+        // get('/{collection}/{slug}', ['uses' => 'PublishController@editTaxonomy', 'as' => 'term.edit']);
         get('/{collection}', 'TaxonomyTermsController@show')->name('terms.show');
     });
 
@@ -76,7 +85,9 @@ Route::group(['prefix' => CP_ROUTE, 'middleware' => ['auth']], function () {
     Route::group(['prefix' => 'globals'], function () {
         get('/', 'GlobalsController@index')->name('globals');
         get('get', 'GlobalsController@get')->name('globals.get');
-        get('{slug}', ['uses' => 'PublishController@editGlobal', 'as' => 'globals.edit']);
+
+        get('{slug}', ['uses' => 'PublishGlobalController@edit', 'as' => 'globals.edit']);
+        post('publish', 'PublishGlobalController@save')->name('global.save');
     });
 
     // Assets
@@ -84,9 +95,11 @@ Route::group(['prefix' => CP_ROUTE, 'middleware' => ['auth']], function () {
         get('/', 'AssetsController@index')->name('assets');
 
         Route::group(['prefix' => 'containers'], function () {
-            get('/', 'AssetContainersController@index')->name('assets.containers');
             delete('delete', 'AssetContainersController@delete')->name('assets.containers.delete');
             get('get', 'AssetContainersController@get')->name('assets.containers.get');
+            post('resolve-path', 'AssetContainersController@getResolvedPath');
+            post('resolve-url', 'AssetContainersController@getResolvedUrl');
+            post('validate-s3', 'AssetContainersController@validateS3Credentials');
             get('{container}/folders', 'AssetContainersController@folders')->name('assets.containers.folders');
         });
 
@@ -99,15 +112,20 @@ Route::group(['prefix' => CP_ROUTE, 'middleware' => ['auth']], function () {
                 '.*')->name('assets.folder.update');
         });
 
+        post('replace-edited-image', 'AssetsController@replaceEditedImage');
+        get('image-editor-auth', 'AssetsController@editorAuth');
+
         post('get', 'AssetsController@get')->name('assets.get');
         delete('delete', 'AssetsController@delete')->name('asset.delete');
-        get('sync/{container}', 'AssetContainersController@sync')->name('assets.sync');
         get('browse/{container}/{folder?}', 'AssetsController@browse')->where('folder',
             '.*')->name('assets.browse');
         post('browse', 'AssetsController@json');
         post('/', 'AssetsController@store')->name('asset.store');
-        get('{uuid}', 'AssetsController@edit')->name('asset.edit');
-        post('{uuid}', 'AssetsController@update')->name('asset.update');
+        get('download/{container}/{path}', 'AssetsController@download')->name('asset.download')->where('path', '.*');
+        post('rename/{container}/{path}', 'AssetsController@rename')->name('asset.rename')->where('path', '.*');
+        post('move', 'AssetsController@move')->name('asset.move');
+        get('{container}/{path}', 'AssetsController@edit')->name('asset.edit')->where('path', '.*');
+        post('{container}/{path}', 'AssetsController@update')->name('asset.update')->where('path', '.*');
     });
 
 
@@ -118,6 +136,7 @@ Route::group(['prefix' => CP_ROUTE, 'middleware' => ['auth']], function () {
         get('get', 'UsersController@get')->name('users.get');
         get('create', 'UsersController@create')->name('user.create');
         delete('delete', 'UsersController@delete')->name('users.delete');
+        post('publish', 'PublishUserController@save')->name('user.save');
 
         // User Roles
         Route::group(['prefix' => 'roles'], function () {
@@ -239,6 +258,7 @@ Route::group(['prefix' => CP_ROUTE, 'middleware' => ['auth']], function () {
             get('/create', 'FieldsetController@create')->name('fieldset.create');
             post('/update-layout/{fieldset}', 'FieldsetController@updateLayout')->name('fieldset.update-layout');
             delete('delete', 'FieldsetController@delete')->name('fieldsets.delete');
+            post('quick', 'FieldsetController@quickStore');
             get('/{fieldset}', 'FieldsetController@edit')->name('fieldset.edit');
             post('/{fieldset}', 'FieldsetController@update')->name('fieldset.update');
             post('/', 'FieldsetController@store')->name('fieldset.store');

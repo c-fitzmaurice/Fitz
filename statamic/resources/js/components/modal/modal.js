@@ -55,7 +55,7 @@ module.exports = {
     },
 
     events: {
-        'modal.close': function () {
+        'close-modal': function () {
             this.show = false;
         }
     }

@@ -3,16 +3,15 @@ global.Lang = require('./lang');
 
 // Global aliases
 global.translate = function(key, replacements) {
+    var message = Lang.get(key, replacements);
 
-    var str = Lang.get(key, replacements);
-
-    if (str === key) {
-        str = str.replace('cp.', '');
-        str = makeTitle(str);
+    if (message === key) {
+        return makeTitle(message.replace('cp.', ''));
     }
 
-    return str;
+    return message;
 };
+
 global.translate_choice = function(key, count, replacements) {
     return Lang.choice(key, count, replacements);
 };

@@ -2,6 +2,7 @@
 
 namespace Statamic\Data\Services;
 
+use Statamic\API\Str;
 use Statamic\API\Helper;
 
 abstract class BaseService extends AbstractService
@@ -45,6 +46,8 @@ abstract class BaseService extends AbstractService
      */
     public function uri($uri)
     {
+        $uri = Str::ensureLeft($uri, '/');
+
         $id = $this->repo()->getIdByUri($uri);
 
         return $this->repo()->getItem($id);

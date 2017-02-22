@@ -2,33 +2,111 @@
 
 namespace Statamic\Data\Taxonomies;
 
+use Statamic\API\Data;
 use Statamic\API\Config;
 use Statamic\API\Entry;
 use Statamic\API\Fieldset;
 use Statamic\API\File;
 use Statamic\API\Path;
+use Statamic\API\Str;
+use Statamic\API\YAML;
 use Statamic\API\Taxonomy as TaxonomyAPI;
 use Statamic\Contracts\Data\Taxonomies\Term as TermContract;
 use Statamic\Data\Content\Content;
 use Statamic\Data\Content\ContentCollection;
 use Statamic\Data\Content\HasLocalizedSlugsInData;
 use Statamic\Contracts\Data\Taxonomies\Taxonomy as TaxonomyContract;
+use Statamic\Data\Services\TermsService;
 
 class Term extends Content implements TermContract
 {
-    /**
-     * Allows localized slugs to be placed in front matter
-     *
-     * Used by entries and terms
-     */
-    use HasLocalizedSlugsInData;
-
     /**
      * The content that is associated to this term.
      *
      * @var ContentCollection
      */
     private $collection;
+
+    /**
+     * Get or set the ID
+     *
+     * @param mixed $id
+     * @return string
+     */
+    public function id($id = null)
+    {
+        if ($id && $id !== true) {
+            throw new \Exception('A taxonomy term ID cannot be set directly.');
+        }
+
+        return $this->taxonomyName() . '/' . $this->defaultSlug();
+    }
+
+    /**
+     * Get or set the slug
+     *
+     * @param string|null $slug
+     * @return mixed
+     */
+    public function slug($slug = null)
+    {
+        if (is_null($slug)) {
+            return \Statamic\API\Term::normalizeSlug($this->getSlug());
+        }
+
+        $this->setSlug($slug);
+    }
+
+    /**
+     * Get the slug
+     *
+     * @return string
+     */
+    protected function getSlug()
+    {
+        // Remove any hidden/draft indicators.
+        $slug = $this->defaultSlug();
+
+        // For localized versions, the slug is contained within the taxonomy.
+        if (! $this->isDefaultLocale()) {
+            if ($localizedSlug = $this->taxonomy()->getLocalizedSlug($this->locale(), $slug)) {
+                return $localizedSlug;
+            }
+        }
+
+        return $slug;
+    }
+
+    /**
+     * Get the slug in the default locale
+     *
+     * @return string
+     */
+    protected function defaultSlug()
+    {
+        return ltrim($this->attributes['slug'], '_');
+    }
+
+    /**
+     * Set the slug
+     *
+     * @param $slug
+     */
+    protected function setSlug($slug)
+    {
+        if ($this->isDefaultLocale()) {
+            // If this content belongs to the default locale, we want to update
+            // the slug property. It is not stored in the front matter.
+            $this->attributes['slug'] = $slug;
+        } else {
+            // If this is not the default locale, we want to store the slug in the
+            // front-matter and leave the property as-is. Also, we only need to
+            // store the slug if it's different from the default locale slug.
+            if ($slug !== $this->get('slug')) {
+                $this->set('slug', $slug);
+            }
+        }
+    }
 
     /**
      * Get or set the path
@@ -57,7 +135,7 @@ class Term extends Content implements TermContract
      */
     public function localizedPath($locale)
     {
-        return $this->buildPath(compact('locale'));
+        return $this->path();
     }
 
     /**
@@ -67,9 +145,7 @@ class Term extends Content implements TermContract
      */
     public function originalPath()
     {
-        $attr = $this->original['attributes'];
-
-        return $this->buildPath($attr);
+        return $this->buildPath($this->original['attributes']);
     }
 
     /**
@@ -80,11 +156,7 @@ class Term extends Content implements TermContract
      */
     public function originalLocalizedPath($locale)
     {
-        $attr = $this->original['attributes'];
-
-        $attr['locale'] = $locale;
-
-        return $this->buildPath($attr);
+        return $this->originalPath();
     }
 
     /**
@@ -164,9 +236,7 @@ class Term extends Content implements TermContract
             return collect_content();
         }
 
-        return $this->collection = collect_content(
-            Entry::all()->filterByTaxonomy($this->id())
-        );
+        return $this->collection = app(TermsService::class)->collection($this);
     }
 
     /**
@@ -217,7 +287,13 @@ class Term extends Content implements TermContract
      */
     public function editUrl()
     {
-        return cp_route('term.edit', [$this->taxonomyName(), $this->slug()]);
+        $params = [$this->taxonomyName(), $this->defaultSlug()];
+
+        if (! $this->isDefaultLocale()) {
+            $params[] = 'locale='.$this->locale();
+        }
+
+        return cp_route('term.edit', $params);
     }
 
     /**
@@ -325,12 +401,162 @@ class Term extends Content implements TermContract
     {
         parent::supplement();
 
+        $this->supplements['default_slug'] = $this->defaultSlug();
+        $this->supplements['title'] = $this->title();
         $this->supplements['taxonomy_group'] = $this->taxonomyName(); // @todo: remove
         $this->supplements['taxonomy'] = $this->taxonomyName();
         $this->supplements['count'] = $this->count();
+        $this->supplements['relation_count'] = $this->count();
         $this->supplements['is_term'] = true;
         $this->supplements['results'] = $this->count();
+    }
 
-        $this->supplements = array_merge($this->cascadingData(), $this->supplements);
+    public function title()
+    {
+        if ($title = $this->getWithDefaultLocale('title')) {
+            return $title;
+        }
+
+        $value = app('stache')->taxonomies->getTitle($this->id());
+
+        return $value ?: $this->defaultSlug();
+    }
+
+    /**
+     * Get the value as a string
+     *
+     * @return string
+     * @throws \Statamic\Exceptions\ModifierException
+     */
+    public function __toString()
+    {
+        return $this->title();
+    }
+
+    /**
+     * Write the files to disk
+     *
+     * @return void
+     */
+    protected function writeFiles()
+    {
+        $taxonomy = $this->taxonomy();
+
+        // Create an array to store the eventual file contents. We'll start
+        // with the default locale and nest additional ones beneath it.
+        $data = $defaultData = $this->defaultData();
+
+        unset($data['id'], $data['slug']);
+
+        // Append additional localized data to the bottom of the array.
+        foreach (collect($this->locales())->splice(1) as $locale) {
+            $localized = $this->removeLocalizedDataIdenticalToDefault(
+                $this->in($locale)->data(),
+                $defaultData
+            );
+
+            unset($localized['id']);
+
+            // If the slug was localized, remove it from the data and instead place
+            // it in the configuration file. It's easier to manage by hand that way.
+            $taxonomy->localizeSlug($locale, $this->slug(), array_get($localized, 'slug'));
+            unset($localized['slug']);
+
+            $data[$locale] = $localized;
+        }
+
+        // Get the before and after paths so we can rename if necessary.
+        $path = $this->path();
+        $original_path = $this->originalPath();
+
+        File::disk('content')->put($path, YAML::dump($data));
+
+        if ($path !== $original_path) {
+            File::disk('content')->delete($original_path);
+        }
+
+        // If any slugs were added to the taxonomy, saving it will write the changes
+        // to disk. We do that here so that there aren't multiple write operations.
+        $taxonomy->save();
+    }
+
+    /**
+     * Remove any localized data keys that are the identical to the default locale's data.
+     *
+     * @param array $localized
+     * @param array $default
+     * @return array
+     */
+    protected function removeLocalizedDataIdenticalToDefault($localized, $default)
+    {
+        foreach ($localized as $key => $value) {
+            if ($key === 'title' && $value === $this->title()) {
+                unset($localized['title']);
+                continue;
+            }
+
+            if ($key === 'slug' && $value === $this->slug()) {
+                unset($localized['slug']);
+                continue;
+            }
+
+            if ($value === array_get($default, $key)) {
+                unset($localized[$key]);
+            }
+        }
+
+        return $localized;
+    }
+
+    /**
+     * Perform any necessary operations after a delete has been completed
+     *
+     * @return void
+     */
+    protected function completeDelete()
+    {
+        $stache = app('stache')->taxonomies;
+
+        // Fetch the data/content IDs associated to this term.
+        $associations = $stache->getAssociations($this);
+
+        // Remove the term from the Stache.
+        $stache->removeTerm($this->taxonomyName(), $this->slug());
+
+        // Iterate over any associated content and remove references to this term.
+        $associations->map(function ($id) {
+            $data = Data::find($id);
+            return ($data->has($this->taxonomyName())) ? $data : null;
+        })->filter()->each(function ($data) {
+            $this->removeFromData($data);
+        });
+    }
+
+    /**
+     * Remove the reference of this term from a given data object
+     *
+     * @param \Statamic\Contracts\Data\Data $data
+     * @return void
+     */
+    private function removeFromData(\Statamic\Contracts\Data\Data $data)
+    {
+        $taxonomy = $this->taxonomyName();
+
+        $terms = $data->get($taxonomy);
+
+        // Get rid of the term we're removing. We can treat it as an array.
+        // If it started as a string, there would only be one term anyway, so it'll end up being removed.
+        $terms = collect($terms)->reject(function ($term) {
+            return \Statamic\API\Term::normalizeSlug($term) === $this->slug();
+        })->values();
+
+        // If the removal of this term results in an empty field, we can simply remove it.
+        if ($terms->isEmpty()) {
+            $data->remove($taxonomy);
+        } else {
+            $data->set($taxonomy, $terms->all());
+        }
+
+        $data->save();
     }
 }

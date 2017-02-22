@@ -12,6 +12,7 @@ use Statamic\API\Str;
 use Statamic\API\URL;
 use Statamic\Data\Content\Content;
 use Statamic\Data\Services\PagesService;
+use League\Flysystem\FileNotFoundException;
 use Statamic\API\PageFolder as PageFolderAPI;
 use Statamic\Contracts\Data\Pages\Page as PageContract;
 
@@ -263,7 +264,12 @@ class Page extends Content implements PageContract
 
         $this->supplements['is_page'] = true;
 
-        $this->supplements = array_merge($this->cascadingData(), $this->supplements);
+        // If the file isn't found, it's probably temporary content created during a sneak peek.
+        try {
+            $this->supplements['last_modified'] = File::disk('content')->lastModified($this->path());
+        } catch (FileNotFoundException $e) {
+            $this->supplements['last_modified'] = time();
+        }
     }
 
     /**
@@ -460,5 +466,15 @@ class Page extends Content implements PageContract
 
         // Finally the default fieldset
         return Fieldset::get(Config::get('theming.default_fieldset'));
+    }
+
+    /**
+     * Get the associated page structure object
+     *
+     * @return PageStructure
+     */
+    public function structure()
+    {
+        return new PageStructure($this->id());
     }
 }

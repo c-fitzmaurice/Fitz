@@ -39,13 +39,13 @@ class Glide
     {
         $this->request = $request;
 
-        if (! $this->isGlideRoute()) {
-            return $next($request);
-        }
-
-        if ($path = $this->getGlidePathFromCache()) {
-            return $this->server->getResponseFactory()->create($this->server->getCache(), $path);
-        }
+//        if (! $this->isGlideRoute()) {
+//            return $next($request);
+//        }
+//
+//        if ($path = $this->getGlidePathFromCache()) {
+//            return $this->server->getResponseFactory()->create($this->server->getCache(), $path);
+//        }
 
         return $next($request);
     }

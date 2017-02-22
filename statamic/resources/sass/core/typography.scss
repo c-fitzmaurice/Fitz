@@ -1,11 +1,11 @@
 body {
     color: $color_gray_dark;
-	font-family: $font_lato;
+	font-family: $font_sans;
     font-size: 16px;
 }
 
 h1 {
-	font: normal 21px $font_lato;
+	font: normal 21px $font_sans;
 	margin: 0;
     -webkit-font-smoothing: antialiased;
 
@@ -34,4 +34,15 @@ a {
 
 .normal {
     font-weight: normal !important;
+}
+
+sup {
+    top: -0.25em;
+}
+
+.little-heading {
+    font: 11px $font_montserrat;
+    padding: 15px 0 0 20px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
 }

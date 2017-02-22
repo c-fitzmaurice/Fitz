@@ -8,7 +8,7 @@
 
         <div class="container">
             <div class="row">
-                <div class="logo">{!! svg('statamic-mark') !!}</div>
+                <div class="logo">{!! inline_svg('statamic-mark') !!}</div>
                 <div class="box card col-centered">
                     <div id="wrapper">
 

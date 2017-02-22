@@ -36,17 +36,17 @@ class GlideUrlBuilder extends ImageUrlBuilder
         $this->item = $item;
 
         switch ($this->itemType()) {
-            case 'asset':
-                $path = 'id/' . $this->item->id();
-                break;
-            case 'id':
-                $path = 'id/' . $this->item;
-                break;
             case 'url':
                 $path = 'http/' . base64_encode($item);
                 break;
+            case 'asset':
+                $path = 'asset/' . base64_encode($this->item->containerId() . '/' . $this->item->path());
+                break;
+            case 'id':
+                $path = 'asset/' . base64_encode(str_replace('::', '/', $this->item));
+                break;
             case 'path':
-                $path = $this->item;
+                $path = URL::encode($this->item);
                 break;
             default:
                 throw new Exception("Cannot build a Glide URL without a URL, path, or asset.");

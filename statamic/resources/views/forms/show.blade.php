@@ -53,14 +53,13 @@
                 </div>
             </div>
 
-            <template v-else>
-                <div class="card flat-bottom">
-                    <h1>{{ translate_choice('cp.submissions', 5) }}</h1>
+            <div class="card flush" v-else>
+                <div class="loading" v-if="loading">
+                    <span class="icon icon-circular-graph animation-spin"></span> {{ translate('cp.loading') }}
                 </div>
-                <div class="card flat-top">
-                    <dossier-table v-if="hasItems" :options="tableOptions"></dossier-table>
-                </div>
-            </template>
+
+                <dossier-table v-if="hasItems" :items="items" :options="tableOptions"></dossier-table>
+            </div>
         </div>
     </form-submission-listing>
 

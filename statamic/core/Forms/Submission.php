@@ -5,9 +5,8 @@ namespace Statamic\Forms;
 use Carbon\Carbon;
 use Statamic\API\Helper;
 use Statamic\API\Storage;
-use Statamic\Forms\Uploaders\Uploader;
 use Statamic\Exceptions\PublishException;
-use Statamic\Exceptions\HoneypotException;
+use Statamic\Exceptions\SilentFormFailureException;
 use Statamic\Contracts\Forms\Submission as SubmissionContract;
 
 class Submission implements SubmissionContract
@@ -145,7 +144,7 @@ class Submission implements SubmissionContract
 
         // If a honeypot exists, throw an exception.
         if (array_get($data, $this->formset()->get('honeypot', 'honeypot'))) {
-            throw new HoneypotException;
+            throw new SilentFormFailureException('Honeypot field has been populated.');
         }
 
         if ($this->guard) {

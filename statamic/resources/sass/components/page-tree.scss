@@ -193,7 +193,7 @@ $branchHoverBg: rgba(black,.025);
     .depth-1 > .branch > .branch-row {
         .page-text {
             font-size: 14px;
-            font-weight: bold;
+            font-weight: 500;
             padding-top: 9px; // negate the font size increase
         }
         .indent-arrow {
@@ -324,7 +324,7 @@ $branchHoverBg: rgba(black,.025);
 
         .page-text {
             font-size: 14px;
-            font-weight: bold;
+            font-weight: 500;
         }
 
         .page-indent {

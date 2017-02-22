@@ -22,7 +22,7 @@ class FormWidget extends Widget
 
         $data = [
             'form'        => $form,
-            'format'      => $this->get('date_format', 'Y/n/d'),
+            'format'      => $this->get('date_format', $form->dateFormat()),
             'fields'      => $this->get('fields', []),
             'submissions' => collect_content($form->submissions())->limit($this->getInt('limit', 5))->reverse()->toArray(),
             'title'       => $this->get('title', $form->title())

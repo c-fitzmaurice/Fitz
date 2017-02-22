@@ -53,7 +53,7 @@ class FormTags extends CollectionTags
             $data['errors'] = $this->getErrorMessages();
         }
 
-        if ($this->flash->exists('success')) {
+        if ($this->flash->exists("form.{$this->formsetName}.success")) {
             $data['success'] = true;
         }
 
@@ -117,7 +117,11 @@ class FormTags extends CollectionTags
      */
     public function success()
     {
-        return $this->flash->exists('success');
+        if (! $formset = $this->getFormset()) {
+            return false;
+        }
+
+        return $this->flash->exists("form.{$formset}.success");
     }
 
     /**

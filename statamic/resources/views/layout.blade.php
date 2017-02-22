@@ -6,6 +6,8 @@
 
 	<body id="statamic" :class="{ 'nav-visible': navVisible }">
 
+		{!! inline_svg('sprite') !!}
+
 		@include('partials.nav-main')
 		@include('partials.shortcuts')
 
@@ -41,7 +43,7 @@
 		<script>
 			Statamic.translations = {!! $translations !!};
 			Statamic.permissions = '{!! $permissions !!}';
-            Statamic.version = '{!! STATAMIC_VERSION !!}';
+			Statamic.version = '{!! STATAMIC_VERSION !!}';
 		</script>
 		@include('partials.scripts')
 		@yield('scripts')

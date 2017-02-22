@@ -24,6 +24,7 @@ table {
 		text-transform: uppercase;
 	}
 	td {
+        font-size: 14px;
 		padding: 10px 5px;
 
         &.minor {
@@ -64,27 +65,37 @@ table {
 	margin-top: 0;
 	table-layout: fixed;
 
-	thead, td, th {
+	> thead,
+	> thead > tr > td,
+	> thead > tr > th,
+	> tbody > tr > td,
+	> tbody > tr > th {
 		border: none;
 	}
 
-	th {
-		border-top: solid 1px $color_border;
-		font-family: $font_lato;
-		font-size: 14px;
-		text-transform: none;
-	}
-	th, td {
-		border-right: solid 1px $color_border;
-		border-bottom: solid 1px $color_border;
+	> thead, > tbody {
+		> tr {
+			> th {
+				border-top: solid 1px $color_border;
+				font-family: $font_sans;
+				font-size: 14px;
+				text-transform: none;
+			}
+			> th, > td {
+				border-right: solid 1px $color_border;
+				border-bottom: solid 1px $color_border;
 
-		&:first-child { border-left: solid 1px $color_border; }
-	}
+				&:first-child {
+					border-left: solid 1px $color_border;
+				}
+			}
+		}
 
-	tr:first-child th:first-child { border-top-left-radius: 2px; }
-	tr:first-child th:last-child { border-top-right-radius: 2px; }
-	tr:last-child td:first-child { border-bottom-left-radius: 2px; }
-	tr:last-child td:last-child { border-bottom-right-radius: 2px; }
+		tr:first-child th:first-child { border-top-left-radius: 2px; }
+		tr:first-child th:last-child { border-top-right-radius: 2px; }
+		tr:last-child td:first-child { border-bottom-left-radius: 2px; }
+		tr:last-child td:last-child { border-bottom-right-radius: 2px; }
+	}
 }
 
 .table-row-placeholder {

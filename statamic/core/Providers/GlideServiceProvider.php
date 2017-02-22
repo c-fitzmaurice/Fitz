@@ -8,8 +8,10 @@ use Statamic\API\Config;
 use League\Glide\ServerFactory;
 use Statamic\Imaging\ImageGenerator;
 use Statamic\Imaging\GlideUrlBuilder;
+use Statamic\Imaging\PresetGenerator;
 use Statamic\Imaging\StaticUrlBuilder;
 use Illuminate\Support\ServiceProvider;
+use Statamic\Contracts\Imaging\UrlBuilder;
 use Statamic\Imaging\GlideImageManipulator;
 use Statamic\Contracts\Imaging\ImageManipulator;
 use League\Glide\Responses\LaravelResponseFactory;
@@ -20,8 +22,14 @@ class GlideServiceProvider extends ServiceProvider
 
     public function register()
     {
+        $this->app->bind(UrlBuilder::class, function () {
+            return $this->getBuilder();
+        });
+
         $this->app->bind(ImageManipulator::class, function () {
-            return new GlideImageManipulator($this->getBuilder());
+            return new GlideImageManipulator(
+                $this->app->make(UrlBuilder::class)
+            );
         });
 
         $this->app->singleton(Server::class, function () {
@@ -32,7 +40,15 @@ class GlideServiceProvider extends ServiceProvider
                 'response' => new LaravelResponseFactory(app('request')),
                 'driver'   => Config::get('assets.image_manipulation_driver'),
                 'cache_with_file_extensions' => true,
+                'presets' => Config::getImageManipulationPresets(),
             ]);
+        });
+
+        $this->app->bind(PresetGenerator::class, function ($app) {
+            return new PresetGenerator(
+                $app->make(ImageGenerator::class),
+                Config::getImageManipulationPresets()
+            );
         });
     }
 
@@ -54,6 +70,6 @@ class GlideServiceProvider extends ServiceProvider
 
     public function provides()
     {
-        return [ImageManipulator::class, Server::class];
+        return [ImageManipulator::class, Server::class, PresetGenerator::class];
     }
 }

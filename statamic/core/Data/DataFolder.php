@@ -17,9 +17,7 @@ abstract class DataFolder implements DataFolderContract
     protected $data = [];
 
     /**
-     * @param string     $key
-     * @param mixed|null $default
-     * @return mixed
+     * @inheritdoc
      */
     public function get($key, $default = null)
     {
@@ -27,8 +25,7 @@ abstract class DataFolder implements DataFolderContract
     }
 
     /**
-     * @param string $key
-     * @param mixed  $value
+     * @inheritdoc
      */
     public function set($key, $value)
     {
@@ -36,10 +33,23 @@ abstract class DataFolder implements DataFolderContract
     }
 
     /**
-     * Get or set the data
-     *
-     * @param array|null $data
-     * @return mixed
+     * @inheritdoc
+     */
+    public function remove($key)
+    {
+        unset($this->data[$key]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function has($key)
+    {
+        return array_has($this->data, $key);
+    }
+
+    /**
+     * @inheritdoc
      */
     public function data($data = null)
     {
@@ -51,8 +61,7 @@ abstract class DataFolder implements DataFolderContract
     }
 
     /**
-     * @param string|null $path
-     * @return string
+     * @inheritdoc
      */
     public function path($path = null)
     {
@@ -64,9 +73,7 @@ abstract class DataFolder implements DataFolderContract
     }
 
     /**
-     * Get the basename of the folder
-     *
-     * @return string
+     * @inheritdoc
      */
     public function basename()
     {
@@ -74,11 +81,18 @@ abstract class DataFolder implements DataFolderContract
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function title()
     {
-        return $this->get('title', ucfirst(pathinfo($this->path())['filename']));
+        return $this->get('title', $this->computedTitle());
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function computedTitle()
+    {
+        return ucfirst(pathinfo($this->path())['filename']);
+    }
 }

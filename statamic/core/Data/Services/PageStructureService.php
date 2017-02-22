@@ -29,6 +29,7 @@ class PageStructureService extends BaseService
         $locale = $locale ?: default_locale();
 
         $structure = $this->all()->map(function ($item, $id) {
+            $item = $item->toArray();
             $item['id'] = $id;
             return $item;
         })->keyBy('url');

@@ -51,6 +51,14 @@ module.exports = {
         }
     },
 
+    watch: {
+        updated(updated) {
+            if (updated) {
+                this.$els.audio.play();
+            }
+        }
+    },
+
     methods: {
         start() {
             this.started = true;

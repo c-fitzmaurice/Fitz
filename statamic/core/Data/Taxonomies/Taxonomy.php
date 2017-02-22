@@ -19,6 +19,11 @@ class Taxonomy extends DataFolder implements TaxonomyContract
     protected $terms;
 
     /**
+     * @var \Statamic\Data\Taxonomies\TermCollection
+     */
+    protected $associated_terms;
+
+    /**
      * @var \Carbon\Carbon
      */
     protected $last_modified;
@@ -50,11 +55,27 @@ class Taxonomy extends DataFolder implements TaxonomyContract
             return $this->terms;
         }
 
-        if (! $taxonomies = TermAPI::whereTaxonomy($this->path())) {
-            $taxonomies = collect_terms();
+        if (! $terms = TermAPI::whereTaxonomy($this->path())) {
+            $terms = collect_terms();
         }
 
-        return $this->terms = $taxonomies;
+        return $this->terms = $terms;
+    }
+
+    /**
+     * @return \Statamic\Data\Taxonomies\TermCollection
+     */
+    public function associatedTerms()
+    {
+        if ($this->associated_terms) {
+            return $this->associated_terms;
+        }
+
+        if (! $terms = TermAPI::whereTaxonomy($this->path(), false)) {
+            $terms = collect_terms();
+        }
+
+        return $this->associated_terms = $terms;
     }
 
     /**
@@ -101,7 +122,7 @@ class Taxonomy extends DataFolder implements TaxonomyContract
      */
     public function save()
     {
-        $path = 'taxonomies/' . $this->path() . '/folder.yaml';
+        $path = 'taxonomies/' . $this->path() . '.yaml';
 
         File::disk('content')->put($path, YAML::dump($this->data()));
 
@@ -171,5 +192,37 @@ class Taxonomy extends DataFolder implements TaxonomyContract
             Config::get('theming.default_term_fieldset'),
             Config::get('theming.default_fieldset')
         ]);
+    }
+
+    public function getLocalizedSlug($locale, $slug)
+    {
+        $slugs = $this->get('slugs', []);
+
+        $localeSlugs = array_get($slugs, $locale, []);
+
+        return array_get($localeSlugs, $slug);
+    }
+
+    public function localizeSlug($locale, $slug, $localizedSlug)
+    {
+        $slugs = $this->get('slugs', []);
+
+        $localeSlugs = array_get($slugs, $locale, []);
+
+        $localeSlugs[$slug] = $localizedSlug;
+
+        $localeSlugs = array_filter($localeSlugs);
+
+        if (empty($localeSlugs)) {
+            unset($slugs[$locale]);
+        } else {
+            $slugs[$locale] = $localeSlugs;
+        }
+
+        if (empty($slugs)) {
+            $this->remove('slugs');
+        } else {
+            $this->set('slugs', $slugs);
+        }
     }
 }

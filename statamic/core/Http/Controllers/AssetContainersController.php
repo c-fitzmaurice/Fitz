@@ -2,6 +2,11 @@
 
 namespace Statamic\Http\Controllers;
 
+use Aws\S3\Exception\PermanentRedirectException;
+use Aws\S3\Exception\S3Exception;
+use Illuminate\Http\Request;
+use Statamic\API\Parse;
+use Statamic\Assets\AssetContainerManager;
 use Statamic\Http\Requests;
 use Statamic\API\AssetContainer;
 use Statamic\API\Stache;
@@ -10,23 +15,6 @@ use Statamic\API\Helper;
 
 class AssetContainersController extends CpController
 {
-    public function index()
-    {
-        $this->access('assets:*:edit');
-
-        $containers = collect(AssetContainer::all())->filter(function ($container) {
-            return User::getCurrent()->can("assets:{$container->uuid()}:edit");
-        })->all();
-
-        if (count($containers) === 1) {
-            return redirect()->route('assets.browse', reset($containers)->id());
-        }
-
-        return view('assets.containers.index', [
-            'title' => 'Assets'
-        ]);
-    }
-
     public function manage()
     {
         return view('assets.containers.manage', [
@@ -100,7 +88,7 @@ class AssetContainersController extends CpController
             'fieldset' => $this->request->input('fieldset'),
         ];
 
-        $data = array_merge($config, $data);
+        $data = array_merge($config, $container->data(), $data);
 
         $container->data($data);
 
@@ -129,20 +117,95 @@ class AssetContainersController extends CpController
     {
         $container = AssetContainer::find($container);
 
-        return collect($container->folders())->map(function ($folder) {
-            return $folder->title();
-        });
+        $folders = collect([
+            ['path' => '/', 'title' => '/']
+        ]);
+
+        $assetFolders = $container->assetFolders()->map(function ($folder) {
+            return [
+                'path' => $folder->path(),
+                'title' => $folder->has('title') ? $folder->title() : $folder->path()
+            ];
+        })->values();
+
+        return $folders->merge($assetFolders);
     }
 
-    public function sync($container)
+    /**
+     * Get the resolved path
+     *
+     * Used from the asset container wizard when typing a path.
+     *
+     * @param Request $request
+     * @param AssetContainerManager $manager
+     * @return array|null
+     */
+    public function getResolvedPath(Request $request, AssetContainerManager $manager)
     {
-        $container = AssetContainer::find($container);
+        $path = Parse::env($request->path);
 
-        $assets = $container->sync();
+        if (! $path || $path === '') {
+            return null;
+        }
+
+        $resolved = $manager->resolveLocalPath($path);
 
         return [
-            'success' => true,
-            'synced' => $assets->toArray(),
+            'path' => $resolved,
+            'exists' => is_dir($resolved)
         ];
+    }
+
+    /**
+     * Get the resolved URL
+     *
+     * Used from the asset container wizard when typing a URL.
+     *
+     * @param Request $request
+     * @param AssetContainerManager $manager
+     * @return array|null
+     */
+    public function getResolvedUrl(Request $request, AssetContainerManager $manager)
+    {
+        $url = $manager->getAbsoluteUrl(
+            Parse::env($request->url)
+        );
+
+        return compact('url');
+    }
+
+    public function validateS3Credentials(Request $request, AssetContainerManager $manager)
+    {
+        try {
+            $files = $manager->createS3Filesystem($request->all())->files('/');
+
+            return [
+                'success' => true,
+                'files' => count($files)
+            ];
+        } catch (S3Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $this->parseS3ExceptionMessage($e)
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    private function parseS3ExceptionMessage(S3Exception $e)
+    {
+        if ($e instanceof PermanentRedirectException) {
+            return $e->getMessage();
+        }
+
+        $xml = $e->getResponse()->getBody();
+
+        preg_match('/<Code>(.*)<\/Code><Message>(.*)<\/Message>/', $xml, $matches);
+
+        return sprintf('%s (Error Code: %s)', $matches[2], $matches[1]);
     }
 }

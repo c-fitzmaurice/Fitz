@@ -116,7 +116,7 @@ class FolderAccessor
      */
     public function getFilesByTypeRecursively($folder, $extension)
     {
-        return $this->getFilesByType($folder, $extension);
+        return $this->getFilesByType($folder, $extension, true);
     }
 
     /**

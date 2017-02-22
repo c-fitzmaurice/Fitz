@@ -10,6 +10,7 @@ use Statamic\API\Path;
 use Statamic\API\Config;
 use Statamic\API\Request;
 use Illuminate\Http\Response;
+use Illuminate\Session\TokenMismatchException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
@@ -83,6 +84,10 @@ class Handler extends ExceptionHandler
             }
 
             return back()->withErrors('Access denied.');
+        }
+
+        if ($e instanceof TokenMismatchException) {
+            return $this->tokenMismatchResponse();
         }
 
         if ($this->isHttpException($e)) {
@@ -168,5 +173,25 @@ class Handler extends ExceptionHandler
         } else {
             return $this->convertExceptionToResponse($e);
         }
+    }
+
+    private function tokenMismatchResponse()
+    {
+        $params = ['expired' => true];
+
+        if ($referer = $this->request->header('referer')) {
+            $params['referer'] = parse_url($referer)['path'];
+        }
+
+        $redirect = route('login', $params);
+
+        if ($this->request->ajax()) {
+            return response([
+                'exception' => 'TokenMismatchException',
+                'redirect' => $redirect
+            ], 401);
+        }
+
+        return redirect($redirect);
     }
 }

@@ -577,6 +577,11 @@ body .redactor-box-fullscreen {
   margin: 15px 0 3px 0 !important;
   padding: 0;
 }
+#redactor-modal input {
+    // Fix the custom checkbox/select overrides
+    opacity: 1;
+    left: auto;
+}
 #redactor-modal input[type="radio"],
 #redactor-modal input[type="checkbox"] {
   position: relative;
@@ -584,6 +589,12 @@ body .redactor-box-fullscreen {
 }
 #redactor-modal select {
   width: 100%;
+  // Fix the custom checkbox/select overrides
+  position: relative;
+  opacity: 1;
+  -webkit-appearance: menulist;
+  -moz-webkit-appearance: menulist;
+  -ms-webkit-appearance: menulist;
 }
 #redactor-modal input[type="text"],
 #redactor-modal input[type="password"],

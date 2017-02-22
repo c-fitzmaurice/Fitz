@@ -22,22 +22,42 @@ class Translator extends \Illuminate\Translation\Translator
      * Since addon's localizations have a prefix, there isn't any issues that
      * will happen, or it's an edge case at the very least.
      *
-     * @return array
+     * @return Collection
      */
     public function all()
     {
         return collect(array_replace_recursive(
-                $this->getTranslations(base_path() . '/resources/lang/en'),
-                $this->getTranslations(site_path() . '/lang/' . $this->locale())
+                $this->fallback()->all(),
+                $this->primary()->all()
             ))->merge($this->getAddonTranslations());
+    }
+
+    /**
+     * Return all the translations for the primary locale.
+     *
+     * @return Collection
+     */
+    private function primary()
+    {
+        return $this->getTranslations($this->locale(), site_path('lang'));
+    }
+
+    /**
+     * Return all the fallback translations.
+     *
+     * @return Collection
+     */
+    private function fallback()
+    {
+        return $this->getTranslations('en', base_path('resources/lang'));
     }
 
     /**
      * Translate the given string to the requested locale.
      *
-     * There are two provided translation lcoations:
-     * - The user's site where they can override the existing translations.
-     * - The Statamic's core translation.
+     * There are two provided translation locations:
+     * - User:     site/lang/<locale>
+     * - Fallback: resources/lang/en
      *
      * We made our own translation to look first for the local translation and
      * fallback to the core translation when there isn't any found.
@@ -52,6 +72,7 @@ class Translator extends \Illuminate\Translation\Translator
     {
         $translation = parent::get($key, $replace, $locale, $fallback);
 
+        // We can't use `has($key)` since we'll end up in the infinite void of space and time.
         if ($key == $translation) {
             $translation = $this->getFallbackTranslator()->get($key, $replace, $locale, $fallback);
         }
@@ -70,7 +91,7 @@ class Translator extends \Illuminate\Translation\Translator
             return $this->fallbackTranslator;
         }
 
-        return $this->fallbackTranslator = new parent(app('translation.loader.fallback'), $this->getLocale());
+        return $this->fallbackTranslator = new parent(app('translation.loader.fallback'), $this->fallback);
     }
 
     /**
@@ -79,11 +100,10 @@ class Translator extends \Illuminate\Translation\Translator
      * @param  string  $path
      * @return array
      */
-    private function getTranslations($path)
+    private function getTranslations($locale, $path)
     {
-        return collect(Folder::getFiles($path))
-            ->localize()
-            ->all();
+        return collect(Folder::getFiles($path . '/' . $locale))
+            ->localize();
     }
 
     /**
@@ -115,13 +135,13 @@ class Translator extends \Illuminate\Translation\Translator
     {
         return collect(Folder::getFolders(site_path('addons')))
             ->filter(function ($item) {
-                return Folder::exists(root_path() . $item . '/resources/lang/' . $this->locale());
+                return Folder::exists(root_path() . $item . '/resources/lang/' . $this->locale);
             })
             ->keyBy(function ($item) {
                 return pathinfo($item, PATHINFO_BASENAME);
             })
             ->map(function ($item) {
-                return root_path() . $item . '/resources/lang/' . $this->locale();
+                return root_path() . $item . '/resources/lang/' . $this->locale;
             })
             ->map(function ($item) {
                 return Folder::getFiles($item);

@@ -1,8 +1,8 @@
 .grid-field,
 .table-field {
-    table { @extend .bordered-table; }
+    > table { @extend .bordered-table; }
 
-    thead th {
+    > table > thead > tr > th {
         @include toolbar;
         display: table-cell;
         box-shadow: none;
@@ -16,15 +16,16 @@
         }
     }
 
-    th:first-child { text-align: left; }
+    > table > thead > tr > th:first-child,
+    > table > tbody > tr > th:first-child { text-align: left; }
 
-    th.row-controls {
+    > table > thead > tr > th.row-controls {
         display: table-cell;
         box-shadow: none;
         width: 60px;
     }
 
-    td.row-controls {
+    > table > tbody > tr > td.row-controls {
         background: #f4f4f4;
         padding: 0;
         text-align: center;
@@ -51,7 +52,7 @@
         .delete { cursor: pointer; }
     }
 
-    td {
+    > table > tbody > td {
     	vertical-align: top;
         padding: 0;
     }

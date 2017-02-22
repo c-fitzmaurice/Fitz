@@ -45,10 +45,17 @@ class AuthController extends CpController
     {
         $data = [
             'title' => translate('cp.login'),
-            'oauth' => OAuth::enabled() && !empty(OAuth::providers())
+            'oauth' => OAuth::enabled() && !empty(OAuth::providers()),
+            'referer' => $this->request->referer
         ];
 
-        return view('auth.login', $data);
+        $view = view('auth.login', $data);
+
+        if ($this->request->expired) {
+            return $view->withErrors(t('session_expired'));
+        }
+
+        return $view;
     }
 
     /**
@@ -111,6 +118,10 @@ class AuthController extends CpController
      */
     public function redirectPath()
     {
+        if ($referer = $this->request->referer) {
+            return $referer;
+        }
+
         return route('cp');
     }
 

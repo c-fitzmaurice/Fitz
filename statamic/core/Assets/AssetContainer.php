@@ -2,18 +2,16 @@
 
 namespace Statamic\Assets;
 
-use Statamic\API\Asset as AssetAPI;
+use Statamic\API\Asset;
 use Statamic\API\Folder;
 use Statamic\API\Str;
-use Statamic\API\URL;
 use Statamic\API\Fieldset;
 use Statamic\API\File;
 use Statamic\API\YAML;
 use Statamic\API\Parse;
-use Statamic\API\Storage;
-use Statamic\Data\Services\AssetFoldersService;
+use Statamic\Events\Data\AssetContainerSaved;
+use Statamic\Events\Data\AssetContainerDeleted;
 use Statamic\Contracts\Assets\AssetContainer as AssetContainerContract;
-use Statamic\Filesystem\FolderAccessor;
 
 class AssetContainer implements AssetContainerContract
 {
@@ -25,7 +23,7 @@ class AssetContainer implements AssetContainerContract
     /**
      * @var string
      */
-    protected $uuid;
+    protected $id;
 
     /**
      * @var string
@@ -41,11 +39,6 @@ class AssetContainer implements AssetContainerContract
      * @var string
      */
     protected $url;
-
-    /**
-     * @var string
-     */
-    protected $title;
 
     /**
      * @var array
@@ -66,12 +59,19 @@ class AssetContainer implements AssetContainerContract
     public function id($id = null)
     {
         if (is_null($id)) {
-            return $this->uuid;
+            return $this->id;
         }
 
-        return $this->uuid = $id;
+        return $this->id = $id;
     }
 
+    /**
+     * Get or set the ID, with backwards compatibility
+     *
+     * @param null|string $uuid
+     * @return string
+     * @deprecated
+     */
     public function uuid($uuid = null)
     {
         return $this->id($uuid);
@@ -103,9 +103,9 @@ class AssetContainer implements AssetContainerContract
             return $this->data;
         }
 
-        $path = 'assets/' . $this->uuid . '/container.yaml';
+        $path = "assets/{$this->id}.yaml";
 
-        $this->data = YAML::parse(Storage::get($path));
+        $this->data = YAML::parse(File::disk('content')->get($path));
 
         return $this->data;
     }
@@ -119,10 +119,10 @@ class AssetContainer implements AssetContainerContract
     public function title($title = null)
     {
         if ($title) {
-            $this->title = $title;
+            $this->data['title'] = $title;
         }
 
-        return $this->title;
+        return array_get($this->data, 'title', Str::title($this->id));
     }
 
     /**
@@ -166,101 +166,6 @@ class AssetContainer implements AssetContainerContract
     }
 
     /**
-     * Get all the assets in this container
-     *
-     * @return \Statamic\Assets\AssetCollection
-     */
-    public function assets()
-    {
-        $assets = [];
-
-        foreach ($this->folders() as $folder) {
-            foreach ($folder->assets() as $uuid => $asset) {
-                $assets[$uuid] = $asset;
-            }
-        }
-
-        return new AssetCollection($assets);
-    }
-
-    /**
-     * Get all the folders in this container
-     *
-     * @return Collection
-     */
-    public function folders()
-    {
-        // We would use ->filter() here but it doesn't pass in keys in Laravel 5.1
-        // For now we'll return nulls for any folders that should be filtered out.
-        return app(AssetFoldersService::class)->all()->map(function ($folder, $key) {
-            if (Str::startsWith($key.'/', 'assets/'.$this->id().'/')) {
-                return $folder;
-            }
-        })->filter()->keyBy(function ($folder) {
-            return $folder->path();
-        });
-    }
-
-    /**
-     * Get a single folder in this container
-     *
-     * @param string $folder
-     * @return \Statamic\Contracts\Assets\AssetFolder
-     */
-    public function folder($folder)
-    {
-        return $this->folders()->get($folder);
-    }
-
-    /**
-     * Check if a folder exists
-     *
-     * @param string $folder
-     * @return bool
-     */
-    public function folderExists($folder)
-    {
-        return $this->folders()->has($folder);
-    }
-
-    /**
-     * Create a folder
-     *
-     * @param string $folder
-     * @param array  $data
-     * @return AssetFolder
-     */
-    public function createFolder($folder, $data = [])
-    {
-        $folder = new AssetFolder($this->uuid(), $folder, $data);
-
-        $folder->save();
-
-        return $folder;
-    }
-
-    /**
-     * Add a folder to this container
-     *
-     * @param string                                 $name
-     * @param \Statamic\Contracts\Assets\AssetFolder $folder
-     */
-    public function addFolder($name, $folder)
-    {
-        $this->folders[$name] = $folder;
-    }
-
-    /**
-     * Remove a folder from this container
-     *
-     * @param string $name
-     */
-    public function removeFolder($name)
-    {
-        unset($this->folders[$name]);
-    }
-
-    /**
      * Convert to an array
      *
      * @return array
@@ -269,7 +174,8 @@ class AssetContainer implements AssetContainerContract
     {
         $data = $this->data();
 
-        $data['id'] = $this->uuid();
+        $data['id'] = $this->id();
+        $data['driver'] = $this->driver();
 
         return $data;
     }
@@ -281,14 +187,14 @@ class AssetContainer implements AssetContainerContract
      */
     public function editUrl()
     {
-        return cp_route('assets.container.edit', $this->uuid());
+        return cp_route('assets.container.edit', $this->id());
     }
 
     /**
      * Get or set the fieldset to be used by assets in this container
      *
      * @param string $fieldset
-     * @return Statamic\Contracts\CP\Fieldset
+     * @return \Statamic\Contracts\CP\Fieldset
      */
     public function fieldset($fieldset = null)
     {
@@ -301,96 +207,6 @@ class AssetContainer implements AssetContainerContract
         }
 
         $this->fieldset = $fieldset;
-    }
-
-    /**
-     * Sync any new files into assets.
-     *
-     * @return mixed
-     */
-    public function sync()
-    {
-        $disk = Folder::disk('assets:' . $this->uuid());
-
-        $this->syncFolders($disk);
-
-        return $this->syncFiles($disk);
-    }
-
-    private function syncFolders(FolderAccessor $disk)
-    {
-        $folders = $disk->getFoldersRecursively('/');
-
-        foreach ($folders as $folder) {
-            if ($this->folderExists($folder)) {
-                continue;
-            }
-
-            $this->addFolder($folder, $this->createFolder($folder));
-        }
-    }
-
-    private function syncFiles(FolderAccessor $disk)
-    {
-        $files = $disk->getFilesRecursively('/');
-
-        $assets = [];
-
-        foreach ($files as $path) {
-            // Always ignore some files.
-            if (in_array(pathinfo($path)['basename'], ['.DS_Store'])) {
-                continue;
-            }
-
-            if ($this->assetExists($path)) {
-                continue;
-            }
-
-            $assets[] = $this->createAsset($path);
-        }
-
-        return new AssetCollection($assets);
-    }
-
-    /**
-     * Check if an asset with a given path exists in this container
-     *
-     * @param string $path
-     * @return bool
-     */
-    public function assetExists($path)
-    {
-        foreach ($this->assets() as $asset) {
-            if (ltrim($asset->path(), '/') === $path) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Create an asset in this container
-     *
-     * @param string $path
-     * @return Asset
-     */
-    public function createAsset($path)
-    {
-        $pathinfo = pathinfo($path);
-
-        $folder = $pathinfo['dirname'];
-        $folder = ($folder === '.') ? '/' : $folder;
-
-        $asset = AssetAPI::create()
-                      ->container($this->uuid())
-                      ->folder($folder)
-                      ->file($pathinfo['basename'])
-                      ->get();
-
-        $asset->save();
-
-        return $asset;
     }
 
     /**
@@ -407,36 +223,215 @@ class AssetContainer implements AssetContainerContract
 
     /**
      * Save the container
+     *
+     * @return void
      */
     public function save()
     {
-        $path = 'assets/' . $this->uuid . '/container.yaml';
+        $path = "assets/{$this->id}.yaml";
 
         $data = array_filter($this->toArray());
         unset($data['id']);
+
+        // Get rid of the driver key if it's local. It's local by default.
+        if (array_get($data, 'driver') === 'local') {
+            unset($data['driver']);
+        }
+
+        // Move assets array to the bottom because it's just easier to read.
+        if ($assets = array_get($data, 'assets')) {
+            unset($data['assets']);
+            $data['assets'] = $assets;
+        }
+
         $yaml = YAML::dump($data);
 
-        Storage::put($path, $yaml);
+        File::disk('content')->put($path, $yaml);
 
-        // Create an empty folder if one doesn't exist.
-        $folder_path = 'assets/' . $this->uuid . '/folder.yaml';
-        if (! Storage::exists($folder_path)) {
-            $yaml = YAML::dump([
-                'title' => $this->title,
-                'assets' => []
-            ]);
-
-            Storage::put($folder_path, $yaml);
-        }
+        event(new AssetContainerSaved($this));
     }
 
     /**
      * Delete the container
      *
-     * @return mixed
+     * @return void
      */
     public function delete()
     {
-        Folder::disk('storage')->delete('assets/' . $this->uuid);
+        $path = "assets/{$this->id}.yaml";
+
+        File::disk('content')->delete($path);
+
+        event(new AssetContainerDeleted($this->id(), $path));
+    }
+
+    public function disk($type = 'folder')
+    {
+        $disk = "assets:{$this->id}";
+
+        return ($type === 'folder') ? Folder::disk($disk) : File::disk($disk);
+    }
+
+    /**
+     * Get all the asset files in this container
+     *
+     * @param string|null $folder Narrow down assets by folder
+     * @param bool $recursive
+     * @return \Illuminate\Support\Collection
+     */
+    public function files($folder = null, $recursive = false)
+    {
+        // When requesting files() as-is, we want all of them.
+        if ($folder == null) {
+            $recursive = true;
+        }
+
+        $files = collect($this->disk()->getFiles($folder, $recursive));
+
+        // Get rid of files we never want to show up.
+        $files = $files->reject(function ($path) {
+            return Str::endsWith($path, ['.DS_Store', 'folder.yaml']);
+        });
+
+        return $files->values();
+    }
+
+    /**
+     * Get all the subfolders in this container
+     *
+     * @param string|null $folder Narrow down subfolders by folder
+     * @param bool $recursive
+     * @return \Illuminate\Support\Collection
+     */
+    public function folders($folder = null, $recursive = false)
+    {
+        // When requesting folders() as-is, we want all of them.
+        if ($folder == null) {
+            $folder = '/';
+            $recursive = true;
+        }
+
+        $folders = collect($this->disk()->getFolders($folder, $recursive));
+
+        return $folders->values();
+    }
+
+    /**
+     * Get all the assets in this container
+     *
+     * @param string|null $folder Narrow down assets by folder
+     * @param bool $recursive Whether to look for assets recursively
+     * @return AssetCollection
+     */
+    public function assets($folder = null, $recursive = false)
+    {
+        $assets = $this->files($folder, $recursive)->keyBy(function ($path) {
+            return $path;
+        })->map(function ($path) {
+            return $this->asset($path);
+        });
+
+        return collect_assets($assets);
+    }
+
+    /**
+     * Get all the asset folders in this container
+     *
+     * @param string|null $folder Narrow down by folder
+     */
+    public function assetFolders($folder = null)
+    {
+        return $this->folders($folder)->keyBy(function ($path) {
+            return $path;
+        })->map(function ($path) {
+            return $this->assetFolder($path);
+        });
+    }
+
+    /**
+     * Create an asset
+     *
+     * @param string $path
+     * @return \Statamic\Assets\Asset
+     */
+    public function createAsset($path)
+    {
+        return Asset::create($path)->container($this->id)->get();
+    }
+
+    /**
+     * Find an asset
+     *
+     * @param string $path
+     * @return \Statamic\Assets\Asset|null
+     */
+    public function asset($path)
+    {
+        if (! $this->disk()->exists($path)) {
+            return;
+        }
+
+        $assets = array_get($this->data, 'assets', []);
+
+        $data = array_get($assets, $path, []);
+
+        return Asset::create($path)->container($this->id)->with($data)->get();
+    }
+
+    /**
+     * Create an asset folder
+     *
+     * @param string $path
+     * @return AssetFolder
+     */
+    public function assetFolder($path)
+    {
+        $contents = $this->disk('file')->get("{$path}/folder.yaml", '');
+
+        $data = YAML::parse($contents);
+
+        return new AssetFolder($this->id, $path, $data);
+    }
+
+    public function addAsset(\Statamic\Assets\Asset $asset)
+    {
+        $data = $asset->data();
+
+        $assets = array_get($this->data, 'assets', []);
+
+        $assets[$asset->path()] = $data;
+
+        if (empty($data)) {
+            unset($assets[$asset->path()]);
+        }
+
+        $this->data['assets'] = $assets;
+    }
+
+    public function removeAsset(\Statamic\Assets\Asset $asset)
+    {
+        $assets = array_get($this->data, 'assets', []);
+
+        unset($assets[$asset->path()]);
+
+        $this->data['assets'] = $assets;
+    }
+
+    /**
+     * Whether the container's assets are web-accessible
+     *
+     * @return bool
+     */
+    public function accessible()
+    {
+        $driver = $this->driver();
+
+        if ($driver === 's3') {
+            return true;
+        } elseif ($driver === 'local') {
+            return ! is_null($this->url());
+        }
+
+        return false;
     }
 }

@@ -114,6 +114,10 @@ module.exports = {
             this.data = [];
         }
 
+        if (!this.config) {
+            this.config = [];
+        }
+
         this.getSuggestions();
 
         this.$watch('suggestionsProp', function(suggestions) {
