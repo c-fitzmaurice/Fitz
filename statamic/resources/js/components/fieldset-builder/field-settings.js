@@ -2,7 +2,7 @@ module.exports = {
 
     template: require('./field-settings.template.html'),
 
-    props: ['field', 'fieldtypeConfig', 'fieldtypes', 'root'],
+    props: ['field', 'fieldtypeConfig', 'fieldtypes', 'root', 'isTaxonomy'],
 
     data: function() {
         return {
@@ -30,10 +30,14 @@ module.exports = {
         },
 
         canBeLocalized: function() {
+            if (this.isTaxonomy) return false;
+
             return this.root && Statamic.locales.length > 1 && this.fieldtype.canBeLocalized;
         },
 
         canBeValidated: function() {
+            if (this.isTaxonomy) return false;
+
             return this.fieldtype.canBeValidated;
         },
 

@@ -1,5 +1,6 @@
 title: Project Post
 create_title: New Project Post
+taxonomies: false
 fields:
   website:
     type: text

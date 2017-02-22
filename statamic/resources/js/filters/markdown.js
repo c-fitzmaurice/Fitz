@@ -1,7 +1,8 @@
 var marked = require('marked');
 
 marked.setOptions({
-    gfm: false
+    gfm: true,
+    tables: true
 });
 
 module.exports = function(value) {

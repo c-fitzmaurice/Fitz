@@ -19,6 +19,8 @@ class RedirectException extends \Exception
     public function setUrl($url)
     {
         $this->url = $url;
+
+        return $this;
     }
 
     /**
@@ -37,10 +39,14 @@ class RedirectException extends \Exception
     public function setStatusCode($code)
     {
         $this->code = $code;
+
+        return $this;
     }
 
     public function setCode($code)
     {
         $this->code = $code;
+
+        return $this;
     }
 }

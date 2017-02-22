@@ -48,10 +48,8 @@ class TermFactory extends ContentFactory implements TermFactoryContract
         if ($this->path) {
             $term->dataType(pathinfo($this->path)['extension']);
         } else {
-            $term->dataType(Config::get('system.default_extension'));
+            $term->dataType('yaml');
         }
-
-        $term = $this->identify($term);
 
         $term->syncOriginal();
 

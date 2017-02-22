@@ -29,7 +29,7 @@
             </div>
 
             <div class="card flush flat-top">
-                <dossier-table v-if="hasItems" :options="tableOptions"></dossier-table>
+                <dossier-table v-if="hasItems" :items="items" :options="tableOptions"></dossier-table>
             </div>
 
         </div>

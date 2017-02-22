@@ -77,6 +77,14 @@ interface Fieldset extends Arrayable, Editable
     public function fieldtypes();
 
     /**
+     * Get or set the taxonomies
+     *
+     * @param array|null $taxonomies
+     * @return mixed
+     */
+    public function taxonomies($taxonomies = null);
+
+    /**
      * Save the fieldset
      *
      * @return mixed

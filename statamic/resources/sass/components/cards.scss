@@ -61,6 +61,7 @@
 .card .head {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     h1 { flex: 1; }
 }
 
@@ -136,7 +137,7 @@
         max-width: 90%;
         span {
             display: block;
-            line-height: 1;
+            line-height: 1.25;
             text-shadow: 0 1px 1px #fff;
         }
         .major { font-weight: bold; }

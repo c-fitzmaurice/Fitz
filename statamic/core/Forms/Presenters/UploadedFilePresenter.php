@@ -66,12 +66,15 @@ class UploadedFilePresenter
         return "<a href='$url'>$file</a>";
     }
 
-    private function buildHtmlForAsset($id)
+    private function buildHtmlForAsset($url)
     {
-        $url = Asset::find($id)->url();
+        if ($asset = Asset::find($url)) {
+            $url = $asset->url();
+        }
 
         $file = urldecode(pathinfo($url)['basename']);
 
-        return "<a href='$url'>$file</a>";
+        // If the file doesn't exist, simply show the filename without a link.
+        return ($asset) ? "<a href='$url'>$file</a>" : $file;
     }
 }

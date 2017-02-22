@@ -4,7 +4,7 @@
         <span class="icon icon-circular-graph animation-spin"></span> {{ translate('cp.loading') }}
     </div>
 
-    <div class="alert alert-danger" v-if="hasErrors">
+    <div class="publish-errors alert alert-danger" v-if="hasErrors">
         <ul>
             <li v-for="error in errors">{{ error }}</li>
         </ul>
@@ -34,6 +34,13 @@
 
             <div class="btn-group" v-if="$parent.isPublishPage">
                 <button type="button" class="btn btn-secondary" @click.prevent="$parent.preview">{{ translate('cp.sneak_peek') }}</button>
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="caret"></span>
+                    <span class="sr-only">{{ translate('cp.toggle_dropdown') }}</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url }}" target="_blank">{{ translate('cp.visit_url') }}</a></li>
+                </ul>
             </div>
 
             <div class="btn-group" v-if="!editingLayout">
@@ -77,8 +84,9 @@
                         <label>{{ translate('cp.published') }}</label>
                         <toggle-fieldtype name="status" :data.sync="formData.status"></toggle-fieldtype>
                     </div>
-
                 </div>
+
+                <taxonomy-fields v-if="shouldShowTaxonomies" :taxonomies="taxonomies" :fields="formData.fields"></taxonomy-fields>
             </div>
         </div>
     </div>
@@ -91,7 +99,7 @@
                     <div class="publish-fields title-field">
                         <div class="form-group" v-if="shouldShowTitle">
                             <label class="block">{{ titleDisplayName }}</label>
-                            <input type="text" class="form-control type-text" autofocus v-model="formData.fields.title" placeholder="{{ translate('cp.new') }} {{ contentType }}" />
+                            <input type="text" class="form-control type-text" autofocus="autofocus" v-model="formData.fields.title" placeholder="{{ translate('cp.new') }} {{ contentType }}" />
                         </div>
                     </div>
 

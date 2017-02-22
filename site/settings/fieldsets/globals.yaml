@@ -1,5 +1,6 @@
 title: Default Globals
 hide: true
+taxonomies: false
 fields:
   site_name:
     type: text

@@ -124,6 +124,11 @@ abstract class Publisher
             return;
         }
 
+        // If a fieldset was part of the field data, we don't want to append anything.
+        if (isset($this->fields['fieldset'])) {
+            return;
+        }
+
         $parent = Page::whereUri($this->request->input('extra.parent_url'));
 
         $fieldset = $this->request->input('fieldset');

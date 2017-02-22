@@ -131,12 +131,24 @@ class PathBuilder implements PathBuilderContract
             );
         }
 
-        $path = ($this->type == 'entry') ? 'collections/'.$this->collection : 'taxonomies/'.$this->collection;
+        if ($this->type === 'entry') {
+            $path = 'collections/' . $this->collection;
 
-        // (collections|taxonomies)/blog/_1.slug.md
-        // (collections|taxonomies)/blog/fr/_1.slug.md
-        return Path::makeRelative($path) . '/' . $this->getLocalePrefix() .
-               $this->getStatusPrefix() . $this->getOrderPrefix() . $this->getSlug() . '.' . $this->extension;
+            // collections/blog/_1.slug.md
+            // collections/blog/fr/_1.slug.md
+            return Path::makeRelative($path) . '/' . $this->getLocalePrefix() .
+            $this->getStatusPrefix() . $this->getOrderPrefix() . $this->getSlug() . '.' . $this->extension;
+        }
+
+        if ($this->type === 'term') {
+            $path = 'taxonomies/'.$this->collection;
+
+            // taxonomies/tags/_1.slug.yaml
+            return Path::makeRelative($path) . '/' .
+                   $this->getStatusPrefix() . $this->getOrderPrefix() . $this->getSlug() . '.' . $this->extension;
+        }
+
+        throw new \Exception('Unexpected type.');
     }
 
     private function getStatusPrefix()

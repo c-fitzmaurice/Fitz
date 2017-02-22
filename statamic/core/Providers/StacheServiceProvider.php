@@ -59,7 +59,7 @@ class StacheServiceProvider extends ServiceProvider
      */
     private function registerStache()
     {
-        $this->stache = new Stache;
+        $this->stache = $this->app->make(Stache::class);
 
         $this->app->singleton(Stache::class, function () {
             return $this->stache;

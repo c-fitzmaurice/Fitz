@@ -55,13 +55,23 @@
             <div v-show="mode == 'preview'" v-html="data || '' | markdown" class="markdown-preview"></div>
         </div>
 
-        <selector v-if="assetsEnabled"
+        <selector v-if="showAssetSelector"
                   :container="container"
                   :folder="folder"
                   :selected="selectedAssets"
-                  :show.sync="assetSelector"
-                  :view-mode="selectorViewMode"
+                  :restrict-navigation="restrictAssetNavigation"
+                  @selected="assetsSelected"
+                  @closed="closeAssetSelector"
         ></selector>
+
+        <uploader
+            v-ref:uploader
+            v-if="! showAssetSelector"
+            :dom-element="uploadElement"
+            :container="container"
+            :path="folder"
+            @upload-complete="uploadComplete">
+        </uploader>
 
         <modal :show.sync="showCheatsheet" class="markdown-modal">
             <template slot="header">{{ translate('cp.markdown_cheatsheet') }}</template>
@@ -88,12 +98,11 @@ require('codemirror/mode/clike/clike');
 require('codemirror/mode/php/php');
 require('codemirror/mode/yaml/yaml');
 
-import AssetFieldtypeSelector from './assets/AssetFieldtypeSelector.vue'
-
 module.exports = {
 
     components: {
-        selector: AssetFieldtypeSelector
+        selector: require('../assets/Selector.vue'),
+        Uploader: require('../assets/Uploader.vue')
     },
 
     props: ['data', 'name', 'config'],
@@ -102,7 +111,7 @@ module.exports = {
         return {
             mode: 'write',
             selections: null,      // CodeMirror text selections
-            assetSelector: false,  // Is the asset selector opened?
+            showAssetSelector: false,  // Is the asset selector opened?
             selectedAssets: [],    // Assets selected in the selector
             selectorViewMode: null,
             draggingFile: false,
@@ -318,38 +327,10 @@ module.exports = {
         },
 
         /**
-         * Bind the uploader plugin
-         */
-        bindUploader: function() {
-            var self = this;
-            var $uploader = $(this.$els.writer);
-
-            $uploader.dmUploader({
-                url: cp_url('assets'),
-                extraData: {
-                    container: self.container,
-                    folder: self.folder,
-                    _token: document.querySelector('#csrf-token').getAttribute('value')
-                },
-                onUploadSuccess: function(id, data) {
-                    if (data.asset.is_image) {
-                        self.appendImage(data.asset.url);
-                    } else {
-                        self.appendLink(data.asset.url);
-                    }
-                },
-                onUploadError: function(id, message) {
-                }
-            });
-
-            self.plugin = $uploader.data('dmUploader');
-        },
-
-        /**
          * Open the asset selector
          */
         addAsset: function() {
-            this.assetSelector = true;
+            this.showAssetSelector = true;
         },
 
         /**
@@ -373,7 +354,53 @@ module.exports = {
                 this.insertLink();
                 e.preventDefault();
             }
+        },
+
+        /**
+         * When assets are selected from the modal, this event gets fired.
+         *
+         * @param  Array assets  All the assets that were selected
+         */
+        assetsSelected: function (assets) {
+            // If one asset is chosen, it's safe to replace the selection.
+            // Otherwise we'll just tack on the assets to the end of the text.
+            var method = (assets.length === 1) ? 'insert' : 'append';
+
+            this.closeAssetSelector();
+
+            // We don't want to maintain the asset selections
+            this.selectedAssets = [];
+
+            this.$http.post(cp_url('assets/get'), { assets }, (response) => {
+                _(response).each((asset) => {
+                    var alt = asset.alt || '';
+                    if (asset.is_image) {
+                        this[method+'Image'](asset.url, alt);
+                    } else {
+                        this[method+'Link'](asset.url, alt);
+                    }
+                });
+            });
+        },
+
+        closeAssetSelector() {
+            this.showAssetSelector = false;
+        },
+
+        uploadComplete(upload, uploads) {
+            if (upload.is_image) {
+                this.insertImage(upload.url);
+            } else {
+                this.insertLink(upload.url);
+            }
+
+            // If there are more uploads in the queue, move the cursor to the
+            // end of the document so the selection doesn't get re-replaced.
+            if (uploads.length > 1) {
+                this.codemirror.setCursor(this.codemirror.lineCount(), 0);
+            }
         }
+
     },
 
     computed: {
@@ -391,44 +418,18 @@ module.exports = {
 
         cheatsheet: function() {
             return this.config && this.config.cheatsheet;
+        },
+
+        uploadElement() {
+            return this.$el;
+        },
+
+        restrictAssetNavigation() {
+            return this.config.restrict_assets || false;
         }
-    },
-
-    events: {
-
-        /**
-         * When assets are selected from the modal, this event gets fired.
-         *
-         * @param  Array assets  All the assets that were selected
-         */
-        'assets.selected': function (assets) {
-            var self = this;
-
-            // If one asset is chosen, it's safe to replace the selection.
-            // Otherwise we'll just tack on the assets to the end of the text.
-            var method = (assets.length === 1) ? 'insert' : 'append';
-
-            _.each(assets, function (asset) {
-                var alt = asset.alt || '';
-                if (asset.is_image) {
-                    self[method+'Image'](asset.url, alt);
-                } else {
-                    self[method+'Link'](asset.url, alt);
-                }
-            });
-
-            // We don't want to maintain the asset selections
-            this.selectedAssets = [];
-        }
-
     },
 
     ready: function() {
-        if (this.assetsEnabled) {
-            this.selectorViewMode = Cookies.get('statamic.assets.listing_view_mode') || 'grid';
-            this.bindUploader();
-        }
-
         var self = this;
 
         self.codemirror = CodeMirror(this.$els.codemirror, {

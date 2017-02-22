@@ -9,6 +9,7 @@ use Statamic\Stache\Repository;
 class TaxonomiesDriver extends AbstractDriver
 {
     protected $relatable = false;
+    protected $traverse_recursively = false;
 
     public function getFilesystemRoot()
     {
@@ -17,7 +18,7 @@ class TaxonomiesDriver extends AbstractDriver
 
     public function createItem($path, $contents)
     {
-        $folder = Taxonomy::create(explode('/', $path)[1]);
+        $folder = Taxonomy::create(pathinfo($path)['filename']);
 
         $folder->data(YAML::parse($contents));
 
@@ -26,12 +27,12 @@ class TaxonomiesDriver extends AbstractDriver
 
     public function getItemId($item, $path)
     {
-        return explode('/', $path)[1];
+        return pathinfo($path)['filename'];
     }
 
     public function isMatchingFile($file)
     {
-        return $file['basename'] === 'folder.yaml';
+        return $file['type'] === 'file' && $file['extension'] === 'yaml';
     }
 
     public function toPersistentArray($repo)
@@ -39,8 +40,7 @@ class TaxonomiesDriver extends AbstractDriver
         return [
             'meta' => [
                 'paths' => $repo->getPaths()->all()
-            ],
-            'items' => ['data' => $repo->getItems()]
+            ]
         ];
     }
 

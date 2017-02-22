@@ -60,7 +60,7 @@ class ImageGenerator
 
         $this->server->setSource(File::disk('webroot')->filesystem()->getDriver());
         $this->server->setSourcePathPrefix('/');
-        $this->server->setCachePathPrefix('default');
+        $this->server->setCachePathPrefix('paths');
 
         return $this->generate($path);
     }
@@ -105,10 +105,10 @@ class ImageGenerator
         // Set the source of the server to the directory where the requested image will be.
         // Then all we have to do is pass in the basename of the file to be manipulated.
         $this->server->setSource($this->asset->disk()->filesystem()->getDriver());
-        $this->server->setSourcePathPrefix($this->asset->folder()->path());
+        $this->server->setSourcePathPrefix($this->asset->folder());
 
         // Set the cache path so files are saved appropriately.
-        $this->server->setCachePathPrefix($this->asset->container()->id() . '/' . $this->asset->folder()->path());
+        $this->server->setCachePathPrefix('containers/' . $this->asset->container()->id() . '/' . $this->asset->folder());
 
         return $this->generate($this->asset->basename());
     }

@@ -8,6 +8,7 @@ use Statamic\API\Helper;
 use Statamic\View\Modify;
 use Statamic\Exceptions\ParsingException;
 use Statamic\Exceptions\ModifierException;
+use Statamic\Contracts\Data\Taxonomies\Term;
 
 /**
  * The Statamic template parser. Here be dragons.
@@ -220,6 +221,13 @@ class Parser
                             foreach ($loop_data as $loop_key => $loop_value) {
                                 $index++;
 
+                                // <statamic>
+                                // Terms should be converted to arrays automatically.
+                                if ($loop_value instanceof Term) {
+                                    $loop_value = $loop_value->toArray();
+                                }
+                                // </statamic>
+
                                 // is the value an array?
                                 if (! is_array($loop_value)) {
                                     // no, make it one
@@ -326,6 +334,9 @@ class Parser
                         if (($var_pipe !== false && in_array('noparse', array_slice(explode('|', $var), 1))) || in_array($var_name, $noparse)) {
                             $text = $this->createExtraction('noparse', $data_matches[0][$index], $val, $text);
                         } else {
+                            if ($val instanceof Term) {
+                                $val = $val->slug();
+                            }
                             // </statamic>
                             $text = str_replace($data_matches[0][$index], $val, $text);
                             // <statamic>
@@ -923,6 +934,10 @@ class Parser
         // if the resulting value of a variable in a string that contains another variable,
         // find that variable's value as well
         if (!is_array($value)) {
+            if ($value instanceof Term) {
+                $value = $value->slug();
+            }
+
             while (preg_match($this->variableTagRegex, $value, $matches)) {
                 $previous_value = $value;
                 $value          = $this->parseVariables($value, $this->conditionalData, $callback);

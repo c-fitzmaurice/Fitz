@@ -100,6 +100,15 @@ interface Data extends Arrayable, Editable, HasFieldset
     public function get($key, $default = null);
 
     /**
+     * Get a key from the data, and fall back to the default locale
+     *
+     * @param string     $key     Key to retrieve
+     * @param mixed|null $default Fallback value
+     * @return mixed
+     */
+    public function getWithDefaultLocale($key, $default = null);
+
+    /**
      * Get a key from the data, and fall back to cascade (folder.yaml + default locale)
      *
      * @param string     $key     Key to retrieve
@@ -115,6 +124,14 @@ interface Data extends Arrayable, Editable, HasFieldset
      * @return bool
      */
     public function has($key);
+
+    /**
+     * Does the given key exist in the data, including the default locale?
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function hasWithDefaultLocale($key);
 
     /**
      * Does the given key exist in the data, including the cascade?

@@ -1,296 +1,370 @@
 <template>
-    <div class="assets-fieldtype-wrapper"
-        :class="{ 'being-dragging': draggingFile && !selector }"
-        @dragover="draggingFile = true"
-        @dragleave="draggingFile = false"
-        @drop="draggingFile = false">
+    <div
+        class="assets-fieldtype"
+        :class="{ 'max-files-reached': maxFilesReached, 'empty': ! assets.length }"
+        @dragover="dragOver"
+        @dragleave="dragStop"
+        @drop="dragStop">
 
         <div v-if="loading" class="loading loading-basic">
             <span class="icon icon-circular-graph animation-spin"></span> {{ translate('cp.loading') }}
         </div>
 
-        <div class="drag-notification" v-if="draggingFile && !selector">
+        <div class="drag-notification" v-if="containerSpecified && draggingFile && !showSelector">
             <i class="icon icon-download"></i>
             <h3>{{ translate('cp.drop_to_upload') }}</h3>
         </div>
 
-        <div class="asset-uploader-container" :class="{ 'max-files-reached': maxFilesReached }" v-if="!loading">
-            <div class="manage-assets" v-else v-if="!maxFilesReached">
-                <button type="button" class="btn btn-with-icon" @click="selectAsset" @keyup.space.enter="selectAsset" tabindex="0">
-                    <span class="icon icon-folder-images"></span>
-                    {{ translate('cp.add_asset') }}
-                </button>
-                <p>or <a href='' @click.prevent="openFinder">upload</a> new file</p>
-            </div>
-            <div class="asset-uploader" v-if="expanded">
-                <div class="asset-listing grid">
-                    <asset v-for="asset in assetQueue" :asset="asset"></asset>
-                </div>
-            </div>
-            <input type="file" multiple="multiple" class="system-file-upload hide">
-        </div>
+        <template v-if="!loading">
 
-        <selector :container="container"
+            <div class="manage-assets" v-if="!maxFilesReached">
+
+                <div v-if="!containerSpecified">
+                    <i class="icon icon-warning"></i>
+                    {{ translate('cp.no_asset_container_specified') }}
+                </div>
+
+                <template v-else>
+                    <button
+                        type="button"
+                        class="btn btn-with-icon"
+                        @click="openSelector"
+                        @keyup.space.enter="openSelector"
+                        tabindex="0">
+                        <span class="icon icon-folder-images"></span>
+                        {{ translate('cp.add_asset') }}
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-with-icon"
+                        @click.prevent="uploadFile">
+                        <span class="icon icon-upload-to-cloud"></span>
+                        {{ translate('cp.upload') }}
+                    </button>
+
+                    <p>{{ translate('cp.or_drag_and_drop_files') }}</p>
+                </template>
+            </div>
+
+            <uploader
+                v-ref:uploader
+                v-if="containerSpecified && !showSelector"
+                :dom-element="uploadElement"
+                :container="container"
+                :path="folder"
+                @updated="uploadsUpdated"
+                @upload-complete="uploadComplete">
+            </uploader>
+
+            <uploads
+                v-if="uploads.length"
+                :uploads="uploads">
+            </uploads>
+
+            <div class="asset-grid-listing" v-if="expanded" v-el:assets>
+
+                <asset
+                    v-for="asset in assets"
+                    :asset="asset"
+                    @removed="assetRemoved">
+                </asset>
+
+                <!-- hack for flexbox spacing the last row properly. -->
+                <div class="asset-tile ghost"></div>
+                <div class="asset-tile ghost"></div>
+                <div class="asset-tile ghost"></div>
+                <div class="asset-tile ghost"></div>
+                <div class="asset-tile ghost"></div>
+
+            </div>
+        </template>
+
+        <selector
+            v-if="showSelector"
+            :container="container"
             :folder="folder"
-            :selected="clone(assets)"
-            :show.sync="selector"
+            :restrict-navigation="restrictNavigation"
+            :selected="selectedAssets"
             :view-mode="selectorViewMode"
-            :max-files="maxFiles">
+            :max-files="maxFiles"
+            @selected="assetsSelected"
+            @closed="closeSelector">
         </selector>
     </div>
 </template>
 
-<script>
-import AssetFieldtypeSelector from './AssetFieldtypeSelector.vue'
 
-module.exports = {
+<style lang="scss">
+
+    .asset-listing-uploads {
+        border: 1px dashed #ccc;
+        border-top: 0;
+        margin: 0;
+        padding: 10px 20px;
+
+        table {
+            margin: 0;
+        }
+
+        thead {
+            display: none;
+        }
+
+        tr:first-child {
+            border-top: 0;
+        }
+    }
+
+</style>
+
+
+<script>
+import DetectsFileDragging from '../../DetectsFileDragging';
+
+export default {
 
     components: {
-        asset: require('../../assets/asset/asset'),
-        selector: AssetFieldtypeSelector
+        asset: require('./Asset.vue'),
+        selector: require('../../assets/Selector.vue'),
+        uploader: require('../../assets/Uploader.vue'),
+        uploads: require('../../assets/Uploads.vue')
     },
+
+
+    mixins: [DetectsFileDragging],
+
 
     props: ['data', 'config', 'name'],
 
-    data: function() {
+
+    data() {
         return {
-            assets: [],      // The asset data
-            assetQueue: [],  // The assets being displayed in the ui
-            loading: true,   // Fieldtype loading state
-            expanded: false, // Fieldtype visual state
-            plugin: null,    // Uploader plugin instance
-            selector: false,  // Is the asset selector opened?
+            assets: [],
+            loading: true,
+            showSelector: false,
             selectorViewMode: null,
             draggingFile: false,
+            uploads: [],
+            innerDragging: false
         };
     },
 
+
     computed: {
 
-        hasAssets: function() {
+        /**
+         * Whether any assets have been selected.
+         */
+        hasAssets() {
             return Boolean(this.assets.length);
         },
 
-        container: function() {
+        /**
+         * The initial container to be displayed in the selector.
+         */
+        container() {
             return this.config.container;
         },
 
-        folder: function() {
+        /**
+         * The initial folder to be displayed in the selector.
+         */
+        folder() {
             return this.config.folder || '/';
         },
 
-        maxFiles: function() {
-            if (! this.config.max_files) {
-                return 0;
-            }
+        /**
+         * If an asset container has been specified in the config.
+         */
+        containerSpecified() {
+            return this.config.container != null;
+        },
+
+        /**
+         * Whether assets should be restricted to the specified container
+         * and folder. This will prevent navigation to other places.
+         */
+        restrictNavigation() {
+            return this.config.restrict || false;
+        },
+
+        /**
+         * The maximum number of files allowed.
+         */
+        maxFiles() {
+            if (! this.config.max_files) return 0;
 
             return this.config.max_files;
         },
 
-        maxFilesReached: function() {
-            if (this.maxFiles === 0) {
-                return false;
-            }
+        /**
+         * Whether the maximum number of files have been selected.
+         */
+        maxFilesReached() {
+            if (this.maxFiles === 0) return false;
 
             return this.assets.length >= this.maxFiles;
+        },
+
+        /**
+         * The selected assets.
+         *
+         * The asset browser expects an array of asset IDs to be passed in as a prop.
+         */
+        selectedAssets() {
+            // If the value has an :: it's already an ID and we can return as-is.
+            // Otherwise, we need to find the ID from the corresponding asset.
+            return _(this.data).map((value) => {
+                return (value.includes('::')) ? value : _(this.assets).findWhere({ url: value }).id;
+            });
+        },
+
+        /**
+         * Whether the fieldtype is in the expanded UI state.
+         */
+        expanded() {
+            return this.assets.length > 0;
+        },
+
+        /**
+         * The DOM element the uploader component will bind to.
+         */
+        uploadElement() {
+            return this.$el;
         }
 
+    },
+
+    events: {
+        'close-selector' () {
+            this.closeSelector();
+        }
     },
 
     methods: {
 
-        clone: function(val) {
-            return JSON.parse(JSON.stringify(val));
-        },
+        /**
+         * Get asset data from the server
+         *
+         * Accepts an array of asset URLs and/or IDs.
+         */
+        loadAssets(data) {
+            this.loading = true;
 
-        // Get assets from the server, or, if there's no data in the
-        // field, just set the fieldtype to a ready state.
-        getAssets: function() {
-            if (this.data && this.data.length) {
-                this.$http.post(cp_url('assets/get'), {uuids: this.data}, function (data) {
-                    this.assets = data;
-                    this.loading = false;
-                    this.$nextTick(function() {
-                        this.bindUploader();
-
-                        var self = this;
-                        _.each(this.assets, function(asset, i) {
-                            self.assetQueue.push(asset);
-                        });
-                    });
-                });
-            } else {
+            if (! data || ! data.length) {
                 this.loading = false;
-                this.$nextTick(function() {
-                    this.bindUploader();
-                });
+                return;
             }
-        },
 
-        // The droparea or manual upload button is clicked.
-        openFinder: function() {
-            $(this.$el).find('input.system-file-upload').click();
-        },
+            this.$http.post(cp_url('assets/get'), { assets: data }, (response) => {
+                this.assets = response;
+                this.loading = false;
 
-        // Asset+ button is clicked. Show the asset listing modal.
-        selectAsset: function() {
-            this.selector = true;
-        },
-
-        bindUploader: function() {
-            var self = this;
-
-            var $uploader = $(this.$el).find('.asset-uploader-container');
-
-            $uploader.dmUploader({
-                url: cp_url('assets'),
-                extraData: {
-                    container: self.container,
-                    folder: self.folder,
-                    _token: document.querySelector('#csrf-token').getAttribute('value')
-                },
-
-                // maxFiles: 0,  - we implement our own max file checks through vue
-
-                onNewFile: function(id, file) {
-                    self.assetQueue.push({
-                        queueId: id,
-                        basename: file.name,
-                        extension: file.name.split('.').pop(),
-                        uploadPercent: 0
-                    });
-                },
-
-                onBeforeUpload: function(id) {
-                    // Don't allow uploading files when the selector is open.
-                    // The user should drag files in there instead.
-                    if (self.selector) {
-                        return false;
-                    }
-
-                    // Check that the max files setting hasn't been reached.
-                    if (self.maxFilesReached) {
-                        // If it has, tug that file back out from the queue.
-                        var item = _.findWhere(self.assetQueue, { queueId: id });
-                        var itemIndex = _.indexOf(self.assetQueue, item);
-                        self.assetQueue.splice(itemIndex, 1);
-
-                        // Return false so the file doesn't get uploaded
-                        return false;
-                    }
-                },
-
-                onUploadProgress: function(id, percent) {
-                    var asset = _.findWhere(self.assetQueue, { queueId: id });
-                    asset.uploadPercent = percent;
-                },
-
-                onUploadSuccess: function(id, data){
-                    var asset = _.findWhere(self.assetQueue, { queueId: id });
-                    Vue.set(asset, 'status', 'success');
-
-                    // Now that the asset exists in Statamic, we'll update with the ID.
-                    Vue.set(asset, 'id', data.asset.id);
-
-                    // And show the thumbnail
-                    Vue.set(asset, 'thumbnail', data.asset.thumbnail);
-
-                    // And a toenail, obviously
-                    Vue.set(asset, 'toenail', data.asset.toenail);
-
-                    // If a duplicate file is uploaded, a timestamp will be appended.
-                    // We need to reflect the updated filename in the UI.
-                    Vue.set(asset, 'basename', data.asset.basename);
-
-                    Vue.set(asset, 'extension', data.asset.extension);
-
-                    self.assets.push(data.asset);
-                },
-
-                onUploadError: function(id, message) {
-                    console.log(id, message);
-                    // var asset = _.findWhere(self.assetQueue, { queueId: id });
-                    // Vue.set(asset, 'status', 'error');
-                    // Vue.set(asset, 'errorMessage', message);
-                }
+                this.$nextTick(() => {
+                    this.sortable();
+                });
             });
+        },
 
-            self.plugin = $uploader.data('dmUploader');
-        }
-    },
+        /**
+         * When a user has finished selecting items in the browser.
+         *
+         * We should update the fieldtype with any selections.
+         */
+        assetsSelected(selections) {
+            this.loadAssets(selections);
+        },
 
-    events: {
-        // The 'x' button on an asset has been clicked.
-        'asset.remove': function(removed) {
-            // Remove from queue
-            var item = _.findWhere(this.assetQueue, { id: removed.id });
-            var itemIndex = _.indexOf(this.assetQueue, item);
-            this.assetQueue.splice(itemIndex, 1);
+        /**
+         * Open the asset selector modal
+         */
+        openSelector() {
+            this.showSelector = true;
+        },
 
-            // Remove from assets array
-            var asset = _.findWhere(this.assets, { id: removed.id });
-            var index = _.indexOf(this.assets, asset);
+        /**
+         * Close the asset selector modal
+         */
+        closeSelector() {
+            this.showSelector = false;
+        },
+
+        /**
+         * When an asset remove button was clicked.
+         */
+        assetRemoved(asset) {
+            const index = _(this.assets).findIndex({ id: asset.id });
             this.assets.splice(index, 1);
         },
 
-        // The 'select' button was clicked in the asset selection modal
-        'assets.selected': function(assets) {
-            var self = this;
+        /**
+         * When the uploader component has finished uploading a file.
+         */
+        uploadComplete(asset) {
+            this.assets.push(asset);
+        },
 
-            var ids = _.pluck(assets, 'id');
-            var newIds = _.difference(ids, this.data);
-            var removedIds = _.difference(this.data, ids);
+        /**
+         * When the uploader component has modified the uploads array
+         */
+        uploadsUpdated(uploads) {
+            this.$set('uploads', uploads);
+        },
 
-            // Add the newly selected assets to the queue
-            _.each(newIds, function(id) {
-                // If the limit has been reached, just ignore.
-                if (self.maxFilesReached) {
-                    return;
+        /**
+         * Show the file upload finder window.
+         */
+        uploadFile() {
+            this.$refs.uploader.browse();
+        },
+
+        sortable() {
+            $(this.$els.assets).sortable({
+                items: '> :not(.ghost)',
+                start: (e, ui) => {
+                    ui.item.data('start', ui.item.index());
+                },
+                update: (e, ui) => {
+                    const start = ui.item.data('start');
+                    const end = ui.item.index();
+
+                    this.assets.splice(end, 0, this.assets.splice(start, 1)[0]);
+                },
+                placeholder: {
+                    element(currentItem) {
+                        return $("<div class='ui-sortable-placeholder asset-tile'><div class='faux-thumbnail'></div></div>")[0];
+                    },
+                    update(container, p) {
+                        return;
+                    }
                 }
-
-                var asset = _.findWhere(assets, { id: id });
-                self.assets.push(asset);
-                self.assetQueue.push({
-                    id: id,
-                    basename: asset.basename,
-                    thumbnail: asset.thumbnail,
-                    toenail: asset.toenail
-                });
-            });
-
-            // Remove any removed assets
-            _.each(removedIds, function(id) {
-                var asset = _.findWhere(self.assets, { id: id });
-                var assetIndex = _.indexOf(self.assets, asset);
-                self.assets.splice(assetIndex, 1);
-
-                var queued = _.findWhere(self.assetQueue, { id: id });
-                var queuedIndex = _.indexOf(self.assetQueue, queued);
-                self.assetQueue.splice(queuedIndex, 1);
             });
         }
+
     },
 
-    ready: function() {
+
+    watch: {
+
+        /**
+         * The components deal with passing around asset objects, however our fieldtype is
+         * only concerned with their respective URLs. Note that if the asset belongs to
+         * a non-public container, the url property will just be the ID, so we're ok.
+         */
+        assets(val) {
+            this.data = _.pluck(this.assets, 'url');
+        }
+
+    },
+
+
+    ready() {
         this.selectorViewMode = Cookies.get('statamic.assets.listing_view_mode') || 'grid';
 
-        // We only have IDs in the field data, so we'll need to request the asset data from the server.
-        this.getAssets();
-
-        // When there are assets in the queue, we want to make sure the fieldtype
-        // is in expanded mode. Otherwise, we just want the "Asset +" button.
-        this.$watch('assetQueue', function(queue) {
-            this.expanded = Boolean(queue.length);
-        });
-
-        // When the assets array is changed (when uploading a new asset or selecting an
-        // existing one), we want to update our data to only show the respective IDs.
-        this.$watch('assets', function(val) {
-            // Sometimes nulls gets added (eg. while uploads are in progress) so we'll just filter those out.
-            this.data = _.reject(_.pluck(this.assets, 'id'), function(val) {
-                return !val;
-            });
-        }, { deep: true });
+        // We only have URLs in the field data, so we'll need to request the asset data from the server.
+        this.loadAssets(this.data);
     }
-};
+
+}
 </script>

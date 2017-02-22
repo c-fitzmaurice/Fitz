@@ -9,20 +9,20 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 class EventServiceProvider extends ServiceProvider
 {
     protected $listen = [
-        'content.saved' => [
-            \Statamic\StaticCaching\Invalidator::class
-        ],
         \Statamic\Events\DataIdCreated::class => [
             \Statamic\Stache\Listeners\SaveCreatedId::class
         ],
         \Statamic\Events\SearchSettingsUpdated::class => [
             \Statamic\Listeners\UpdateSearchIndex::class,
             \Statamic\Listeners\FlushCache::class,
-        ],
+        ]
     ];
 
     protected $subscribe = [
-        \Statamic\Stache\Listeners\UpdateItem::class
+        \Statamic\Stache\Listeners\UpdateItem::class,
+        \Statamic\Data\Taxonomies\TermTracker::class,
+        \Statamic\Listeners\GeneratePresetImageManipulations::class,
+        \Statamic\StaticCaching\Invalidator::class,
     ];
 
     public function register()

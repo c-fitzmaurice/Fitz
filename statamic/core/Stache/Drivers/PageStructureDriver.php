@@ -5,6 +5,7 @@ namespace Statamic\Stache\Drivers;
 use Statamic\API\Str;
 use Statamic\API\URL;
 use Statamic\API\Path;
+use Statamic\Data\Pages\PageStructure;
 
 class PageStructureDriver extends AbstractDriver
 {
@@ -17,19 +18,11 @@ class PageStructureDriver extends AbstractDriver
 
     public function createItem($path, $contents)
     {
-        $url = URL::buildFromPath($path);
+        $repo = $this->stache->repo('pages');
 
-        return [
-            'url'    => $url,
-            'parent' => ($url == '/') ? null : URL::parent($url),
-            'depth'  => ($url == '/') ? 0 : substr_count($url, '/'),
-            'status' => Path::status($path),
-        ];
-    }
+        $page = $repo->getItem($repo->getIdByPath($path));
 
-    public function getItemId($item, $path)
-    {
-        return $this->stache->repo('pages')->getIdByPath($path);
+        return $page->structure();
     }
 
     public function isMatchingFile($file)
@@ -63,12 +56,25 @@ class PageStructureDriver extends AbstractDriver
 
     public function toPersistentArray($repo)
     {
+        $structures = $repo->getItems()->map(function ($structure) {
+            return $structure->toArray();
+        })->all();
+
         return [
             'meta' => [
                 'paths' => $repo->getPaths()->all(),
                 'uris' => $repo->getUris()->all(),
             ],
-            'items' => ['data' => $repo->getItems()]
+            'items' => ['data' => $structures]
         ];
+    }
+
+    public function load($collection)
+    {
+        return $collection->map(function ($item, $id) {
+            $structure = new PageStructure($id);
+            $structure->data($item);
+            return $structure;
+        });
     }
 }

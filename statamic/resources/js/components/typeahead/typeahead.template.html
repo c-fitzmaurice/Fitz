@@ -1,11 +1,10 @@
 <div id="typeahead" v-cloak>
     <div class="state-container">
-        <i class="icon icon-magnifying-glass" v-show="isEmpty"></i>
+        <i class="icon icon-magnifying-glass" v-show="isEmpty" @click="focus"></i>
         <i class="icon icon-circle-with-cross" v-show="isDirty || loading" @click="reset"></i>
     </div>
 
     <typeahead-input class="search alt"
-                     placeholder="{{ translate('cp.search_for_anything') }}..."
                      id="global-search"
                      :query.sync="query"
                      :on-up="up"

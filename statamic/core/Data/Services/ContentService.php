@@ -16,17 +16,13 @@ class ContentService extends AbstractService
      */
     public function all()
     {
-        $entries = $this->stache->repo('entries')->getItems()->flatMap(function ($items) {
-            return $items;
-        });
+        $entries = app(EntriesService::class)->all();
+        $terms = app(TermsService::class)->all();
+        $pages = app(PagesService::class)->all();
 
-        $terms = $this->stache->repo('terms')->getItems()->flatMap(function ($items) {
-            return $items;
-        });
-
-        $pages = $this->stache->repo('pages')->getItems();
-
-        return collect_content($entries->merge($terms)->merge($pages));
+        return collect_content(
+            $entries->merge($terms)->merge($pages)
+        );
     }
 
     /**
@@ -37,6 +33,12 @@ class ContentService extends AbstractService
      */
     public function id($id)
     {
+        // Temporarily do a different check for taxonomy terms.
+        // @todo
+        if ($term = app(TermsService::class)->id($id)) {
+            return $term;
+        }
+
         $ids = $this->getFlattenedIds();
 
         if (! $ids->has($id)) {
@@ -85,6 +87,12 @@ class ContentService extends AbstractService
      */
     public function uri($uri)
     {
+        // Temporarily do a different check for taxonomy terms.
+        // @todo
+        if ($term = app(TermsService::class)->uri($uri)) {
+            return $term;
+        }
+
         $key = default_locale() . '::' . Str::ensureLeft($uri, '/');
 
         $id = $this->uris()->get($key);
@@ -101,6 +109,12 @@ class ContentService extends AbstractService
      */
     public function defaultUri($locale, $uri)
     {
+        // Temporarily do a different check for taxonomy terms.
+        // @todo
+        if ($defaultTermUri = app(TermsService::class)->getDefaultTermUri($locale, $uri)) {
+            return $defaultTermUri;
+        }
+
         $uris = $this->stache->uris();
 
         // Attempt to get the ID of a localized URI. If an ID is found it means a localized
@@ -125,13 +139,13 @@ class ContentService extends AbstractService
      *
      * @return Collection
      */
-    private function getFlattenedIds()
+    public function getFlattenedIds()
     {
         $ids = collect();
 
         $stache = $this->stache;
 
-        $keys = ['pages', 'entries', 'terms', 'globals'];
+        $keys = ['pages', 'entries', 'globals'];
 
         // Organize ids into groups of their repo keys. For AggregateRepos,
         // the keys will be namespaces like so: entries::blog

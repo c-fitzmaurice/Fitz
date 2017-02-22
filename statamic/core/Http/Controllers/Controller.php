@@ -30,9 +30,9 @@ abstract class Controller extends BaseController
 
         $this->request = request();
 
-        $get = sanitizeArray($this->request->query->all());
-        $post = ($this->request->isMethod('post')) ? sanitizeArray($this->request->request->all()) : [];
-        $get_post = sanitizeArray($this->request->all());
+        $get = sanitize_array($this->request->query->all());
+        $post = ($this->request->isMethod('post')) ? sanitize_array($this->request->request->all()) : [];
+        $get_post = sanitize_array($this->request->all());
 
         datastore()->merge(array_merge(
             [

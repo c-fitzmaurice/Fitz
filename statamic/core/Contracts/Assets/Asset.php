@@ -15,20 +15,11 @@ interface Asset extends Data
     public function filename();
 
     /**
-     * Get or set the basename
+     * Get the basename
      *
-     * @param string|null $basename
      * @return string
      */
-    public function basename($basename = null);
-
-    /**
-     * Get or set the folder
-     *
-     * @param string|null $folder
-     * @return \Statamic\Contracts\Assets\AssetFolder
-     */
-    public function folder($folder = null);
+    public function basename();
 
     /**
      * Get or set the container
@@ -37,6 +28,14 @@ interface Asset extends Data
      * @return \Statamic\Contracts\Assets\AssetContainer
      */
     public function container($id = null);
+
+    /**
+     * Get or set the container by ID
+     *
+     * @param null|string $id  ID of the container, if setting.
+     * @return string
+     */
+    public function containerId($id = null);
 
     /**
      * Get the URI

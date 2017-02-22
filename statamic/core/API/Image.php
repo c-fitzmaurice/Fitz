@@ -39,4 +39,17 @@ class Image
     {
         return app(ImageManipulator::class);
     }
+
+    /**
+     * Get the image manipulation presets required by the control panel
+     *
+     * @return array
+     */
+    public static function getCpImageManipulationPresets()
+    {
+        return [
+            'cp_thumbnail_small' => ['w' => '200', 'h' => '200'],
+            'cp_thumbnail_large' => ['w' => '1000', 'h' => '1000']
+        ];
+    }
 }

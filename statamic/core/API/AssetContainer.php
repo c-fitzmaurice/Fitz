@@ -36,7 +36,9 @@ class AssetContainer
      */
     public static function wherePath($path)
     {
-        // @todo
+        return self::all()->filter(function ($container) use ($path) {
+            return $container->path() == $path;
+        })->first();
     }
 
     /**

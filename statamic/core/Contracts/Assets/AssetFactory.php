@@ -5,10 +5,10 @@ namespace Statamic\Contracts\Assets;
 interface AssetFactory
 {
     /**
-     * @param string|null $uuid
+     * @param string|null $path
      * @return $this
      */
-    public function create($uuid = null);
+    public function create($path = null);
 
     /**
      * @param string $container

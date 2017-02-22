@@ -11,19 +11,19 @@
                     <th v-for="column in columns"
                         @click="sortBy(column)"
                         class="column-sortable"
-                        :class="['column-' + column.label, {'active': sortCol === column.field} ]"
+                        :class="['column-' + column.label, {'active': isColumnActive(column)} ]"
                     >
                         <template v-if="column.translation">{{ column.translation }}</template>
                         <template v-else>{{ translate('cp.'+column.label) }}</template>
-                        <i v-if="sortCol === column.field"
-                           class="icon icon-chevron-{{ (sortOrders[column.field] > 0) ? 'up' : 'down' }}"></i>
+                        <i v-if="isColumnActive(column)"
+                           class="icon icon-chevron-{{ sortOrder === 'asc' ? 'up' : 'down' }}"></i>
                     </th>
 
                     <th class="column-actions" v-if="hasActions"></th>
                 </tr>
             </thead>
             <tbody v-el:tbody>
-                <tr v-for="item in items | filterBy computedSearch | caseInsensitiveOrderBy computedSortCol computedSortOrder">
+                <tr v-for="item in items">
 
                     <td class="checkbox-col" v-if="hasCheckboxes && !reordering">
                         <input type="checkbox" :id="'checkbox-' + $index" :checked="item.checked" @change="toggle(item)" />
@@ -57,10 +57,21 @@
         </table>
 
         <div v-if="showBulkActions" :class="{ 'bulk-actions': true, 'no-checkboxes': !hasCheckboxes }">
-            <button type="button" class="btn btn-delete" @click.prevent="call('deleteMultiple', 'foo', 'bar')">
+          <button type="button" class="btn action" @click="uncheckAllItems">
+            {{ translate('cp.uncheck_all') }}
+          </button>
+          <button type="button" class="btn btn-delete action" @click.prevent="call('deleteMultiple', 'foo', 'bar')">
                 {{ translate('cp.delete') }} {{ checkedItems.length }} {{ translate_choice('cp.items', checkedItems.length)}}
             </button>
         </div>
+
+        <pagination
+            v-if="pagination.totalPages > 1"
+            :total="pagination.totalPages"
+            :current="pagination.currentPage"
+            :segments="pagination.segments"
+            @selected="paginationPageSelected">
+        </pagination>
 
     </div>
 </template>
@@ -68,15 +79,11 @@
 <script>
 module.exports = {
 
-    props: ['options', 'keyword'],
+    props: ['options', 'keyword', 'items'],
 
     data: function () {
         return {
-            items: [],
             columns: [],
-            sortCol: this.options.sort || null,
-            sortOrder: this.options.sortOrder || 'asc',
-            sortOrders: {},
             reordering: false
         }
     },
@@ -108,14 +115,6 @@ module.exports = {
 
         itemsAreChecked: function() {
             return this.checkedItems.length > 0;
-        },
-
-        hasSearch: function () {
-            if (this.options.search === false) {
-                return false;
-            }
-
-            return true;
         },
 
         hasHeaders: function () {
@@ -155,28 +154,12 @@ module.exports = {
             return this.items.length === this.checkedItems.length;
         },
 
-        computedSearch: function () {
-            if (this.reordering) {
-                return null;
-            }
-
-            return this.keyword;
+        pagination() {
+            return this.$parent.pagination;
         },
 
-        computedSortCol: function () {
-            if (this.reordering) {
-                return false;
-            }
-
-            return this.sortCol;
-        },
-
-        computedSortOrder: function () {
-            if (this.reordering) {
-                return false;
-            }
-
-            return this.sortOrders[this.sortCol];
+        sortOrder() {
+            return this.$parent.sortOrder;
         }
     },
 
@@ -189,13 +172,9 @@ module.exports = {
     },
 
     ready: function() {
-        this.items = this.$parent.items;
         this.columns = this.$parent.columns;
 
         this.setColumns();
-        this.setSortOrders();
-
-        this.sortCol = this.options.sort || this.columns[0].field;
     },
 
     methods: {
@@ -219,24 +198,17 @@ module.exports = {
             this.columns = columns;
         },
 
-        setSortOrders: function () {
-            var sortOrders = {};
-            _.each(this.columns, function(col) {
-                sortOrders[col.field] = 1;
-            });
-
-            // Apply the initial sort order
-            sortOrders[this.sortCol] = (this.sortOrder === 'asc') ? 1 : -1;
-
-            this.sortOrders = sortOrders;
-        },
-
         sortBy: function (col) {
-            if (this.sortCol === col.field) {
-                this.sortOrders[col.field] = this.sortOrders[col.field] * -1;
+            const sort = col.field;
+
+            let sortOrder = 'desc';
+
+            // If the current sort order was clicked again, change the direction.
+            if (this.$parent.sort === sort) {
+                sortOrder = (this.$parent.sortOrder === 'asc') ? 'desc' : 'asc';
             }
 
-            this.sortCol = col.field;
+            this.$parent.sortBy(sort, sortOrder);
         },
 
         checkAllItems: function () {
@@ -244,6 +216,12 @@ module.exports = {
 
             _.each(this.items, function (item) {
                 item.checked = status;
+            });
+        },
+
+        uncheckAllItems: function () {
+            _.each(this.items, function (item) {
+                item.checked = false;
             });
         },
 
@@ -295,6 +273,18 @@ module.exports = {
         call: function (method) {
             var args = Array.prototype.slice.call(arguments, 1);
             this.$parent[method].apply(this, args);
+        },
+
+        /**
+         * When a page was selected in the pagination.
+         */
+        paginationPageSelected(page) {
+            this.$parent.selectedPage = page;
+            this.$parent.getItems();
+        },
+
+        isColumnActive(col) {
+            return col.field === this.$parent.sort;
         }
     },
 

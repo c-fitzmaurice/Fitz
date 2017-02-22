@@ -3,12 +3,14 @@
 namespace Statamic\Http\Controllers;
 
 use Cache;
+use Statamic\API\Str;
 use Statamic\API\Asset;
 use League\Glide\Server;
+use Statamic\API\AssetContainer;
 use Statamic\API\Config;
-use Statamic\API\Stache;
 use Illuminate\Http\Request;
 use Statamic\Imaging\ImageGenerator;
+use League\Flysystem\FileNotFoundException;
 use League\Glide\Signatures\SignatureFactory;
 use League\Glide\Signatures\SignatureException;
 
@@ -52,9 +54,15 @@ class GlideController extends Controller
     {
         $this->validateSignature();
 
-        return $this->createResponse(
-            $this->generator->generateByPath($path, $this->request->all())
-        );
+        // If the auto crop setting is enabled, we will attempt to resolve an asset from the
+        // given path in order to get its focal point. A little overhead for convenience.
+        if (Config::get('assets.auto_crop')) {
+            if ($asset = Asset::find(Str::ensureLeft($path, '/'))) {
+                return $this->createResponse($this->generateBy('asset', $asset));
+            }
+        }
+
+        return $this->createResponse($this->generateBy('path', $path));
     }
 
     /**
@@ -69,25 +77,46 @@ class GlideController extends Controller
 
         $url = base64_decode($url);
 
-        return $this->createResponse(
-            $this->generator->generateByUrl($url, $this->request->all())
-        );
+        return $this->createResponse($this->generateBy('url', $url));
     }
 
     /**
-     * Generate a manipulated image by an asset ID
+     * Generate a manipulated image by an asset reference
      *
-     * @param string $id
+     * @param string $ref
      * @return mixed
      * @throws \Exception
      */
-    public function generateByAsset($id)
+    public function generateByAsset($encoded)
     {
         $this->validateSignature();
 
-        return $this->createResponse(
-            $this->generator->generateByAsset($this->getAsset($id), $this->request->all())
-        );
+        $decoded = base64_decode($encoded);
+
+        // The string before the first slash is the container
+        list($container, $path) = explode('/', $decoded, 2);
+
+        $asset = AssetContainer::find($container)->asset($path);
+
+        return $this->createResponse($this->generateBy('asset', $asset));
+    }
+
+    /**
+     * Generate an image
+     *
+     * @param $type
+     * @param $item
+     * @return mixed
+     */
+    private function generateBy($type, $item)
+    {
+        $method = 'generateBy' . ucfirst($type);
+
+        try {
+            return $this->generator->$method($item, $this->request->all());
+        } catch (FileNotFoundException $e) {
+            abort(404);
+        }
     }
 
     /**
@@ -120,33 +149,6 @@ class GlideController extends Controller
 
         // Save the path as its own key so it can be retrieved quickly.
         Cache::forever("glide::paths.$key", $path);
-    }
-
-    /**
-     * Get an asset by ID
-     *
-     * @param string $id
-     * @return \Statamic\Contracts\Assets\Asset
-     * @throws \Exception
-     */
-    private function getAsset($id)
-    {
-        // If an asset exists, great. We're done here.
-        if ($asset = Asset::find($id)) {
-            return $asset;
-        }
-
-        // If it does not exist, it's possible the request arrived
-        // before the Stache has had a chance to pick up the new
-        // asset. We'll try to update it now just to be sure.
-        Stache::update();
-
-        if ($asset = Asset::find($id)) {
-            return $asset;
-        }
-
-        // If it still doesn't exist, well then, it really doesn't exist.
-        throw new \Exception("Asset with ID [$id] doesn't exist.");
     }
 
     /**

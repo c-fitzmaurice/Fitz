@@ -74,7 +74,7 @@ class AddonsController extends CpController
 
     public function refresh()
     {
-        \Artisan::call('addons:refresh');
+        \Artisan::call('update:addons');
 
         return back()->with('success', 'Addons refreshed.');
     }

@@ -48,7 +48,9 @@
 		<div class="version" v-cloak>Statamic @{{ version }}</div>
 
 		@if ($is_trial)
-			<div class="trial">DEV MODE</div>
+			<div class="trial">
+                <a href="{{ route('settings') }}">{{ t('trial_mode_badge') }}</a>
+            </div>
 		@endif
 	</div>
 </nav>

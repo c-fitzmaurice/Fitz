@@ -3,6 +3,7 @@
 namespace Statamic\Data\Content;
 
 use Statamic\API\Str;
+use Statamic\API\URL;
 use Statamic\Contracts\Data\Content\UrlBuilder as UrlBuilderContract;
 
 class UrlBuilder implements UrlBuilderContract
@@ -44,31 +45,94 @@ class UrlBuilder implements UrlBuilderContract
         $url = $route_url;
 
         foreach ($matches[1] as $key => $variable) {
-            if ($value = $this->content->get($variable)) {
-                $value = rawurlencode($value);
-            } else {
-                switch ($variable) {
-                    case 'slug':
-                        $value = $this->content->slug();
-                        break;
-                    case 'year':
-                        $value = $this->content->date()->format('Y');
-                        break;
-                    case 'month':
-                        $value = $this->content->date()->format('m');
-                        break;
-                    case 'day':
-                        $value = $this->content->date()->format('d');
-                        break;
-                    default:
-                        $value = '';
-                        break;
-                }
+            // Get the corresponding value for the provided variable.
+            $value = $this->getValue($variable);
+
+            // If the value is an array, we'll grab the first value. This is useful
+            // for including a taxonomy term (an array) as part of the URI.
+            if (is_array($value)) {
+                $value = reset($value);
             }
 
+            // Slugify it because we're dealing with URLs after all.
+            $value = Str::slug($value);
+
+            // Replace the variable in the URL.
             $url = str_replace($matches[0][$key], $value, $url);
         }
 
+        // If provided variables had no matching value, we would end up with
+        // blank spaces in the URL, possibly resulting in double slashes.
+        // Tidying up the URL will de-duplicate those extra slashes.
+        $url = URL::tidy($url);
+
         return Str::ensureLeft($url, '/');
+    }
+
+    /**
+     * Given a route variable, get the appropriate value from the content
+     *
+     * @param string $variable
+     * @return string
+     */
+    private function getValue($variable)
+    {
+        // Handle special values like {year}, {month}, and {day}.
+        if ($specialValue = $this->getSpecialValue($variable)) {
+            return $specialValue;
+        }
+
+        // Get the value from the content if it exists.
+        if ($contentValue = $this->getContentValue($variable)) {
+            return $contentValue;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get a special value based on a variable
+     *
+     * @param string $variable
+     * @return mixed
+     */
+    private function getSpecialValue($variable)
+    {
+        switch ($variable) {
+            case 'year':
+                $value = $this->content->date()->format('Y');
+                break;
+            case 'month':
+                $value = $this->content->date()->format('m');
+                break;
+            case 'day':
+                $value = $this->content->date()->format('d');
+                break;
+            default:
+                $value = null;
+        }
+
+        return $value;
+    }
+
+    /**
+     * Get a value from the content based on a variable
+     *
+     * @param string $variable
+     * @return mixed
+     */
+    private function getContentValue($variable)
+    {
+        // If the given variable exists as data on the content object
+        // (ie. in the front-matter), we'll just use that as-is.
+        if ($this->content->has($variable)) {
+            return $this->content->get($variable);
+        }
+
+        // Otherwise, attempt to get it from a method on the object if one exists.
+        // This will allow us to reference dynamic values like ->title() and so on.
+        $method = Str::camel($variable);
+
+        return (method_exists($this->content, $method)) ? $this->content->$method() : null;
     }
 }

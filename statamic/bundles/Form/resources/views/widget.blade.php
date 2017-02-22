@@ -4,7 +4,7 @@
     </div>
     <div class="card-body">
         @if ( ! $submissions)
-            <h2>{{ trans('cp.empty_responses') }}</h2>
+            <p class="mt">{{ trans('cp.empty_responses') }}</p>
         @else
             <table class="dossier">
                 @foreach($submissions as $submission)

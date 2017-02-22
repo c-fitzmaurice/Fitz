@@ -7,12 +7,12 @@ use Statamic\Contracts\CP\Editable;
 interface AssetContainer extends Editable
 {
     /**
-     * Get or set the uuid
+     * Get or set the ID
      *
-     * @param null|string $uuid
+     * @param null|string $id
      * @return string
      */
-    public function uuid($uuid = null);
+    public function id($id = null);
 
     /**
      * Get or set the handle
@@ -39,6 +39,14 @@ interface AssetContainer extends Editable
     public function title($title = null);
 
     /**
+     * Get or set the data
+     *
+     * @param null|array $data
+     * @return array|null
+     */
+    public function data($data = null);
+
+    /**
      * Get or set the path
      *
      * @param null|string $path
@@ -56,46 +64,44 @@ interface AssetContainer extends Editable
     /**
      * Get or set the URL to this location
      *
+     * @param string|null $url
      * @return null|string
      */
     public function url($url = null);
 
     /**
+     * Create an asset
+     *
+     * @param string $path
+     * @return \Statamic\Assets\Asset
+     */
+    public function asset($path);
+
+    /**
      * Get all the assets in this container
      *
+     * @param string|null $folder Narrow down assets by folder
+     * @param bool $recursive Whether to look for assets recursively
      * @return \Statamic\Assets\AssetCollection
      */
-    public function assets();
+    public function assets($folder = null, $recursive = false);
 
     /**
-     * Get all the folders in this container
+     * Get all the asset files in this container
      *
-     * @return \Statamic\Contracts\Assets\AssetFolder[]
+     * @param string|null $folder  Narrow down assets by folder
+     * @return \Illuminate\Support\Collection
      */
-    public function folders();
+    public function files($folder = null);
 
     /**
-     * Get a single folder in this container
+     * Get all the subfolders in this container
      *
-     * @param string $folder
-     * @return \Statamic\Contracts\Assets\AssetFolder
+     * @param string|null $folder Narrow down subfolders by folder
+     * @param bool $recursive
+     * @return \Illuminate\Support\Collection
      */
-    public function folder($folder);
-
-    /**
-     * Add a folder to this container
-     *
-     * @param string $name
-     * @param \Statamic\Contracts\Assets\AssetFolder $folder
-     */
-    public function addFolder($name, $folder);
-
-    /**
-     * Remove a folder from this container
-     *
-     * @param string $name
-     */
-    public function removeFolder($name);
+    public function folders($folder = null, $recursive = false);
 
     /**
      * Save the container
@@ -119,9 +125,9 @@ interface AssetContainer extends Editable
     public function fieldset($fieldset = null);
 
     /**
-     * Sync the assets with the files
+     * Whether the container's assets are web-accessible
      *
-     * @return mixed
+     * @return bool
      */
-    public function sync();
+    public function accessible();
 }

@@ -31,6 +31,11 @@ abstract class AbstractDriver implements Driver
     /**
      * @var bool
      */
+    protected $traverse_recursively = true;
+
+    /**
+     * @var bool
+     */
     protected $routable = false;
 
     /**
@@ -166,6 +171,16 @@ abstract class AbstractDriver implements Driver
     public function isMultiItem()
     {
         return $this->multi_item;
+    }
+
+    /**
+     * Whether this driver's filesystem should be traversed recursively.
+     *
+     * @return bool
+     */
+    public function traverseRecursively()
+    {
+        return $this->traverse_recursively;
     }
 
     /**

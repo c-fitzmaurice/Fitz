@@ -19,7 +19,7 @@
                         <h3>{{ trans('cp.addons_empty') }}</h3>
                     </div>
                 </template>
-                <dossier-table v-if="hasItems" :keyword.sync="keyword" :options="tableOptions"></dossier-table>
+                <dossier-table v-if="hasItems" :items="items" :keyword.sync="keyword" :options="tableOptions"></dossier-table>
             </div>
         </div>
 

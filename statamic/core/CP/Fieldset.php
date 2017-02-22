@@ -5,6 +5,7 @@ namespace Statamic\CP;
 use Statamic\API\Str;
 use Statamic\API\File;
 use Statamic\API\Path;
+use Statamic\API\Taxonomy;
 use Statamic\API\YAML;
 use Statamic\API\Fieldset as FieldsetAPI;
 use Statamic\Contracts\CP\Fieldset as FieldsetContract;
@@ -235,13 +236,69 @@ class Fieldset implements FieldsetContract
 
         $fieldtypes = [];
 
-        foreach ($this->fields() as $name => $config) {
+        $configs = array_merge(
+            $this->fields(),
+            $this->getTaxonomyFieldConfigs()
+        );
+
+        foreach ($configs as $name => $config) {
+            // When merging fields without configs, they'd just be
+            // empty strings so we'll set them to empty arrays.
+            if (! is_array($config)) {
+                $config = [];
+            }
+
             $type = array_get($config, 'type', 'text');
             $config['name'] = $name;
             $fieldtypes[] = FieldtypeFactory::create($type, $config);
         }
 
         return $this->fieldtypes = $fieldtypes;
+    }
+
+    /**
+     * Get the taxonomy field configurations
+     *
+     * @return array
+     */
+    private function getTaxonomyFieldConfigs()
+    {
+        if ($this->type() !== 'default') {
+            return [];
+        }
+
+        $configs = $this->taxonomies();
+
+        // If the configuration has been specifically set to false, there should be none.
+        if ($configs === false) {
+            return [];
+        }
+
+        // If there's no configs, we want to create empty arrays for all the taxonomies in the system.
+        if (! $configs || $configs === []) {
+            $configs = Taxonomy::all()->keyBy(function ($taxonomy) {
+                return $taxonomy->path();
+            })->map(function () { return []; })->all();
+        }
+
+        // Add type and name the configs so the fieldtypes will know they are taxonomy fields.
+        foreach ($configs as $handle => &$config) {
+            // Allow a primitive list of taxonomy handles.
+            if (is_string($config)) {
+                $handle = $config;
+                $config = [];
+            }
+
+            // Allow passing "true" to allow a field without any configuration.
+            if ($config === true) {
+                $config = [];
+            }
+
+            $config['type'] = 'taxonomy';
+            $config['name'] = $handle;
+        }
+
+        return $configs;
     }
 
     /**
@@ -319,6 +376,12 @@ class Fieldset implements FieldsetContract
         $fields = ($inline_partials) ? $this->fields() : $this->fieldsWithPartials();
 
         foreach ($fields as $name => $config) {
+            // When merging fields without configs, they'd just be
+            // empty strings so we'll set them to empty arrays.
+            if (! is_array($config)) {
+                $config = [];
+            }
+
             // Skip any non-localizable fields if this isn't the default locale.
             if ($localized && !array_get($config, 'localizable')) {
                 continue;
@@ -442,5 +505,20 @@ class Fieldset implements FieldsetContract
     public function editUrl()
     {
         return cp_route('fieldset.edit', $this->name());
+    }
+
+    /**
+     * Get or set the taxonomies
+     *
+     * @param array|null $taxonomies
+     * @return mixed
+     */
+    public function taxonomies($taxonomies = null)
+    {
+        if (is_null($taxonomies)) {
+            return array_get($this->contents, 'taxonomies');
+        }
+
+        $this->contents['taxonomies'] = $taxonomies;
     }
 }

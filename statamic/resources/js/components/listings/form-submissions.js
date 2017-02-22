@@ -6,6 +6,8 @@ module.exports = {
 
     data: function() {
         return {
+            sort: 'datestamp',
+            sortOrder: 'desc',
             ajax: {
                 get: this.get
             },
@@ -19,7 +21,7 @@ module.exports = {
                             {{ item[column.label] }}
                         </a>
                         <template v-else>
-                            {{ item[column.label] }}
+                            {{{ item[column.label] }}}
                         </template>`
                 }
             }

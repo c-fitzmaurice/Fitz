@@ -3,6 +3,7 @@
 namespace Statamic\Addons\Collection;
 
 use Statamic\API\Collection;
+use Statamic\API\Config;
 use Statamic\API\Content;
 use Statamic\Extend\Widget;
 
@@ -24,7 +25,7 @@ class CollectionWidget extends Widget
 
         $title = $this->get('title', $collection->title());
 
-        $format = $this->get('date_format', 'Y/n/d');
+        $format = $this->get('date_format', Config::get('cp.date_format'));
 
         $button = array_get(
                 $collection->fieldset()->contents(),

@@ -20,3 +20,7 @@ fields:
      type: text
   static_caching_ignore_query_strings:
     type: toggle
+  static_caching_exclude:
+    type: list
+  static_caching_invalidation:
+    type: yaml

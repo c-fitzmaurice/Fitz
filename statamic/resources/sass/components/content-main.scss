@@ -10,7 +10,7 @@
 	position: relative;
 	height: 53px;
 	background: #fff;
-	padding: 10px 30px;
+	padding: 10px 45px;
 	font-size: 14px;
 
 
@@ -24,9 +24,9 @@
 
 	.view {
 		font-size: 14px;
-		position: absolute;
-		right: 32px;
+		right: 47px;
 		top: 16px;
+        position: absolute;
 		.icon {
 			position: relative;
 			top: 1px;
@@ -53,10 +53,6 @@
 	}
 
 	.head {
-		h1 {
-			margin-top: 2px;
-		}
-
 		.btn-group {
 			margin-left: 10px;
 		}

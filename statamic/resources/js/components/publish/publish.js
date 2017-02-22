@@ -10,7 +10,8 @@ module.exports = {
     components: {
         'publish-fields': require('./fields'),
         'locale-selector': require('./locale-selector'),
-        'user-options': require('./user-options')
+        'user-options': require('./user-options'),
+        'taxonomy-fields': require('./TaxonomyFields.vue')
     },
 
     deep: true,
@@ -19,7 +20,6 @@ module.exports = {
         title: String,
         extra: String,
         isNew: Boolean,
-        contentData: String,
         contentType: String,
         titleDisplayName: {
             type: String,
@@ -33,6 +33,7 @@ module.exports = {
         },
         uri: String,
         url: String,
+        submitUrl: String,
         status: {
             type: Boolean,
             default: true
@@ -55,6 +56,8 @@ module.exports = {
             saving: false,
             editingLayout: false,
             fieldset: {},
+            contentData: null,
+            taxonomies: null,
             formData: { extra: {}, fields: {} },
             isSlugModified: false,
             iframeLoading: false,
@@ -98,8 +101,6 @@ module.exports = {
         },
 
         shouldShowMeta: function() {
-            if (this.isHomePage) return true;
-
             return !this.isUser && !this.isSettings && !this.isAddon && (this.shouldShowSlug || this.shouldShowDate || this.shouldShowLocales);
         },
 
@@ -138,6 +139,10 @@ module.exports = {
             return false;
         },
 
+        shouldShowTaxonomies: function() {
+            return typeof this.taxonomies !== 'string' && this.isEntry;
+        },
+
         shouldShowSneakPeek: function() {
             return !this.isGlobal && !this.isSettings && !this.isUser && !this.isAddon;
         },
@@ -165,7 +170,7 @@ module.exports = {
                 type: this.contentType,
                 uuid: this.uuid,
                 status: this.status,
-                slug: this.slug,
+                slug: this.contentData.slug || this.slug,
                 locale: this.locale,
                 extra: this.extra,
                 fields: this.contentData
@@ -183,7 +188,7 @@ module.exports = {
             } else if (this.isAddon) {
                 var url = cp_url('addons/') + this.extra.addon + '/settings';
             } else {
-                var url = cp_url('publish');
+                var url = this.submitUrl;
             }
 
             var request = this.$http.post(url, this.formData)
@@ -362,11 +367,15 @@ module.exports = {
         var self = this;
 
         this.extra = JSON.parse(this.extra);
-        this.contentData = JSON.parse(this.contentData);
+        this.contentData = JSON.parse(JSON.stringify(Statamic.Publish.contentData));
+
+        if (Statamic.Publish.taxonomies) {
+            this.taxonomies = JSON.parse(JSON.stringify(Statamic.Publish.taxonomies));
+        }
+
         if (this.locales) {
             this.locales = JSON.parse(this.locales);
         }
-
 
         this.initFormData();
 

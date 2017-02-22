@@ -1,0 +1,42 @@
+title: Main Assets
+path: assets
+url: /assets
+assets:
+  img/black-bear-cubs.jpg:
+    title: Black Bear Cubs
+  img/coffee-mug.jpg:
+    title: Coffee Mug
+  img/jedi-set.jpg:
+    title: Jedi Set
+    alt: The set of The Return of the Jedi
+  img/me.jpg:
+    title: Me
+    alt: Niles Peppertrout
+  img/Colin-Fitz-Maurice.jpg:
+    title: Colin Fitz-Maurice
+    alt: Colin Fitz-Maurice
+  img/resume/Fitz-Maurice, Colin J. - Resume.pdf:
+    title: Resume
+    alt: "Colin's resume"
+  projects/lifezette_mobile_app_hero.png:
+    title: LifeZette Mobile App
+    alt: LifeZette Mobile App
+  projects/lifezette_3.png:
+    alt: LifeZette Article Detail
+  projects/lifezette_4.png:
+    alt: LifeZette Article View
+  projects/lifezette_6.png:
+    alt: LifeZette Menu
+  projects/lifezette_2.png:
+    alt: LifeZette Vertical View
+  projects/lifezette_5.png:
+    alt: LifeZette Video Page
+  projects/lifezette_1.png:
+    title: LifeZette Homepage
+    alt: lifezette_homepage
+  projects/jericho_oil_corporation.png:
+    title: Jericho Oil Corporation
+    alt: Jericho Oil Corporation
+  projects/Salt_House_Road.png:
+    title: Salt House Road
+    alt: Salt House Road Homepage

@@ -16,16 +16,13 @@ class Manager
         'Pages',
         'PageFolders',
         'PageStructure',
-        'Taxonomies',
         'Collections',
         'Globals',
-        'Terms',
         'Entries',
         'Users',
         'UserGroups',
         'AssetContainers',
-        'AssetFolders',
-        'Assets',
+        'Taxonomies',
     ];
 
     /**

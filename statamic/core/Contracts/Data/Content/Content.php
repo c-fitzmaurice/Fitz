@@ -82,4 +82,11 @@ interface Content extends Data
      * @return string
      */
     public function contentType();
+
+    /**
+     * Cause taxonomies to be added when supplementing occurs
+     *
+     * @return void
+     */
+    public function supplementTaxonomies();
 }

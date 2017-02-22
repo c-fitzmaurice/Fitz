@@ -265,6 +265,7 @@ class StatamicController extends Controller
             // default URI should not be accessible. For example, if /team has
             // been localized to /equipe, visiting /about should throw a 404.
             if ($requested_uri === $content->uri()) {
+                $content->supplementTaxonomies();
                 return $content;
             }
         }

@@ -29,6 +29,10 @@ global.format_input_options = function(options) {
 	return formatted;
 };
 
+global.file_icon = function(extension) {
+    return resource_url('img/filetypes/'+ extension +'.png');
+};
+
 global.dd = function(args) {
     console.log(args);
 };

@@ -70,8 +70,5 @@ class Cache
     public static function clear()
     {
         \Artisan::call('cache:clear');
-
-        // @todo When the stache goes back into the cache, we can remove this.
-        Stache::clear();
     }
 }

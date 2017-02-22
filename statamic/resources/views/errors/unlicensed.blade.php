@@ -5,15 +5,15 @@
         {!! csrf_field() !!}
 
         <p>
-            <b>Developer Mode</b><br>
-            Please enter your license key to access to the control panel on a public domain.
+            <b>{{ t('trial_mode') }}</b><br>
+            {{ t('trial_mode_explanation') }}
         </p>
-        <p><a href="https://docs.statamic.com/knowledge-base/developer-mode">Learn more about developer mode.</a></p>
+        <p><a href="https://docs.statamic.com/knowledge-base/trial-mode">{{ t('learn_more_about_trial_mode') }}</a></p>
 
         <hr>
 
         <div class="form-group">
-            <label>License Key</label>
+            <label>{{ t('license_key')}}</label>
             <input type="text" class="form-control" name="key" value="{{ \Statamic\API\Config::getLicenseKey() }}" autofocus>
         </div>
         <div>

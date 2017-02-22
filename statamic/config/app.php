@@ -143,6 +143,7 @@ return [
          */
 
         'Statamic\Providers\AppServiceProvider',
+        'Statamic\Providers\CollectionsServiceProvider',
         'Barryvdh\Debugbar\ServiceProvider',
         'Statamic\Providers\DataServiceProvider',
         'Statamic\Providers\FilesystemServiceProvider',

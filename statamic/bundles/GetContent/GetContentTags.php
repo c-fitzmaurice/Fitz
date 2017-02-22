@@ -29,14 +29,18 @@ class GetContentTags extends CollectionTags
      */
     public function index($locations = null)
     {
+        if (! $locale = $this->get('locale')) {
+            $locale = site_locale();
+        }
+
         if (! $locations) {
             $locations = $this->get(['from', 'id']);
         }
 
         $this->collection = collect_content(
             Helper::explodeOptions($locations)
-        )->map(function ($from) {
-            return $this->getContent($from);
+        )->map(function ($from) use ($locale) {
+            return $this->getContent($from)->in($locale);
         })->filter();
 
         $this->filter();

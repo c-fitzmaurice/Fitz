@@ -95,6 +95,15 @@ class Fieldset
         return $fieldset;
     }
 
+    public static function exists($name, $type = 'default')
+    {
+        $fieldset = self::create($name);
+
+        $fieldset->type($type);
+
+        return File::exists($fieldset->path());
+    }
+
     /**
      * Get all the fieldsets
      *

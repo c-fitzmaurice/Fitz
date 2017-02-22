@@ -14,11 +14,13 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
        'Statamic\Console\Commands\ShowCommand',
+       'Statamic\Console\Commands\ListCommand',
+       'Statamic\Console\Commands\VersionCommand',
        'Statamic\Console\Commands\JokeCommand',
        'Statamic\Console\Commands\GlobetrottersCommand',
        'Statamic\Console\Commands\Assets\AssetsListCommand',
        'Statamic\Console\Commands\Assets\AssetsFindCommand',
-       'Statamic\Console\Commands\Assets\AssetsSyncCommand',
+       'Statamic\Console\Commands\Assets\AssetsGeneratePresetsCommand',
        'Statamic\Console\Commands\Clear\ClearCacheCommand',
        'Statamic\Console\Commands\Clear\ClearStacheCommand',
        'Statamic\Console\Commands\Clear\ClearGlideCommand',
@@ -39,10 +41,13 @@ class Kernel extends ConsoleKernel
        'Statamic\Console\Commands\Generators\Addon\ControllerMakeCommand',
        'Statamic\Console\Commands\Generators\UserMakeCommand',
        'Statamic\Console\Commands\Generators\FieldsetMakeCommand',
+       'Statamic\Console\Commands\Generators\AssetContainerMakeCommand',
        'Statamic\Console\Commands\RefreshAddonsCommand',
        'Statamic\Console\Commands\Config\ConfigSetCommand',
        'Statamic\Console\Commands\Convert\ConvertEmailLoginCommand',
        'Statamic\Console\Commands\SetCommand',
+       'Statamic\Console\Commands\UpdateAddonsCommand',
+       'Statamic\Console\Commands\UpdateHousekeepingCommand',
     ];
 
     /**
@@ -58,8 +63,6 @@ class Kernel extends ConsoleKernel
         parent::bootstrap();
 
         $this->registerAddonCommands();
-
-        $this->getArtisan()->setDefaultCommand('show');
     }
 
     public function bootstrappers()

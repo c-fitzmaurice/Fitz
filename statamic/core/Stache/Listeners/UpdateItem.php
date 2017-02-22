@@ -5,20 +5,21 @@ namespace Statamic\Stache\Listeners;
 use Statamic\API\Str;
 use Statamic\Stache\Stache;
 use Statamic\Contracts\Data\Data;
-use Statamic\Contracts\Assets\Asset;
 use Statamic\Events\Data\PageDeleted;
 use Statamic\Events\Data\TermDeleted;
 use Statamic\Events\Data\UserDeleted;
+use Statamic\Data\Pages\PageStructure;
 use Statamic\Events\Data\EntryDeleted;
 use Statamic\Contracts\Data\Pages\Page;
 use Statamic\Contracts\Data\Users\User;
-use Statamic\Contracts\Assets\AssetFolder;
 use Statamic\Events\Data\UserGroupDeleted;
 use Statamic\Contracts\Data\Entries\Entry;
-use Statamic\Events\Data\AssetFolderDeleted;
 use Statamic\Contracts\Data\Taxonomies\Term;
+use Statamic\Contracts\Assets\AssetContainer;
+use Statamic\Events\Data\AssetContainerSaved;
 use Statamic\Contracts\Permissions\UserGroup;
 use Statamic\Contracts\Data\Globals\GlobalSet;
+use Statamic\Events\Data\AssetContainerDeleted;
 
 class UpdateItem
 {
@@ -50,16 +51,17 @@ class UpdateItem
     public function subscribe($events)
     {
         $events->listen(
-            ['asset.saved', 'assetfolder.saved', 'content.saved', 'user.saved', 'usergroup.saved'],
+            ['content.saved', 'user.saved', 'usergroup.saved'],
             self::class.'@updateSavedItem'
         );
 
+        $events->listen(AssetContainerSaved::class, self::class.'@updateAssetContainer');
+
         $events->listen(EntryDeleted::class, self::class.'@removeDeletedEntry');
-        $events->listen(TermDeleted::class, self::class.'@removeDeletedTerm');
         $events->listen(PageDeleted::class, self::class.'@removeDeletedPages');
         $events->listen(UserDeleted::class, self::class.'@removeDeletedUser');
         $events->listen(UserGroupDeleted::class, self::class.'@removeDeletedUserGroup');
-        $events->listen(AssetFolderDeleted::class, self::class.'@removeDeletedAssetFolder');
+        $events->listen(AssetContainerDeleted::class, self::class.'@removeDeletedAssetContainer');
     }
 
     /**
@@ -70,6 +72,10 @@ class UpdateItem
      */
     public function updateSavedItem($data)
     {
+        if ($data instanceof Term) {
+            return;
+        }
+
         $this->data = $data;
 
         if (! $repo = $this->repo()) {
@@ -91,6 +97,15 @@ class UpdateItem
         }
 
         $this->stache->updated($this->repo());
+
+        if ($repo === 'pages') {
+            $this->updateSavedItem($data->structure());
+        }
+    }
+
+    public function updateAssetContainer(AssetContainerSaved $event)
+    {
+        $this->updateSavedItem($event->container);
     }
 
     /**
@@ -104,23 +119,6 @@ class UpdateItem
         $collection = explode('/', $event->paths[0])[1];
 
         $key = 'entries::'.$collection;
-
-        $this->stache->repo($key)->removeItem($event->id);
-
-        $this->stache->updated($key);
-    }
-
-    /**
-     * Remove a deleted term
-     *
-     * @param TermDeleted $event
-     */
-    public function removeDeletedTerm(TermDeleted $event)
-    {
-        // Get the taxonomy from the path. There's only ever going to be one path.
-        $taxonomy = explode('/', $event->paths[0])[1];
-
-        $key = 'terms::'.$taxonomy;
 
         $this->stache->repo($key)->removeItem($event->id);
 
@@ -171,13 +169,15 @@ class UpdateItem
         $this->stache->updated('usergroups');
     }
 
-    public function removeDeletedAssetFolder(AssetFolderDeleted $event)
+    /**
+     * Remove a deleted asset container
+     *
+     * @param AssetContainerDeleted $event
+     */
+    public function removeDeletedAssetContainer(AssetContainerDeleted $event)
     {
-        $this->stache->repo('assetfolders')->removeItem($event->id);
-        $this->stache->updated('assetfolders');
-
-        $repo = $this->stache->repo('assets')->repo(substr($event->id, 7))->clear();
-        $this->stache->updated('assets');
+        $this->stache->repo('assetcontainers')->removeItem($event->id);
+        $this->stache->updated('assetcontainers');
     }
 
     /**
@@ -189,6 +189,8 @@ class UpdateItem
     {
         if ($this->data instanceof Page) {
             return 'pages';
+        } elseif ($this->data instanceof PageStructure) {
+            return 'pagestructure';
         } elseif ($this->data instanceof Entry) {
             return 'entries::' . $this->data->collectionName();
         } elseif ($this->data instanceof Term) {
@@ -199,11 +201,8 @@ class UpdateItem
             return 'users';
         } elseif ($this->data instanceof UserGroup) {
             return 'usergroups';
-        } elseif ($this->data instanceof Asset) {
-            $str = 'assets::' . $this->data->container()->id() . '/' . $this->data->folder()->path();
-            return rtrim(str_replace('//', '/', $str), '/');
-        } elseif ($this->data instanceof AssetFolder) {
-            return 'assetfolders';
+        } elseif ($this->data instanceof AssetContainer) {
+            return 'assetcontainers';
         }
     }
 

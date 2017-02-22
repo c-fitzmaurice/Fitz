@@ -3,6 +3,7 @@
 namespace Statamic\Forms\Uploaders;
 
 use Statamic\API\Asset;
+use Statamic\API\Path;
 
 class AssetUploader extends Uploader
 {
@@ -14,7 +15,7 @@ class AssetUploader extends Uploader
     public function upload()
     {
         $ids = $this->files->map(function ($file) {
-            return $this->createAsset($file)->id();
+            return $this->createAsset($file)->url();
         });
 
         return ($this->multipleFilesAllowed()) ? $ids->all() : $ids->first();
@@ -28,9 +29,11 @@ class AssetUploader extends Uploader
      */
     private function createAsset($file)
     {
+        $path = Path::assemble($this->config->get('folder'), $file->getClientOriginalName());
+
         $asset = Asset::create()
                       ->container($this->config->get('container'))
-                      ->folder($this->config->get('folder'))
+                      ->path(ltrim($path, '/'))
                       ->get();
 
         $asset->upload($file);
