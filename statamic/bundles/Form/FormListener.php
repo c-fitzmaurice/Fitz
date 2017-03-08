@@ -150,8 +150,7 @@ class FormListener extends Listener
 
         $config = $this->parseConfig($config, $submission->toArray());
 
-        $email->to($config['to'])
-              ->with(array_merge($this->loadKeyVars(), $submission->toArray()));
+        $email->to($config['to']);
 
         if ($from = array_get($config, 'from')) {
             $email->from($from);
@@ -174,9 +173,11 @@ class FormListener extends Listener
         }
 
         if ($template = array_get($config, 'template')) {
-            $email->template($template);
+            $email->template($template)
+                ->with(array_merge($this->loadKeyVars(), $submission->toArray()));
+
         } else {
-            $email->automagic();
+            $email->automagic()->with($submission->toArray());
         }
 
         $email->send();

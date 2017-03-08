@@ -143,6 +143,9 @@ class StatamicController extends Controller
      */
     public function index($segments = '/')
     {
+        // Create a response now so that we can modify it.
+        $this->response = response('');
+
         $segments = $this->parseUrl($segments);
 
         // Are we sneaking a peek?
@@ -194,6 +197,8 @@ class StatamicController extends Controller
             if (! $user || ! $user->hasPermission('content:view_drafts_on_frontend')) {
                 return $this->notFoundResponse();
             }
+
+            $this->response->header('X-Statamic-Draft', true);
         }
 
         // If we're sneaking a peek, we'll need to update the data for the content object.
@@ -209,8 +214,8 @@ class StatamicController extends Controller
 
         $this->ensureTheme();
 
-        // Get the output of the parsed template.
-        $this->response = response($this->view->render($this->data));
+        // Get the output of the parsed template and add it to the response
+        $this->response->setContent($this->view->render($this->data));
 
         $this->setUpDebugBar();
 
@@ -494,7 +499,6 @@ class StatamicController extends Controller
      */
     private function modifyResponse()
     {
-
         $data = (is_object($this->data)) ? $this->data->toArray() : $this->data;
 
         // Modify the response if we're attempting to serve something other than just HTML.

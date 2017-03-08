@@ -1,7 +1,8 @@
 module.exports = {
 
     props: {
-        version: { type: String, default: null }
+        versionTo: { type: String, default: null },
+        versionFrom: { type: String, default: null }
     },
 
     data() {
@@ -68,7 +69,7 @@ module.exports = {
 
         backup() {
             this.backingUp = true
-            this.$http.post(cp_url('system/updater/backup'), { version: this.version }).success(function (data) {
+            this.$http.post(cp_url('system/updater/backup')).success(function (data) {
                 this.backingUp = false
                 this.backedUp = true
                 this.backupMessage = data.message
@@ -82,7 +83,7 @@ module.exports = {
 
         download() {
             this.downloading = true;
-            this.$http.post(cp_url('system/updater/download'), { version: this.version }).success(function (data) {
+            this.$http.post(cp_url('system/updater/download'), { version: this.versionTo }).success(function (data) {
                 this.downloading = false
                 this.downloaded = true
                 this.downloadMessage = data.message
@@ -103,7 +104,7 @@ module.exports = {
 
         unzip() {
             this.unzipping = true;
-            this.$http.post(cp_url('system/updater/unzip'), { version: this.version }).success(function () {
+            this.$http.post(cp_url('system/updater/unzip'), { version: this.versionTo }).success(function () {
                 this.unzipping = false
                 this.unzipped = true
                 this.composer()
@@ -117,7 +118,7 @@ module.exports = {
 
         composer() {
             this.installingDependencies = true;
-            this.$http.post(cp_url('system/updater/composer'), { version: this.version }).success(function () {
+            this.$http.post(cp_url('system/updater/composer')).success(function () {
                 this.installingDependencies = false
                 this.installedDependencies = true
                 this.swap()
@@ -130,7 +131,7 @@ module.exports = {
 
         swap() {
             this.swapping = true;
-            this.$http.post(cp_url('system/updater/swap'), { version: this.version }).success(function () {
+            this.$http.post(cp_url('system/updater/swap')).success(function () {
                 this.swapping = false
                 this.swapped = true
                 this.cleanUp()
@@ -149,7 +150,10 @@ module.exports = {
             this.$root.version = this.version;
             $('.nav-main .update').hide();
 
-            this.$http.post(cp_url('system/updater/clean'), { version: this.version }).success(function () {
+            this.$http.post(cp_url('system/updater/clean'), {
+                version: this.versionTo,
+                oldVersion: this.versionFrom
+            }).success(function () {
                 this.cleaningUp = false
                 this.cleanedUp = true
             }).error(function (data) {

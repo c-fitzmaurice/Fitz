@@ -4289,7 +4289,7 @@
 					if (current && current.tagName === 'TR') return;
 
 					// Stop formatting pre and headers
-					if (this.utils.isCurrentOrParent('PRE') || this.utils.isCurrentOrParentHeader()) return;
+					if (this.utils.isCurrentOrParent('PRE')) return;
 
 					var tags = ['b', 'bold', 'i', 'italic', 'underline', 'strikethrough', 'deleted', 'superscript', 'subscript'];
 					var replaced = ['strong', 'strong', 'em', 'em', 'u', 'del', 'del', 'sup', 'sub'];

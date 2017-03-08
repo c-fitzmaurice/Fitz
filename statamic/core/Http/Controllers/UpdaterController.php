@@ -224,8 +224,6 @@ class UpdaterController extends CpController
      */
     public function cleanUp()
     {
-        $version = $this->request->input('version');
-
         // Keep track of errors. These are not showstoppers.
         $errors = [];
 
@@ -245,7 +243,10 @@ class UpdaterController extends CpController
         // }
 
         try {
-            (new Housekeeper)->clean($version);
+            (new Housekeeper)->clean(
+                $this->request->input('version'),
+                $this->request->input('oldVersion', '2.0.0')
+            );
         } catch (\Exception $e) {
             $errors[] = ['message' => "There was a problem while running the system.updated event.", 'e' => $e];
         }

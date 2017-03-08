@@ -2,7 +2,7 @@
 
 @section('content')
 
-<updater version="{{ $version }}" inline-template>
+<updater version-to="{{ $version }}" version-from="{{ STATAMIC_VERSION }}" inline-template>
     <div class="card update" v-cloak>
         <div class="info-blocks">
 

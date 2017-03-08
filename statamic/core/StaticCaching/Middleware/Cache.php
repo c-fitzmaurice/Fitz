@@ -43,6 +43,11 @@ class Cache
             return;
         }
 
+        // Draft pages should not be cached.
+        if ($response->headers->has('X-Statamic-Draft')) {
+            return;
+        }
+
         if ($response->getStatusCode() !== 200) {
             return;
         }
