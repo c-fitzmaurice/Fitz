@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitda9b816925044ecf6836b17d821bf29f
+class ComposerStaticInitb9210eeb7fd50988097add791a6f5e98
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -2526,6 +2526,8 @@ class ComposerStaticInitda9b816925044ecf6836b17d821bf29f
         'Statamic\\Addons\\Section\\SectionFieldtype' => __DIR__ . '/../..' . '/bundles/Section/SectionFieldtype.php',
         'Statamic\\Addons\\Section\\SectionTags' => __DIR__ . '/../..' . '/bundles/Section/SectionTags.php',
         'Statamic\\Addons\\Select\\SelectFieldtype' => __DIR__ . '/../..' . '/bundles/Select/SelectFieldtype.php',
+        'Statamic\\Addons\\Sitemap\\SitemapController' => __DIR__ . '/../..' . '/../site/addons/Sitemap/SitemapController.php',
+        'Statamic\\Addons\\Sitemap\\SitemapServiceProvider' => __DIR__ . '/../..' . '/../site/addons/Sitemap/SitemapServiceProvider.php',
         'Statamic\\Addons\\Suggest\\Mode' => __DIR__ . '/../..' . '/bundles/Suggest/Mode.php',
         'Statamic\\Addons\\Suggest\\Modes\\AbstractMode' => __DIR__ . '/../..' . '/bundles/Suggest/Modes/AbstractMode.php',
         'Statamic\\Addons\\Suggest\\Modes\\CollectionMode' => __DIR__ . '/../..' . '/bundles/Suggest/Modes/CollectionMode.php',
@@ -3788,10 +3790,10 @@ class ComposerStaticInitda9b816925044ecf6836b17d821bf29f
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitda9b816925044ecf6836b17d821bf29f::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitda9b816925044ecf6836b17d821bf29f::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitda9b816925044ecf6836b17d821bf29f::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitda9b816925044ecf6836b17d821bf29f::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitb9210eeb7fd50988097add791a6f5e98::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitb9210eeb7fd50988097add791a6f5e98::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitb9210eeb7fd50988097add791a6f5e98::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitb9210eeb7fd50988097add791a6f5e98::$classMap;
 
         }, null, ClassLoader::class);
     }

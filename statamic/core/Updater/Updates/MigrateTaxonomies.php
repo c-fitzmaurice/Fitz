@@ -80,7 +80,7 @@ class MigrateTaxonomies extends Update
     {
         $this->files = collect(
             Folder::disk('content')
-                ->getFilesByTypeRecursively('taxonomies', ['yaml', 'md'])
+                ->getFilesByTypeRecursively('taxonomies', ['yaml', 'md', 'html'])
         );
     }
 
@@ -113,7 +113,7 @@ class MigrateTaxonomies extends Update
     private function getTerms()
     {
         $this->terms = $this->files->filter(function ($path) {
-            return Str::endsWith($path, '.md');
+            return Str::endsWith($path, ['.md', '.html']);
         })->map(function ($path) {
             $data = YAML::parse(File::disk('content')->get($path));
 
@@ -299,7 +299,7 @@ class MigrateTaxonomies extends Update
     private function deleteOldTerms()
     {
         $this->files->each(function ($path) {
-            if (Str::endsWith($path, ['.md', '/folder.yaml'])) {
+            if (Str::endsWith($path, ['.md', '.html', '/folder.yaml'])) {
                 File::disk('content')->delete($path);
             }
         });

@@ -4,7 +4,6 @@ namespace Statamic\Forms\Exporters;
 
 use SplTempFileObject;
 use League\Csv\Writer;
-use Statamic\Forms\Exporters\AbstractExporter;
 
 class CsvExporter extends AbstractExporter
 {
@@ -42,6 +41,8 @@ class CsvExporter extends AbstractExporter
     {
         $headers = array_keys($this->form()->fields());
 
+        $headers[] = 'date';
+
         $this->writer->insertOne($headers);
     }
 
@@ -50,7 +51,17 @@ class CsvExporter extends AbstractExporter
      */
     private function insertData()
     {
-        $data = $this->form()->submissions()->toArray();
+        $data = $this->form()->submissions()->map(function ($submission) {
+            $submission = $submission->toArray();
+
+            $submission['date'] = (string) $submission['date'];
+
+            unset($submission['id']);
+
+            return collect($submission)->map(function ($value) {
+                return (is_array($value)) ? join(', ', $value) : $value;
+            })->all();
+        })->all();
 
         $this->writer->insertAll($data);
     }

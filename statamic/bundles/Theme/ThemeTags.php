@@ -140,7 +140,7 @@ class ThemeTags extends Tags
 
         // Front-matter, tag parameters, and the context is all passed through to the partial.
         // Since 2.5, parameters need to be prefixed with a colon in order to read from the field.
-        $variables = array_merge($this->context, $this->parameters, $variables);
+        $variables = array_merge($this->context, $variables, $this->parameters);
 
         return Parse::template($template, $variables);
     }

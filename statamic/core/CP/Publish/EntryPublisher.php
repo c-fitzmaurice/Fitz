@@ -34,7 +34,7 @@ class EntryPublisher extends Publisher
     {
         $rules = [
             'fields.title' => 'required',
-            'slug' => 'required|alpha_dash'
+            'slug' => "required|alpha_dash|entry_slug_exists:{$this->collection},{$this->request->uuid}",
         ];
 
         if ($this->getEntryOrderType() === 'date') {

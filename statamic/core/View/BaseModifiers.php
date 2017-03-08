@@ -51,6 +51,26 @@ class BaseModifiers extends Modifier
     }
 
     /**
+     * Scope an array variable
+     *
+     * @param $value
+     * @param $params
+     * @return string
+     */
+    public function as($value, $params)
+    {
+        if ( is_array($value)) {
+            $as = array_get($params, 0);
+
+            foreach ($value as $key => $data) {
+              $value[$key][$as] = $data;
+            }
+
+            return $value;
+        }
+    }
+
+    /**
      * Returns an ASCII version of the string. A set of non-ASCII characters are replaced with their
      * closest ASCII counterparts, and the rest are removed unless instructed otherwise.
      *
@@ -1207,14 +1227,31 @@ class BaseModifiers extends Modifier
     }
 
     /**
-     * Renders an array variable with a partial
+     * Get the output of an Asset, useful for SVGs
+     *
+     * @param $value
+     * @return array
+     */
+    public function output($value)
+    {
+        $asset = Asset::find($value);
+
+        if ($asset) {
+            return $asset->disk()->get($asset->path());
+        }
+    }
+
+    /**
+     * Renders an array variable with a partial, context aware
      * @param  $value
      * @param  $params
      * @return [string
      */
-    public function partial($value, $params)
+    public function partial($value, $params, $context)
     {
-        $partial = 'partials/' . array_get($params, 0) . '.html';
+        $name = array_get($context, $params[0], $params[0]);
+
+        $partial = 'partials/' . $name . '.html';
 
         return Parse::template(File::disk('theme')->get($partial), $value);
     }

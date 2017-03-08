@@ -164,10 +164,12 @@ class CollectionTags extends Tags
 
     private function getTaxonomyCollectionFromUri()
     {
-        return Term::whereSlug(
+        $data = Term::whereSlug(
             array_get($this->context, 'page.default_slug'),
             array_get($this->context, 'page.taxonomy')
-        )->collection();
+        );
+        
+        return ($data) ? $data->collection() : $data;
     }
 
     private function getTaxonomyCollectionFromParams($collection)

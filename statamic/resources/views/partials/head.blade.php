@@ -6,7 +6,8 @@
 
 <title>{{ $title or '' }} | Statamic</title>
 <link href="{{ cp_resource_url('css/cp.css') }}?v={{ STATAMIC_VERSION }}" rel="stylesheet" />
-<link rel="shortcut icon" href="{{ cp_resource_url('img/favicon.png') }}" />
+<link rel="icon" type="image/png" href="{{ cp_resource_url('img/favicon@2x.png') }}" sizes="32x32" />
+<link rel="icon" type="image/png" href="{{ cp_resource_url('img/favicon.png') }}" sizes="16x16" />
 <script>
     var Statamic = {
     	'siteRoot': '{!! SITE_ROOT !!}',
