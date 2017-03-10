@@ -290,6 +290,9 @@ class Modify implements \IteratorAggregate
             case "inPast":
                 return "isPast";
 
+            case "as":
+                return "scopeAs";
+
             default:
                 return $modifier;
         }

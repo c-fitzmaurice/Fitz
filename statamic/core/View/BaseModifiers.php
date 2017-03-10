@@ -57,7 +57,7 @@ class BaseModifiers extends Modifier
      * @param $params
      * @return string
      */
-    public function as($value, $params)
+    public function scopeAs($value, $params)
     {
         if ( is_array($value)) {
             $as = array_get($params, 0);
