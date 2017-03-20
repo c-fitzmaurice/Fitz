@@ -52,7 +52,7 @@ module.exports = {
         },
 
         maxItems: function() {
-            return this.config.max_items;
+            return parseInt(this.config.max_items);
         },
 
         mode() {

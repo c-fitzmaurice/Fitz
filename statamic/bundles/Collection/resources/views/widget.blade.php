@@ -1,6 +1,6 @@
 <div class="card">
     <div class="head">
-        <h1><a href="{{ $collection->editUrl() }}">{{ $title }}</a></h1>
+        <h1><a href="{{ cp_route('entries.show', $collection->path()) }}">{{ $title }}</a></h1>
         <a href="{{ $collection->createEntryUrl() }}" class="btn btn-primary">{{ $button }}</a>
     </div>
     <div class="card-body">

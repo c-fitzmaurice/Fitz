@@ -21,14 +21,14 @@ class GlobalsController extends CpController
         }
 
         return view('globals.index', [
-            'title' => 'Globals'
+            'title' => t('cp.globals')
         ]);
     }
 
     public function manage()
     {
         return view('globals.configure', [
-            'title' => 'Globals'
+            'title' => t('cp.globals')
         ]);
     }
 

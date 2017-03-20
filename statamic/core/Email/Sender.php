@@ -99,7 +99,7 @@ class Sender
 
         // Split out the text version and the html versions
         $separator = Config::get('theming.email_separator', '---');
-        $split = preg_split("#\n".$separator."\n#", $raw_template);
+        $split = preg_split("#".PHP_EOL.$separator.PHP_EOL."#", $raw_template);
         $text = $split[0];
         $html = array_get($split, 1);
 
@@ -134,8 +134,8 @@ class Sender
         $text = '';
 
         foreach ($this->message->data() as $key => $value) {
-            $html .= "<strong>" . $key . "</strong>: " . $value . "<br><br>\n";
-            $text .= $key . ": " . $value . "\n";
+            $html .= "<strong>" . $key . "</strong>: " . $value . "<br><br>".PHP_EOL;
+            $text .= $key . ": " . $value . PHP_EOL;
         }
 
         return [$html, $text];

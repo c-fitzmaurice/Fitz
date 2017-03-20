@@ -51,6 +51,8 @@ class UpdateConfiguration
         $this->loadAddonSettings();
 
         $this->loadGlobalOverrides();
+
+        $this->updateTimezone();
     }
 
     private function loadSettings()
@@ -270,5 +272,12 @@ class UpdateConfiguration
         }
 
         $globals->hydrate($data);
+    }
+
+    private function updateTimezone()
+    {
+        $timezone = $this->settings->get('system.timezone');
+        config(['app.timezone' => $timezone]);
+        date_default_timezone_set($timezone);
     }
 }

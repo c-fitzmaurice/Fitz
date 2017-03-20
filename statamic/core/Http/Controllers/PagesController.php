@@ -30,7 +30,8 @@ class PagesController extends CpController
         $home = Page::whereUri('/');
 
         $home_data = [
-            'title' => array_get($home->data(), 'title', t('home'))
+            'title' => array_get($home->data(), 'title', t('home')),
+            'id' => array_get($home->data(), 'id')
         ];
 
         if ($home && $home->hasEntries()) {
@@ -91,7 +92,7 @@ class PagesController extends CpController
             $data[] = [
                 'id'          => $page->id(),
                 'order'       => $page->order(),
-                'title'       => $page->get('title'),
+                'title'       => (string) $page->get('title'),
                 'url'         => $url,
                 'uri'         => $uri,
                 'extension'   => $page->dataType(),

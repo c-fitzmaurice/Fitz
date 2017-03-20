@@ -547,6 +547,9 @@
         flex-grow: 1;
         box-shadow: none;
         margin: 0;
+        max-height: 100%;
+        min-height: 50%;
+        height: 100%;
 
         // The publish form has styles that cascade into here.
         // We'll just undo those.

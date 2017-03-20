@@ -74,7 +74,7 @@ module.exports = {
          * `this.data` is the full datetime string. This will get just the date.
          */
         dateString: function() {
-            if (this.data) {
+            if (this.data && this.data.length >= 10) {
                 return this.data.substr(0, 10)
             } else {
                 return moment().format('YYYY-MM-DD')

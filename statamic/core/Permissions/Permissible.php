@@ -26,11 +26,20 @@ trait Permissible
             return $this->roles;
         }
 
-        $roles = $this->get('roles', []);
-
-        return $this->roles = RoleAPI::all()->filter(function($role) use ($roles) {
-            return in_array($role->uuid(), $roles);
+        // First, get the roles defined on the actual user.
+        $userRoleIds = $this->get('roles', []);
+        $userRoles = RoleAPI::all()->filter(function($role) use ($userRoleIds) {
+            return in_array($role->uuid(), $userRoleIds);
         });
+
+        // Next, get the roles inherited from the user groups this user belongs to.
+        $groupRoles = $this->groups()->flatMap(function ($group) {
+            return $group->roles();
+        })->filter()->keyBy(function ($role) {
+            return $role->uuid();
+        });
+
+        return $this->roles = $userRoles->merge($groupRoles);
     }
 
     /**
@@ -43,15 +52,7 @@ trait Permissible
     {
         $role = ($role instanceof Role) ? $role->uuid() : $role;
 
-        if ($result = $this->roles()->has($role)) {
-            return true;
-        }
-
-        foreach ($this->groups() as $group) {
-            if ($group->hasRole($role)) {
-                return true;
-            }
-        }
+        return $this->roles()->has($role);
     }
 
     /**
@@ -68,12 +69,6 @@ trait Permissible
 
         foreach ($this->roles() as $role) {
             if ($role->hasPermission($permission)) {
-                return true;
-            }
-        }
-
-        foreach ($this->groups() as $group) {
-            if ($group->hasPermission($permission)) {
                 return true;
             }
         }

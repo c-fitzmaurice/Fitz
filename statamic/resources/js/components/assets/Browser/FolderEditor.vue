@@ -1,6 +1,11 @@
 <template>
 
     <modal :show="true" class="asset-modal asset-folder-editor" :saving="saving" :loading="loading">
+        <template slot="close">
+            <button type="button" tabindex="-1" class="close" slot="close" aria-label="Close" @click="close"><span aria-hidden="true">&times;</span>
+            </button>
+        </template>
+
         <template slot="header">
             <h1 v-if="create">{{ translate('cp.create_folder') }}</h1>
             <h1 v-if="!create">{{ translate('cp.edit_folder') }}</h1>

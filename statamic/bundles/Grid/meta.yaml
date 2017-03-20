@@ -6,9 +6,9 @@ fieldtype_fields:
       table: Table
       stacked: Stacked
   max_rows:
-    type: text
+    type: integer
   min_rows:
-    type: text
+    type: integer
   add_row:
     type: text
   fields:

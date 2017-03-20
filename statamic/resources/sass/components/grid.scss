@@ -25,6 +25,10 @@
         width: 60px;
     }
 
+    > table > tbody > tr > td {
+        vertical-align: top;
+    }
+
     > table > tbody > tr > td.row-controls {
         background: #f4f4f4;
         padding: 0;

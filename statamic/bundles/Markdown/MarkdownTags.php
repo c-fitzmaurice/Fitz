@@ -19,7 +19,7 @@ class MarkdownTags extends Tags
     public function indent()
     {
         // Break up all the lines.
-        $lines = collect(explode("\n", $this->parse()));
+        $lines = collect(explode(PHP_EOL, $this->parse()));
         $regex = '/[^\s]/';
 
         // Find the first line with a non-whitespace character.
@@ -36,7 +36,7 @@ class MarkdownTags extends Tags
             // Trim the appropriate amount of whitespace at the start of
             // each line.
             return preg_replace('/^\s{0,' . $maxTrim . '}/', '', $line);
-        })->implode("\n");
+        })->implode(PHP_EOL);
 
         return markdown($md);
     }

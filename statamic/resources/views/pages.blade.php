@@ -56,6 +56,7 @@
                     <branch url="/"
                             :home="true"
                             title="{{ array_get($home, 'title') }}"
+                            uuid="{{ array_get($home, 'id')}}"
                             edit-url="{{ route('page.edit') }}"
                             :has-entries="{{ bool_str(array_get($home, 'has_entries')) }}"
                             entries-url="{{ array_get($home, 'entries_url') }}"

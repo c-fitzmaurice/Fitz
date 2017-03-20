@@ -195,7 +195,7 @@ export default {
         maxFiles() {
             if (! this.config.max_files) return 0;
 
-            return this.config.max_files;
+            return parseInt(this.config.max_files);
         },
 
         /**

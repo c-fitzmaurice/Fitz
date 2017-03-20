@@ -56,6 +56,22 @@ $app->singleton(
 
 /*
 |--------------------------------------------------------------------------
+| Configure the Logging Handler
+|--------------------------------------------------------------------------
+|
+| Next, we configure the logging handlers for the application.
+| This needs to happen as early as possible in order to
+| catch any startup errors or notices.
+|
+*/
+
+$app->configureMonologUsing(function($monolog) {
+    new Statamic\Logging\LoggingHandler($monolog);
+});
+
+
+/*
+|--------------------------------------------------------------------------
 | Return The Application
 |--------------------------------------------------------------------------
 |
@@ -64,10 +80,5 @@ $app->singleton(
 | from the actual running of the application and sending responses.
 |
 */
-
-$app->configureMonologUsing(function($monolog) {
-    new Statamic\Logging\LoggingHandler($monolog);
-});
-
 
 return $app;

@@ -609,6 +609,24 @@ function sanitize_array($array)
     return $result;
 }
 
+/**
+ * Recusive friendly method of filtering an array
+ *
+ * @return array
+ */
+ function array_filter_recursive(array $array, callable $callback = null)
+ {
+     $array = is_callable($callback) ? array_filter($array, $callback) : array_filter($array);
+
+     foreach ($array as &$value) {
+         if (is_array($value)) {
+             $value = call_user_func(__FUNCTION__, $value, $callback);
+         }
+     }
+
+     return $array;
+ }
+
 if (! function_exists('array_filter_use_both')) {
     /**
      * Polyfill for the array_filter constant ARRAY_FILTER_USE_BOTH.

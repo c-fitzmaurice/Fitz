@@ -1,6 +1,6 @@
 fieldtype_fields:
   max_items:
-    type: text
+    type: integer
   label:
     type: text
   mode:
