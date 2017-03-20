@@ -255,7 +255,7 @@ trait Extensible
     {
         $reflector = new \ReflectionClass($this->getAddonFQCN());
 
-        return Path::popLastSegment($reflector->getFileName());
+        return Path::popLastSegment(Path::tidy($reflector->getFileName()));
     }
 
     /**

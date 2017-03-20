@@ -48,7 +48,6 @@ module.exports = {
         config: {},
         name: {},
         required: Boolean,
-        hidden: { type: Boolean, default: function() { return false; }},
         url: String,
     },
 
@@ -117,9 +116,9 @@ module.exports = {
                 params.url = this.url;
             }
 
-            if (! this.hidden) {
-                // By default, we'll get all fieldsets. If we specify that we
-                // dont want hidden ones, we'll pass that along.
+            if (this.config && ! this.config.hidden) {
+                // By default we don't get hidden fieldsets.
+                // You can specify hidden: true to get them.
                 params.hidden = false;
             }
 

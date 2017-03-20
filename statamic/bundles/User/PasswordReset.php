@@ -121,8 +121,8 @@ class PasswordReset
     public function send()
     {
         $subject = ($this->user->status() === 'pending')
-            ? 'Activate your account'
-            : 'Reset your password';
+            ? translate('passwords.activate_subject')
+            : translate('passwords.reset_subject');
 
         $template = ($this->user->status() === 'pending') ? 'user-activation' : 'user-reset';
 

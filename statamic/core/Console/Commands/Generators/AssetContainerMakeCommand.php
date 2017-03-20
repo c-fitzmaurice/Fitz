@@ -332,7 +332,7 @@ class AssetContainerMakeCommand extends AbstractCommand
         }
 
         $url = $this->ask(
-            "Enter the URL of the container. This can be absolute or relative. \n" .
+            "Enter the URL of the container. This can be absolute or relative. ".PHP_EOL.
             ' If this directory is not web-accessible, leave this blank.',
             false
         );

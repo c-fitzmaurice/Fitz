@@ -64,7 +64,7 @@ class TermTracker
                     $this->addTerms($handle, $event->item);
                 } catch (\Exception $e) {
                     \Log::debug('There was a problem adding taxonomy terms to data with ID ' . $event->item->id());
-                    \Log::debug($e->getMessage() . "\n" . $e->getTraceAsString());
+                    \Log::debug($e->getMessage() . PHP_EOL . $e->getTraceAsString());
                 }
             }
         });

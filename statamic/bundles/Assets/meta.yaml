@@ -6,4 +6,4 @@ fieldtype_fields:
   restrict:
     type: toggle
   max_files:
-    type: text
+    type: integer

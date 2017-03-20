@@ -39,7 +39,14 @@ class GridFieldtype extends Fieldtype
         $processed = [];
 
         foreach ($data as $i => $row) {
-            $processed[$i] = $this->processRow($row);
+            $processed_row = $this->processRow($row);
+
+            // Empty rows can create issues with
+            // populating data in subsequent requests
+            // so we completely remove them.
+            if (! empty($processed_row)) {
+                $processed[$i] = $processed_row;
+            }
         }
 
         return $processed;
@@ -50,7 +57,7 @@ class GridFieldtype extends Fieldtype
         $processed = [];
 
         foreach ($row_data as $field => $value) {
-            $field_config = $this->getFieldConfig('fields.'.$field);
+            $field_config = Helper::ensureArray($this->getFieldConfig('fields.'.$field));
 
             $processed[$field] = $this->processField($value, $field_config);
         }

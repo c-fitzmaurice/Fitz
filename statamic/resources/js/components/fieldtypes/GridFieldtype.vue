@@ -35,13 +35,13 @@
 	</table>
 
 	<div v-if="hasData && stacked" class="grid-stacked">
-		<div class="list-group" v-for="row in data">
+		<div class="list-group" v-for="(rowIndex, row) in data">
 			<div class="list-group-item group-header">
 				<div class="btn-group icon-group pull-right">
-                    <i class="icon icon-cross" v-on:click="deleteRow($index)"></i>
+                    <i class="icon icon-cross" v-on:click="deleteRow(rowIndex)"></i>
                     <i class="icon icon-menu drag-handle"></i>
 				</div>
-				<label>{{ $index + 1 }}</label>
+				<label>{{ rowIndex + 1 }}</label>
 			</div>
 			<div class="list-group-item">
 				<div class="row">
@@ -56,7 +56,7 @@
 							<small class="help-block" v-if="field.instructions" v-html="field.instructions | markdown"></small>
 
 							<component :is="field.type + '-fieldtype'"
-							           :name="field.name"
+							           :name="name + '.' + rowIndex + '.' + field.name"
 							           :data.sync="row[field.name]"
 							           :config="field">
 							</component>

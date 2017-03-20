@@ -73,6 +73,7 @@ class PublishPageController extends PublishController
             'content_type'      => 'page',
             'fieldset'          => $page->fieldset()->name(),
             'title'             => array_get($data, 'title', $url),
+            'title_display_name' => array_get($page->fieldset()->fields(), 'title.display', t('title')),
             'uuid'              => $page->id(),
             'uri'               => $page->uri(),
             'url'               => $page->url(),

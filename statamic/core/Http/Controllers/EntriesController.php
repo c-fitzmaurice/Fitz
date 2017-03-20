@@ -52,6 +52,7 @@ class EntriesController extends CpController
             $sort_order = $collection->get('sort_dir', 'desc');
         } elseif ($collection->order() === 'number') {
             $sort = 'order';
+            $sort_order = $collection->get('sort_dir', 'asc');
         }
 
         $reorderable = $collection->order() === 'number' && $collection->count() <= Config::get('cp.pagination_size');

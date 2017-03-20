@@ -374,10 +374,11 @@ module.exports = {
             this.$http.post(cp_url('assets/get'), { assets }, (response) => {
                 _(response).each((asset) => {
                     var alt = asset.alt || '';
+                    var url = encodeURI(asset.url);
                     if (asset.is_image) {
-                        this[method+'Image'](asset.url, alt);
+                        this[method+'Image'](url, alt);
                     } else {
-                        this[method+'Link'](asset.url, alt);
+                        this[method+'Link'](url, alt);
                     }
                 });
             });

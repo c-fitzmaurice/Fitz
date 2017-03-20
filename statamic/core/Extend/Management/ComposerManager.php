@@ -92,9 +92,9 @@ class ComposerManager implements ManagerContract
 
         $command = sprintf('php composer.phar update %s --prefer-dist --no-dev --optimize-autoloader', $packages);
 
-        $process = new Process($command, $this->path(), [
+        $process = new Process($command, $this->path(), array_merge($_SERVER, [
             'COMPOSER_HOME' => local_path('composer')
-        ]);
+        ]));
 
         $process->setTimeout(null);
 

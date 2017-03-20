@@ -45,7 +45,7 @@ class YAML
         $yaml = substr($yaml, 4); // remove the initial fencing by spyc
 
         if ($content) {
-            $fenced = "---\n" . $yaml . "---\n";
+            $fenced = "---".PHP_EOL . $yaml . "---".PHP_EOL;
             $yaml = $fenced . $content;
         }
 

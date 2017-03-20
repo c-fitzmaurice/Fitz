@@ -25,10 +25,6 @@ class AppServiceProvider extends ServiceProvider
         // Set the site's locale
         site_locale(LOCALE);
 
-        // Set the timezone. Override Laravel's config, and set in PHP
-        config(['app.timezone' => Config::get('system.timezone')]);
-        date_default_timezone_set(config('app.timezone'));
-
         // Laravel needs an application key to function securely. We'll allow our
         // users to set it either by using APP_KEY in their .env file (Laravel
         // style) or by setting app_key in their system.yaml (Statamic style).
@@ -73,6 +69,11 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('partials.scripts', 'Statamic\Http\ViewComposers\JavascriptComposer');
         view()->composer('partials.nav-main', 'Statamic\Http\ViewComposers\NavigationComposer');
         view()->composer('settings.edit', 'Statamic\Http\ViewComposers\SettingsComposer');
+
+        // Some servers don't send the appropriate headers to flag the request as https. We can force it.
+        if (Config::get('system.use_https')) {
+            $this->app['url']->forceSchema('https');
+        }
     }
 
     /**

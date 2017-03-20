@@ -32,6 +32,6 @@ class LayoutComposer
     {
         $response = Event::fire($event);
 
-        return join("\n", $response);
+        return join(PHP_EOL, $response);
     }
 }

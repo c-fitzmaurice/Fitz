@@ -115,7 +115,7 @@ class UsersController extends CpController
             $data['username'] = $this->user->username();
         }
 
-        $data['roles'] = $this->user->roles()->keys();
+        $data['roles'] = $this->user->get('roles');
         $data['user_groups'] = $this->user->groups()->keys();
         $data['status'] = $this->user->status();
 

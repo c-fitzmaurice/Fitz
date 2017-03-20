@@ -103,7 +103,7 @@ class FieldsetController extends CpController
         $fieldset->locale($this->request->input('locale', default_locale()));
 
         try {
-            $array = $fieldset->toArray($this->request->input('partials', true));
+            $array = $fieldset->toArray(bool($this->request->input('partials', true)));
         } catch (\Exception $e) {
             return response(['success' => false, 'message' => $e->getMessage()], 500);
         }

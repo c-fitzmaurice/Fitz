@@ -150,6 +150,12 @@ class FormsController extends CpController
 
         foreach ($form->fields() as $name => $field) {
             $field['name'] = $name;
+
+            // Vue relies on a boolean being available on the field itself.
+            if (collect($array['columns'])->contains($field['name'])) {
+                $field['column'] = true;
+            }
+
             $array['fields'][] = $field;
         }
 
@@ -207,6 +213,7 @@ class FormsController extends CpController
 
         $form->title($this->request->input('formset.title'));
         $form->honeypot($this->request->input('formset.honeypot'));
+        $form->columns($this->prepareColumns());
         $form->fields($this->prepareFields());
         $form->metrics($this->prepareMetrics());
         $form->email($this->prepareEmail());
@@ -238,7 +245,7 @@ class FormsController extends CpController
 
         $form->title($this->request->input('formset.title'));
         $form->honeypot($this->request->input('formset.honeypot'));
-        $form->columns($this->request->input('formset.columns'));
+        $form->columns($this->prepareColumns());
         $form->metrics($this->prepareMetrics());
         $form->email($this->prepareEmail());
         $form->fields($this->prepareFields());
@@ -306,6 +313,20 @@ class FormsController extends CpController
     }
 
     /**
+     * Get the columns array
+     *
+     * @return array
+     */
+    private function prepareColumns()
+    {
+        return collect($this->request->input('formset.fields'))->filter(function ($field) {
+            return array_get($field, 'column');
+        })->map(function ($field) {
+            return $field['name'];
+        })->values()->all();
+    }
+
+    /**
      * Get an array of submitted fields, keyed by the field names
      *
      * @return array
@@ -316,7 +337,7 @@ class FormsController extends CpController
 
         foreach ($this->request->input('formset.fields') as $field) {
             $field_name = $field['name'];
-            unset($field['name']);
+            unset($field['name'], $field['column']);
             $fields[$field_name] = $field;
         }
 

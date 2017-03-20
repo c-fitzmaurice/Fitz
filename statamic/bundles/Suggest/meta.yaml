@@ -1,7 +1,6 @@
 fieldtype_fields:
   max_items:
-    type: text
-    mode: number
+    type: integer
   options:
     type: array
   create:

@@ -206,7 +206,10 @@ abstract class Publisher
         }
 
         // Get rid of null fields
-        $this->fields = array_filter($this->fields);
+        $this->fields = array_filter($this->fields, function ($item) {
+            return $item !== null;
+        });
+
     }
 
     /**

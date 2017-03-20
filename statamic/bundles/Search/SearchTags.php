@@ -59,6 +59,13 @@ class SearchTags extends CollectionTags
             ? $this->blink->get($this->blink_hash)
             : $this->buildSearchCollection();
 
+        // Convert taxonomy fields to actual taxonomy terms.
+        // This will allow taxonomy term data to be available in the template without additional tags.
+        // If terms are not needed, there's a slight performance benefit in disabling this.
+        if ($this->getBool('supplement_taxonomies', true)) {
+            $this->collection = $this->collection->supplementTaxonomies();
+        }
+
         $this->filter();
 
         if ($this->collection->isEmpty()) {

@@ -4,13 +4,17 @@
             <tr>
                 <th>{{ translate('cp.handle') }}</th>
                 <th>{{ translate('cp.label') }}</th>
+                <th class="col-column">{{ translate_choice('cp.columns', 1) }}</th>
                 <th class="row-controls"></th>
             </tr>
         </thead>
-        <tbody v-el:tbody>
+        <tbody class="sortable" v-el:tbody>
             <tr v-for="field in fields">
                 <td class="col-handle"><input type="text" class="code" v-model="field.name" /></td>
                 <td class="col-display"><input type="text" v-model="field.display" /></td>
+                <td class="col-column">
+                    <toggle-fieldtype :data.sync="field.column"></toggle-fieldtype>
+                </td>
                 <td class="row-controls">
                     <span class="icon icon-edit edit" @click="selectField($index)"></span>
                     <span class="icon icon-menu move drag-handle"></span>

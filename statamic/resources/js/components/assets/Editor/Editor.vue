@@ -21,15 +21,15 @@
                         {{ asset.path }}
                     </div>
                     <div class="meta-item" v-if="isImage">
-                        <span class="meta-label">Dimensions</span>
+                        <span class="meta-label">{{ translate('cp.dimensions') }}</span>
                         <span class="meta-value">{{ asset.width }} x {{ asset.height }}</span>
                     </div>
                     <div class="meta-item">
-                        <span class="meta-label">Size</span>
+                        <span class="meta-label">{{ translate('cp.size') }}</span>
                         <span class="meta-value">{{ asset.size }}</span>
                     </div>
                     <div class="meta-item">
-                        <span class="meta-label">Last Modified</span>
+                        <span class="meta-label">{{ translate('cp.last_modified') }}</span>
                         <span class="meta-value" :title="asset.last_modified">{{ asset.last_modified_relative }}</span>
                     </div>
                 </div>
@@ -84,7 +84,7 @@
                         <button
                             v-if="isImage"
                             type="button" class="btn"
-                            @click.prevent="openFocalPointEditor">Focal Point
+                            @click.prevent="openFocalPointEditor">{{ translate('cp.focal_point') }}
                         </button>
 
                         <!--
@@ -97,12 +97,12 @@
 
                         <button
                             type="button" class="btn"
-                            @click.prevent="openRenamer">Rename File
+                            @click.prevent="openRenamer">{{ translate('cp.rename_file') }}
                         </button>
 
                         <button
                             type="button" class="btn"
-                            @click.prevent="openMover">Move File
+                            @click.prevent="openMover">{{ translate('cp.move_file') }}
                         </button>
 
                         <!--

@@ -58,7 +58,7 @@ class Parse
         $data = [];
         $content = $string;
 
-        if (Str::startsWith($string, "---\n")) {
+        if (Str::startsWith($string, "---".PHP_EOL)) {
             $data = self::YAML($string);
             $content = $data['content'];
             unset($data['content']);

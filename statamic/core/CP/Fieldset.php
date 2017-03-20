@@ -298,7 +298,8 @@ class Fieldset implements FieldsetContract
             $config['name'] = $handle;
         }
 
-        return $configs;
+        // Key them by the name. This ensures that if a primitive list was used, the indexes get changed.
+        return collect($configs)->keyBy('name')->all();
     }
 
     /**
@@ -311,8 +312,9 @@ class Fieldset implements FieldsetContract
 
         // Do some cleaning up
         foreach ($fields as $name => $field) {
-            // When a JS submission is involved, the fields array contains some extra data that is used for display
-            // purposes. We don't need them in the actual fieldset, so we'll get rid of those.
+            // When a JS submission is involved, the fields array contains
+            // some extra data that is used for display purposes.
+            // We don't need them in the actual fieldset, so we'll get rid of those.
             foreach (['name'] as $unneeded) {
                 unset($field[$unneeded]);
             }
@@ -328,11 +330,7 @@ class Fieldset implements FieldsetContract
             unset($field['required']);
 
             // Blank keys can be discarded.
-            foreach ($field as $key => $val) {
-                if ($val === '' || is_null($val)) {
-                    unset($field[$key]);
-                }
-            }
+            $field = array_filter_recursive($field);
 
             // Replace it, making sure to use the name as the key.
             $fields[$name] = $field;
