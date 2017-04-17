@@ -3,6 +3,8 @@
 namespace Statamic\Imaging;
 
 use Statamic\API\URL;
+use Statamic\API\Path;
+use Statamic\API\Config;
 
 class ThumbnailUrlBuilder extends StaticUrlBuilder
 {
@@ -19,11 +21,13 @@ class ThumbnailUrlBuilder extends StaticUrlBuilder
         $this->item = $item;
         $this->params = $params;
 
-        return URL::assemble(
+        $url = URL::assemble(
             RESOURCES_ROUTE,
             'thumbs',
             base64_encode($this->generatePath()),
             $item->basename()
         );
+
+        return URL::prependSiteRoot($url);
     }
 }

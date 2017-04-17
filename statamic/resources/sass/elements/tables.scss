@@ -10,6 +10,10 @@ table {
 		position: relative;
 	}
 
+        tr.warning td {
+            background-color: #fcf8e2;
+        }
+
 	tbody tr.active td { background: $color_gray_input; }
 
 	.checkbox-col {

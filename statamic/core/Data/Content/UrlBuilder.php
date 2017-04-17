@@ -55,7 +55,7 @@ class UrlBuilder implements UrlBuilderContract
             }
 
             // Slugify it because we're dealing with URLs after all.
-            $value = Str::slug($value);
+            $value = $this->slugify($value);
 
             // Replace the variable in the URL.
             $url = str_replace($matches[0][$key], $value, $url);
@@ -67,6 +67,15 @@ class UrlBuilder implements UrlBuilderContract
         $url = URL::tidy($url);
 
         return Str::ensureLeft($url, '/');
+    }
+
+    private function slugify($value)
+    {
+        $placeholder = strtolower(str_random(16));
+
+        $value = str_replace('_', $placeholder, $value);
+
+        return str_replace($placeholder, '_', Str::slug($value));
     }
 
     /**

@@ -104,6 +104,15 @@ module.exports = {
         },
 
         save: function() {
+            if (! this.formset.title) {
+                this.$dispatch(
+                    'setFlashError',
+                    translate('validation.required', { attribute: 'title' })
+                );
+
+                return;
+            }
+
             this.$http.post(this.saveUrl, {
                 slug: this.slug,
                 formset: this.formset

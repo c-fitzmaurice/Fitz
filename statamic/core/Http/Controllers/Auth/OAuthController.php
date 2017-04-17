@@ -139,8 +139,8 @@ class OAuthController extends Controller
     private function createNewUser($provider, $provider_user)
     {
         $user = User::create()
-            ->username($this->oAuthUsername($provider_user))
-            ->with($this->oAuthUserData($provider_user))
+            ->username($this->oAuthUsername($provider_user, $provider))
+            ->with($this->oAuthUserData($provider_user, $provider))
             ->get();
 
         $user->ensureId();
@@ -158,11 +158,11 @@ class OAuthController extends Controller
      * @param \Laravel\Socialite\Contracts\User $user
      * @return string
      */
-    private function oAuthUsername($user)
+    private function oAuthUsername($user, $provider)
     {
         // Allow an addon to provide a customized OAuth username generator.
         // If nothing is returned we will simply move on with the default.
-        if ($username = Event::fireFirst(new GeneratingUsername($user))) {
+        if ($username = Event::fireFirst(new GeneratingUsername($user, $provider))) {
             return $username;
         }
 
@@ -175,11 +175,11 @@ class OAuthController extends Controller
      * @param \Laravel\Socialite\Contracts\User $user
      * @return array
      */
-    private function oAuthUserData($user)
+    private function oAuthUserData($user, $provider)
     {
         // Allow an addon to provide the array of data to be saved to a user.
         // If nothing is returned we will simply move on with the default.
-        if ($data = Event::fireFirst(new GeneratingUserData($user))) {
+        if ($data = Event::fireFirst(new GeneratingUserData($user, $provider))) {
             if (is_array($data)) {
                 return $data;
             }

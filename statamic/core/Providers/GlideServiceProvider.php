@@ -2,6 +2,7 @@
 
 namespace Statamic\Providers;
 
+use Statamic\API\URL;
 use Statamic\API\File;
 use League\Glide\Server;
 use Statamic\API\Config;
@@ -58,7 +59,7 @@ class GlideServiceProvider extends ServiceProvider
 
         if (Config::get('assets.image_manipulation_cached')) {
             return new StaticUrlBuilder($this->app->make(ImageGenerator::class), [
-                'route' => $route
+                'route' => URL::prependSiteUrl($route)
             ]);
         }
 

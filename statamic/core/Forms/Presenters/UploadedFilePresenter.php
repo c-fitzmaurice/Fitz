@@ -75,6 +75,6 @@ class UploadedFilePresenter
         $file = urldecode(pathinfo($url)['basename']);
 
         // If the file doesn't exist, simply show the filename without a link.
-        return ($asset) ? "<a href='$url'>$file</a>" : $file;
+        return ($asset) ? "<a href='$url' target='_blank'>$file</a>" : $file;
     }
 }

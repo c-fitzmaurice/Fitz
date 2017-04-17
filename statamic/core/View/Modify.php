@@ -133,6 +133,10 @@ class Modify implements \IteratorAggregate
         // We should make sure it's always an array.
         $params = Helper::ensureArray($params);
 
+        // Some modifier names are strange, reserved, or just more convenient
+        // using alternate names. We'll get the alias here if one exists.
+        $modifier = $this->resolveAlias($modifier);
+
         // Templates will use snake_case to specify modifiers, so we'll
         // convert them to the correct PSR-2 modifier method name.
         $modifier = Str::camel($modifier);
@@ -191,13 +195,11 @@ class Modify implements \IteratorAggregate
     {
         $base_modifiers = app('Statamic\View\BaseModifiers');
 
-        $method = $this->resolveAlias($modifier);
-
-        if (! method_exists($base_modifiers, $method)) {
+        if (! method_exists($base_modifiers, $modifier)) {
             throw new NativeModifierNotFoundException;
         }
 
-        return $base_modifiers->$method($this->value, $params, $this->context);
+        return $base_modifiers->$modifier($this->value, $params, $this->context);
     }
 
     /**
@@ -227,7 +229,7 @@ class Modify implements \IteratorAggregate
      */
     protected function resolveAlias($modifier)
     {
-        switch (Str::camel($modifier)) {
+        switch ($modifier) {
             case "+":
                 return "add";
 
@@ -278,6 +280,9 @@ class Modify implements \IteratorAggregate
             case "l10n":
                 return "formatLocalized";
 
+            case "lowercase":
+                return "lower";
+
             case "85":
                 return "slackEasterEgg";
 
@@ -285,9 +290,13 @@ class Modify implements \IteratorAggregate
                 return "timezone";
 
             case "inFuture":
+            case "in_future":
+            case "is_future":
                 return "isFuture";
 
             case "inPast":
+            case "in_past":
+            case "is_past":
                 return "isPast";
 
             case "as":

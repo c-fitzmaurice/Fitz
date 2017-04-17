@@ -3,8 +3,10 @@
 namespace Statamic\Addons\Glide;
 
 use Statamic\API\Str;
+use Statamic\API\URL;
 use Statamic\API\Asset;
 use Statamic\API\Image;
+use Statamic\API\Config;
 use League\Glide\Server;
 use Statamic\Extend\Tags;
 use Statamic\Imaging\ImageGenerator;
@@ -105,11 +107,19 @@ class GlideTags extends Tags
      */
     private function generateGlideUrl($item)
     {
+        // In a subfolder installation, the subfolder will likely be passed in
+        // with the path. We don't want it in there, so we'll strip it out.
+        $url = Str::removeLeft($item, Config::getSiteUrl());
+
         try {
-            return $this->getManipulator($item)->build();
+            $url = $this->getManipulator($url)->build();
         } catch (\Exception $e) {
             \Log::error($e->getMessage());
         }
+
+        $url = ($this->getBool('absolute')) ? URL::makeAbsolute($url) : URL::makeRelative($url);
+
+        return $url;
     }
 
     /**
@@ -150,7 +160,7 @@ class GlideTags extends Tags
         $params = collect();
 
         foreach ($this->parameters as $param => $value) {
-            if (! in_array($param, ['src', 'id', 'path', 'tag', 'alt'])) {
+            if (! in_array($param, ['src', 'id', 'path', 'tag', 'alt', 'absolute'])) {
                 $params->put($param, $value);
             }
         }

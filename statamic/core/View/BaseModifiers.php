@@ -28,9 +28,7 @@ class BaseModifiers extends Modifier
      */
     public function add($value, $params, $context)
     {
-        $number = array_get($context, $params[0], $params[0]);
-
-        return ($value + $number);
+        return $value + $this->getMathModifierNumber($params, $context);
     }
 
     /**
@@ -324,9 +322,7 @@ class BaseModifiers extends Modifier
      */
     public function divide($value, $params, $context)
     {
-        $number = array_get($context, $params[0], $params[0]);
-
-        return ($value / $number);
+        return $value / $this->getMathModifierNumber($params, $context);
     }
 
     /**
@@ -1125,9 +1121,7 @@ class BaseModifiers extends Modifier
      */
     public function multiply($value, $params, $context)
     {
-        $number = array_get($context, $params[0], $params[0]);
-
-        return ($value * $number);
+        return $value * $this->getMathModifierNumber($params, $context);
     }
 
     /**
@@ -1641,9 +1635,7 @@ class BaseModifiers extends Modifier
      */
     public function subtract($value, $params, $context)
     {
-        $number = array_get($context, $params[0], $params[0]);
-
-        return ($value - $number);
+        return $value - $this->getMathModifierNumber($params, $context);
     }
 
     /**
@@ -2018,5 +2010,16 @@ class BaseModifiers extends Modifier
         }
 
         return $attributes;
+    }
+
+    private function getMathModifierNumber($params, $context)
+    {
+        $number = $params[0];
+
+        // If the number is already a number, use that. Otherwise, attempt to resolve it
+        // from a value in the context. This allows users to specify a variable name.
+        return (is_numeric($number))
+            ? $number
+            : array_get($context, $number, $number);
     }
 }

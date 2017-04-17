@@ -3,6 +3,7 @@
 namespace Statamic\Http\Controllers;
 
 use Lang;
+use Carbon\Carbon;
 use Statamic\API\Str;
 use Statamic\API\File;
 use Statamic\API\YAML;
@@ -112,6 +113,13 @@ class CpController extends Controller
             Config::get('cp.locale'),
             Config::getDefaultLocale()
         );
+
+        try {
+            Carbon::setLocale($locale);
+        } catch (\Exception $e) {
+            // Just in case Carbon doesn't support the locale provided,
+            // we wouldn't want things to break.
+        }
 
         Lang::setLocale($locale);
     }

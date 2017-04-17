@@ -2,64 +2,13 @@
 
 @section('content')
 
-    <importer inline-template importer="{{ $importer->name() }}">
+    <script>
+        Statamic.ImportSummary = {!! json_encode($summary) !!};
+    </script>
 
-        <div class="card">
-            <div class="head">
-                <h1>Import from {{ $importer->title() }}</h1>
-            </div>
-        </div>
+    <importer inline-template>
 
-        <div class="card" v-if="loading">
-            <div class="loading">
-                <span class="icon icon-circular-graph animation-spin"></span> {{ translate('cp.loading') }}
-            </div>
-        </div>
-
-        <template v-if="!loading && !exporting && !exported && !exportFailed">
-            <div class="card flat-bottom">
-                <div class="head">
-                    <h1>{{ t('export') }}</h1>
-                </div>
-            </div>
-            <div class="card flat-top flat-bottom">
-                @{{{ instructions }}}
-                <br>
-                <div class="form-group">
-                    <label>{{ t('site_url') }}</label>
-                    <small class="help-block">{{ t('import_site_url_instructions') }}</small>
-                    <input type="text" class="form-control" v-model="siteUrl" />
-                </div>
-                <button class="btn btn-primary" @click.prevent="export">{{ t('export') }}</button>
-            </div>
-        </template>
-
-        <template v-if="exporting">
-            <div class="card flat-bottom">
-                <div class="head">
-                    <h1>{{ t('exporting') }}</h1>
-                </div>
-            </div>
-            <div class="card flat-top">
-                <div class="loading loading-basic">
-                    <span class="icon icon-circular-graph animation-spin"></span> {{ t('please_wait') }}
-                </div>
-            </div>
-        </template>
-
-        <template v-if="exportFailed">
-            <div class="card flat-bottom">
-                <div class="head">
-                    <h1>{{ t('exporting_failed') }}</h1>
-                </div>
-            </div>
-            <div class="card flat-top text-danger">
-                <p>{{ t('export_failed_with_error') }}</p>
-                <p>@{{ exportError }}</p>
-            </div>
-        </template>
-
-        <template v-if="exported && !importing && !imported">
+        <template v-if="!importing && !imported">
             <div class="card flat-bottom">
                 <div class="head">
                     <h1>{{ t('import_summary') }}</h1>
@@ -67,6 +16,11 @@
             </div>
             <div class="card flat-top flat-bottom">
                 <h2>{{ trans_choice('cp.pages', 2) }}</h2>
+                <div class="alert alert-warning" role="alert" v-if="hasDuplicates(summary.pages)">
+                    @{{ translate_choice('cp.duplicate_item_warning', duplicateCount(summary.pages)) }}
+
+                    <a @click.prevent="uncheckDuplicates(summary.pages)" href="#">@{{ translate('uncheck_duplicates') }}</a>
+                </div>
                 <p>
                     @{{ totalPages }} pages.
                     <a href="#" @click.prevent="showAllPages = true" v-if="!showAllPages">{{ t('show') }}</a>
@@ -79,7 +33,7 @@
                         <th>URL</th>
                     </thead>
                     <tbody>
-                        <tr v-for="(i, page) in summary.pages">
+                        <tr v-for="(i, page) in summary.pages" :class="{ warning: page.exists }">
                             <td class="checkbox-col">
                                 <input type="checkbox" v-model="page._checked" id="page-@{{ i }}" />
                                 <label for="page-@{{ i }}"></label>
@@ -97,19 +51,26 @@
                 </div>
                 <div class="form-group">
                     <label>{{ trans_choice('entries', 2) }}</label>
+
+                    <div class="alert alert-warning" role="alert" v-if="hasDuplicates(collection.entries)">
+                        @{{ translate_choice('cp.duplicate_item_warning', duplicateCount(collection.entries)) }}
+
+                        <a @click.prevent="uncheckDuplicates(collection.entries)" href="#">@{{ translate('uncheck_duplicates') }}</a>
+                    </div>
+
                     <p>
                         @{{ size(collection.entries) }} entries.
                         <a href="#" @click.prevent="showCollection(collectionName)" v-if="!shouldShowCollection(collectionName)">{{ t('show') }}</a>
                         <a href="#" @click.prevent="hideCollection(collectionName)" v-else>{{ t('hide') }}</a>
                     </p>
                 </div>
-                <table v-if="shouldShowCollection(collectionName)">
+                <table v-show="shouldShowCollection(collectionName)">
                     <thead>
                         <th></th>
                         <th>{{ t('slug') }}</th>
                     </thead>
                     <tbody>
-                        <tr v-for="(slug, entry) in collection.entries">
+                        <tr v-for="(slug, entry) in collection.entries" :class="{ 'warning': entry.exists }">
                             <td class="checkbox-col">
                                 <input type="checkbox" v-model="entry._checked" id="c-@{{ collectionName }}-@{{ slug }}" />
                                 <label for="c-@{{ collectionName }}-@{{ slug }}"></label>
@@ -127,6 +88,11 @@
                 </div>
                 <div class="form-group">
                     <label>{{ trans_choice('cp.terms', 2) }}</label>
+                    <div class="alert alert-warning" role="alert" v-if="hasDuplicates(taxonomy.terms)">
+                        @{{ translate_choice('cp.duplicate_item_warning', duplicateCount(taxonomy.terms)) }}
+
+                        <a @click.prevent="uncheckDuplicates(taxonomy.terms)" href="#">@{{ translate('uncheck_duplicates') }}</a>
+                    </div>
                     <p>
                         @{{ size(taxonomy.terms) }} terms.
                         <a href="#" @click.prevent="showTaxonomy(taxonomyName)" v-if="!shouldShowTaxonomy(taxonomyName)">{{ t('show') }}</a>
@@ -139,7 +105,7 @@
                         <th>{{ t('slug') }}</th>
                     </thead>
                     <tbody>
-                        <tr v-for="(slug, term) in taxonomy.terms">
+                        <tr v-for="(slug, term) in taxonomy.terms" :class="{ 'warning': term.exists }">
                             <td class="checkbox-col">
                                 <input type="checkbox" v-model="term._checked" id="t-@{{ taxonomyName }}-@{{ slug }}" />
                                 <label for="t-@{{ taxonomyName }}-@{{ slug }}"></label>

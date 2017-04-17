@@ -476,6 +476,7 @@ class Asset extends Data implements AssetContract
         $ext       = $file->getClientOriginalExtension();
 
         $directory = $this->folder();
+        $directory = ($directory === '.') ? '/' : $directory;
         $path      = Path::tidy($directory . '/' . $filename . '.' . $ext);
 
         // If the file exists, we'll append a timestamp to prevent overwriting.

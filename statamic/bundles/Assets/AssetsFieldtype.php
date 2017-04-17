@@ -24,7 +24,9 @@ class AssetsFieldtype extends Fieldtype
 
     public function preProcess($data)
     {
-        if ($this->getFieldConfig('max_files') === 1 && empty($data)) {
+        $max_files = (int) $this->getFieldConfig('max_files');
+
+        if ($max_files === 1 && empty($data)) {
             return $data;
         }
 
@@ -33,7 +35,9 @@ class AssetsFieldtype extends Fieldtype
 
     public function process($data)
     {
-        if ($this->getFieldConfig('max_files') === 1) {
+        $max_files = (int) $this->getFieldConfig('max_files');
+
+        if ($max_files === 1) {
             return array_get($data, 0);
         }
 

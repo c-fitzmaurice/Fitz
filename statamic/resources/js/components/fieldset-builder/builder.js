@@ -1,3 +1,5 @@
+Mousetrap = require('mousetrap');
+
 module.exports = {
 
     components: {
@@ -106,5 +108,11 @@ module.exports = {
 
     ready: function() {
         this.getFieldtypes();
+
+        Mousetrap.bindGlobal('mod+s', (e) => {
+            e.preventDefault();
+
+            this.save();
+        });
     }
 };

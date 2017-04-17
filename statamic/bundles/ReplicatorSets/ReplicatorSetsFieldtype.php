@@ -13,7 +13,7 @@ class ReplicatorSetsFieldtype extends Fieldtype
 
         foreach ($data as $set_name => $set_config) {
             $set_config['name'] = $set_name;
-            $set_config['fields'] = $this->moveInNameKey($set_config['fields']);
+            $set_config['fields'] = $this->moveInNameKey(array_get($set_config, 'fields', []));
             $processed[] = $set_config;
         }
 

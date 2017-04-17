@@ -304,9 +304,9 @@ trait Extensible
         return $url;
     }
 
-    protected function trans($key)
+    protected function trans($key, $params = [])
     {
-        return trans('addons.'.$this->getAddonClassName().'::'.$key);
+        return trans('addons.'.$this->getAddonClassName().'::'.$key, $params);
     }
 
     protected function transChoice($key, $number)

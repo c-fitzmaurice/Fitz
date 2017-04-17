@@ -6,7 +6,7 @@ fieldtype_fields:
   depth:
     type: text
   max_items:
-    type: text
+    type: integer
   sort:
     type: text
   label:

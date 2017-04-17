@@ -15,7 +15,7 @@
                 <td class="col-display"><input type="text" v-model="field.display" tabindex="0" /></td>
                 <td>{{ fieldtypeLabel(field.type) }}</td>
                 <td class="col-localizable" v-if="canLocalize">
-                    <toggle-fieldtype :data="field.localizable"></toggle-fieldtype>
+                    <toggle-fieldtype :data.sync="field.localizable"></toggle-fieldtype>
                 </td>
                 <td class="row-controls">
                     <span class="icon icon-edit edit" @click="selectField($index)"></span>

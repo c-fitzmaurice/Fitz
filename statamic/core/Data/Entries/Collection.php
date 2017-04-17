@@ -9,6 +9,7 @@ use Statamic\API\Config;
 use Statamic\API\Folder;
 use Statamic\API\Fieldset;
 use Statamic\Data\DataFolder;
+use Statamic\Events\Data\CollectionDeleted;
 use Statamic\Contracts\Data\Entries\Collection as CollectionContract;
 
 class Collection extends DataFolder implements CollectionContract
@@ -153,6 +154,8 @@ class Collection extends DataFolder implements CollectionContract
         $path = 'collections/' . $this->path();
 
         Folder::disk('content')->delete($path);
+
+        event(new CollectionDeleted($this->path()));
     }
 
     /**

@@ -102,10 +102,7 @@ class Server
      */
     private function setResourceType()
     {
-        // Ensure index.php is in the URI.
-        $uri = Str::ensureLeft($_SERVER['REQUEST_URI'], SITE_ROOT.pathinfo($_SERVER['SCRIPT_NAME'])['basename']);
-
-        $uri = Str::removeLeft($uri, $this->base_uri);
+        $uri = $this->getUri();
 
         if (Str::startsWith($uri, '/cp')) {
             $this->resource_type = self::RESOURCE_CP;
@@ -126,21 +123,17 @@ class Server
      */
     private function setResourceUri()
     {
-        // Get the URI, which would be everything after index.php. This might be
-        // after /index.php for a regular install, or after /subdir/index.php,
-        // or even /sub/subdir/subsubdir/index.php for a bonkers install.
-        $uri = Str::removeLeft($_SERVER['REQUEST_URI'], $_SERVER['SCRIPT_NAME']);
-
+        $uri = $this->getUri();
         $uri = explode('?', $uri)[0];
 
         $parts = explode('/', $uri);
 
         if ($this->resource_type === self::RESOURCE_CP) {
-            $parts = array_slice($parts, 3);
+            $parts = array_slice($parts, 2);
         } elseif ($this->resource_type === self::RESOURCE_ADDON) {
-            $parts = array_slice($parts, 4);
+            $parts = array_slice($parts, 3);
         } elseif ($this->resource_type === self::RESOURCE_THUMBNAIL) {
-            $parts = explode('/', base64_decode($parts[3]));
+            $parts = explode('/', base64_decode($parts[2]));
         }
 
         $this->resource_uri = join('/', $parts);
@@ -252,5 +245,14 @@ class Server
             'Cache-Control' => 'max-age='.$cache_time,
             'Last-Modified' => gmdate("D, d M Y H:i:s", $this->getLastModified()).' GMT'
         ]);
+    }
+
+    private function getUri()
+    {
+        $pattern = '#^['.SITE_ROOT.'|'.$_SERVER['SCRIPT_NAME'].'\/]+'.RESOURCES_ROUTE.'\/(.*)$#';
+
+        preg_match($pattern, $_SERVER['REQUEST_URI'], $matches);
+
+        return Str::ensureLeft($matches[1], '/');
     }
 }

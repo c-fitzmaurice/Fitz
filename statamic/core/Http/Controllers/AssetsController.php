@@ -274,9 +274,7 @@ class AssetsController extends CpController
     {
         $params = ($preset) ? ['p' => "cp_thumbnail_$preset"] : [];
 
-        $url = $this->thumbnailBuilder()->build($asset, $params);
-
-        return Str::ensureLeft($url, '/');
+        return $this->thumbnailBuilder()->build($asset, $params);
     }
 
     private function thumbnailBuilder()

@@ -79,12 +79,13 @@ class PageStructure
         }
 
         $path = $this->page()->path();
-        $url = $this->page()->url();
+        $uri = $this->page()->uri();
 
         return [
-            'url'    => $url,
-            'parent' => ($url == '/') ? null : URL::parent($url),
-            'depth'  => ($url == '/') ? 0 : substr_count($url, '/'),
+            'url'    => $this->page()->url(),
+            'uri'    => $uri,
+            'parent' => ($uri == '/') ? null : URL::parent($uri),
+            'depth'  => ($uri == '/') ? 0 : substr_count($uri, '/'),
             'status' => Path::status($path),
         ];
     }
