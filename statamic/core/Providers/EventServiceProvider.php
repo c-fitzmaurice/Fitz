@@ -15,7 +15,7 @@ class EventServiceProvider extends ServiceProvider
         \Statamic\Events\SearchSettingsUpdated::class => [
             \Statamic\Listeners\UpdateSearchIndex::class,
             \Statamic\Listeners\FlushCache::class,
-        ]
+        ],
     ];
 
     protected $subscribe = [
@@ -23,6 +23,7 @@ class EventServiceProvider extends ServiceProvider
         \Statamic\Data\Taxonomies\TermTracker::class,
         \Statamic\Listeners\GeneratePresetImageManipulations::class,
         \Statamic\StaticCaching\Invalidator::class,
+        \Statamic\Listeners\UpdateRoutes::class,
     ];
 
     public function register()

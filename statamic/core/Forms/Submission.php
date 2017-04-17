@@ -109,7 +109,7 @@ class Submission implements SubmissionContract
     public function formattedDate()
     {
         return $this->date()->format(
-            $this->formset()->get('date_format', 'Y-m-d H:m')
+            $this->form()->dateFormat()
         );
     }
 

@@ -36,6 +36,10 @@ class Content
      */
     public static function whereUri($uri)
     {
+        if ($uri === null) {
+            return null;
+        }
+
         $is_array   = is_array($uri);
         $uris       = Helper::ensureArray($uri);
         $collection = collect_content();

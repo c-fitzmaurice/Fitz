@@ -279,10 +279,9 @@ Route::group(['prefix' => CP_ROUTE, 'middleware' => ['auth']], function () {
 
     // Importers
     get('import', 'ImportController@index')->name('import');
-    get('import/{importer}', 'ImportController@ui')->name('importer');
-    get('import/{importer}/details', 'ImportController@details')->name('importer.details');
-    post('import/{importer}/export', 'ImportController@export')->name('importer.export');
-    post('import/{importer}/import', 'ImportController@import')->name('importer.import');
+    post('import/upload', 'ImportController@upload')->name('import.upload');
+    get('import/configure', 'ImportController@configure')->name('import.configure');
+    post('import/import', 'ImportController@import')->name('importer.import');
 
     // Updater
     get('system/updater', 'UpdaterController@index')->name('updater');

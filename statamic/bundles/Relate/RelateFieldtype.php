@@ -8,7 +8,7 @@ class RelateFieldtype extends SuggestFieldtype
 {
     public function preProcess($data)
     {
-        $max_items = $this->getFieldConfig('max_items');
+        $max_items = (int) $this->getFieldConfig('max_items');
 
         $data = (array) $data;
 
@@ -25,7 +25,9 @@ class RelateFieldtype extends SuggestFieldtype
 
     public function process($data)
     {
-        if ($this->getFieldConfig('max_items') === 1 && is_array($data)) {
+        $max_items = (int) $this->getFieldConfig('max_items');
+
+        if ($max_items === 1 && is_array($data)) {
             return $data[0];
         }
 

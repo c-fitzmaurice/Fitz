@@ -9,6 +9,7 @@ use Statamic\API\Config;
 use Statamic\API\Folder;
 use Statamic\API\Fieldset;
 use Statamic\Data\DataFolder;
+use Statamic\Events\Data\TaxonomyDeleted;
 use Statamic\Contracts\Data\Taxonomies\Taxonomy as TaxonomyContract;
 
 class Taxonomy extends DataFolder implements TaxonomyContract
@@ -140,7 +141,10 @@ class Taxonomy extends DataFolder implements TaxonomyContract
      */
     public function delete()
     {
+        File::disk('content')->delete('taxonomies/' . $this->path() . '.yaml');
         Folder::disk('content')->delete('taxonomies/' . $this->path());
+
+        event(new TaxonomyDeleted($this->path()));
     }
 
     /**

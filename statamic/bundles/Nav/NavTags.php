@@ -125,15 +125,25 @@ class NavTags extends Tags
         foreach ($segment_urls as $segment_url) {
             $default_segment_uri = URL::getDefaultUri($locale, $segment_url);
 
+            $content = Content::whereUri($default_segment_uri);
+
+            if (! $content) {
+                $content = app(\Statamic\Routing\Router::class)->getRoute($segment_url);
+            }
+
             // Skip this segment if it results in a non-existent URI.
             // An example of when this might happen is if your entries are routed through a non-standard URL.
             // For instance, on /blog/2015/01/02/post, the parent URL /blog/2015/01/02 probably isn't an
             // actual page. The segments will get skipped until `/blog`, which probably does exist.
-            if (! $content = Content::whereUri($default_segment_uri)) {
+            if (! $content) {
                 continue;
             }
 
-            $crumbs[$segment_url] = $content->in($locale)->toArray();
+            if ($content instanceof \Statamic\Contracts\Data\Content\Content) {
+                $content = $content->in($locale);
+            }
+
+            $crumbs[$segment_url] = $content->toArray();
             $crumbs[$segment_url]['is_current'] = (URL::getCurrent() == $segment_url);
         }
 

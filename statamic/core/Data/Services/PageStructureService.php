@@ -32,7 +32,7 @@ class PageStructureService extends BaseService
             $item = $item->toArray();
             $item['id'] = $id;
             return $item;
-        })->keyBy('url');
+        })->keyBy('uri');
 
         $depth = is_null($depth) ? INF : $depth;
         $output    = [];
@@ -56,7 +56,7 @@ class PageStructureService extends BaseService
 
         // Recursively grab the tree
         foreach ($structure->all() as $id => $data) {
-            $url = $data['url'];
+            $url = $data['uri'];
 
             // Is this the right depth and not the 404 page?
             if ($data['depth'] !== $current_depth || $url == "/404") {

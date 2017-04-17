@@ -10,6 +10,7 @@ use Statamic\API\Path;
 use Statamic\API\Config;
 use Statamic\API\Request;
 use Illuminate\Http\Response;
+use Statamic\Routing\ExceptionRoute;
 use Illuminate\Session\TokenMismatchException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
@@ -26,7 +27,8 @@ class Handler extends ExceptionHandler
     protected $dontReport = [
         'Symfony\Component\HttpKernel\Exception\HttpException',
         'Statamic\Exceptions\RedirectException',
-        'Statamic\Exceptions\UrlNotFoundException'
+        'Statamic\Exceptions\UrlNotFoundException',
+        TokenMismatchException::class,
     ];
 
     /**
@@ -159,11 +161,13 @@ class Handler extends ExceptionHandler
             if (File::disk('theme')->exists($path)) {
                 $template = join('.', [Config::get('theming.error_template_folder'), $status]);
 
-                return response(app('Statamic\Http\View')->render([
+                $route = new ExceptionRoute('/'.request()->path(), [
                     'layout' => ['error', Config::get('theming.default_layout')],
                     'response_code' => $status,
                     'exception_message' => $e->getMessage()
-                ], $template), $status);
+                ]);
+
+                return response(app('Statamic\Http\View')->render($route, $template), $status);
             }
         }
 

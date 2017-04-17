@@ -113,9 +113,7 @@ class Migrator
                     continue;
                 }
 
-                $term = Term::create($term_slug)->taxonomy($taxonomy_slug)->get();
-                $term->set('id', $term_data['id']);
-                $term->save();
+                Term::create($term_slug)->taxonomy($taxonomy_slug)->with($term_data)->save();
             }
         }
     }

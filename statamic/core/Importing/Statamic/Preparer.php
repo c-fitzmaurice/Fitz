@@ -35,6 +35,10 @@ class Preparer
 
     private function createTaxonomies()
     {
+        if (! isset($this->data['taxonomies'])) {
+            return;
+        }
+
         foreach ($this->data['taxonomies'] as $taxonomy_name => $terms) {
             $this->migration['taxonomies']->put($taxonomy_name, [
                 'title' => Str::title($taxonomy_name),
@@ -43,9 +47,15 @@ class Preparer
 
             $this->migration['terms']->put($taxonomy_name, collect());
 
-            foreach ($terms as $slug) {
-                $id = Helper::makeUuid();
-                $this->migration['terms'][$taxonomy_name]->put($slug, compact('id'));
+            foreach ($terms as $slug => $term_data) {
+                // Older versions of the importer saved the slugs of the terms to the json.
+                // We longer need to do that. This can be removed, but keeping it here
+                // for temporary backwards compatibility.
+                if (is_string($term_data)) {
+                    continue;
+                }
+
+                $this->migration['terms'][$taxonomy_name]->put($slug, $term_data);
             }
         }
     }
@@ -102,22 +112,8 @@ class Preparer
         foreach ($entries as $url => $data) {
             $slug = URL::slug($url);
 
-            if ($this->hasTaxonomies()) {
-                $data['data'] = $this->replaceTaxonomies($data['data']);
-            }
-
             $this->migration['entries'][str_replace('/', '-', $collection)]->put($slug, $data);
         }
-    }
-
-    /**
-     * Are there taxonomies in the migration?
-     *
-     * @return bool
-     */
-    private function hasTaxonomies()
-    {
-        return ! $this->migration['taxonomies']->isEmpty();
     }
 
     /**
@@ -171,6 +167,10 @@ class Preparer
      */
     private function createGlobals()
     {
+        if (! isset($this->data['globals'])) {
+            return;
+        }
+
         $globals = $this->data['globals'];
 
         // If there are globals in "settings", we'll merge them in with "global"

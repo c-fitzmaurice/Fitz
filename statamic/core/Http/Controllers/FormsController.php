@@ -127,7 +127,7 @@ class FormsController extends CpController
         $values = Helper::ensureArray($value);
 
         foreach ($values as &$value) {
-            $value = htmlspecialchars($value);
+            $value = (is_array($value)) ? json_encode($value) : htmlspecialchars($value);
         }
 
         return ($is_arr) ? $values : $values[0];
@@ -381,6 +381,8 @@ class FormsController extends CpController
         if (! $submission = $form->submission($submission)) {
             return $this->pageNotFound();
         }
+
+        $this->sanitizeSubmission($submission);
 
         return view('forms.submission', compact('form', 'submission'));
     }

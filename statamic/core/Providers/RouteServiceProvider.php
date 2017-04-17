@@ -2,9 +2,10 @@
 
 namespace Statamic\Providers;
 
-use Statamic\API\Page;
 use Statamic\API\Str;
+use Statamic\API\Config;
 use Illuminate\Routing\Router;
+use Statamic\Routing\Router as StatamicRouter;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider
@@ -31,6 +32,14 @@ class RouteServiceProvider extends ServiceProvider
         }
 
         parent::boot($router);
+    }
+
+    public function register()
+    {
+        $this->app->bind(StatamicRouter::class, function () {
+            $routes = array_get(Config::getRoutes(), 'routes', []);
+            return new StatamicRouter($routes);
+        });
     }
 
     /**

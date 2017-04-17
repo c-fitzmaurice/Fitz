@@ -56,7 +56,7 @@ class StaticUrlBuilder extends ImageUrlBuilder
         $this->item = $item;
         $this->params = $params;
 
-        $url = URL::assemble($this->options['route'], $this->generatePath());
+        $url = Str::removeRight($this->options['route'], '/') . '/' . $this->generatePath();
 
         return URL::encode($url);
     }

@@ -199,14 +199,18 @@ class AssetContainer implements AssetContainerContract
     public function fieldset($fieldset = null)
     {
         if (is_null($fieldset)) {
-            return ($this->fieldset) ? Fieldset::get($this->fieldset) : null;
+            if (! $fieldset = array_get($this->data, 'fieldset')) {
+                return null;
+            }
+
+            return Fieldset::get($fieldset);
         }
 
         if ($fieldset === false) {
-            return $this->fieldset = null;
+            $fieldset = null;
         }
 
-        $this->fieldset = $fieldset;
+        $this->data['fieldset'] = $fieldset;
     }
 
     /**

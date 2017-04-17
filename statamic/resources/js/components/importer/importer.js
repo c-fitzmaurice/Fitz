@@ -4,9 +4,6 @@ module.exports = {
 
     data: function() {
         return {
-            loading: true,
-            instructions: null,
-            siteUrl: '',
             exporting: false,
             exported: false,
             exportFailed: false,
@@ -17,7 +14,7 @@ module.exports = {
             showAllPages: false,
             showCollections: [],
             showTaxonomies: [],
-            showGlobals: []
+            showGlobals: [],
         }
     },
 
@@ -27,61 +24,46 @@ module.exports = {
         }
     },
 
-    ready: function () {
-        this.$http.get(cp_url('import/'+this.importer+'/details')).success(function (response) {
-            this.loading = false;
-            this.instructions = response.instructions;
-            this.json = response.json;
-        });
+    ready() {
+        this.summary = Statamic.ImportSummary;
     },
 
     methods: {
-        export: function () {
-            this.exporting = true;
-            this.$http.post(cp_url('import/'+this.importer+'/export'), { url: this.siteUrl }).success(function (response) {
-                if (response.success) {
-                    this.exporting = false;
-                    this.exported = true;
-                    this.summary = response.summary;
-                    this.setChecks();
-                }
-            }).error(function (response) {
-                this.exporting = false;
-                this.exportFailed = true;
-                this.exportError = response.error;
-            });
-        },
 
         import: function () {
             this.importing = true;
-            this.$http.post(cp_url('import/'+this.importer+'/import'), { summary: this.summary }).success(function (response) {
+            this.$http.post(cp_url('import/import'), { summary: this.summary }).success(function (response) {
                 this.importing = false;
                 this.imported = true;
                 console.log(response);
             });
         },
 
-        setChecks: function () {
-            _.each(this.summary.pages, function (page) {
-                page._checked = true;
+        hasDuplicates (collection) {
+            return !! this.duplicateCount(collection);
+        },
+
+        duplicateCount: function (items) {
+            let count = 0;
+
+            _.each(items, (item) => {
+                if (! item.exists) {
+                    return;
+                }
+
+                count++;
             });
 
-            _.each(this.summary.collections, function (collection) {
-                _.each(collection.entries, function (entry) {
-                    entry._checked = true;
-                })
-            });
+            return count;
+        },
 
-            _.each(this.summary.taxonomies, function (taxonomy) {
-                _.each(taxonomy.terms, function (term) {
-                    term._checked = true;
-                })
-            });
+        uncheckDuplicates: function(items) {
+            _.each(items, (item) => {
+                if (! item.exists) {
+                    return;
+                }
 
-            _.each(this.summary.globals, function (global) {
-                _.each(global.variables, function (variable) {
-                    variable._checked = true;
-                })
+                item._checked = false;
             });
         },
 

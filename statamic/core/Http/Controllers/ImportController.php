@@ -2,87 +2,63 @@
 
 namespace Statamic\Http\Controllers;
 
-use Exception;
-use Statamic\API\Str;
-use GuzzleHttp\Client;
 use Statamic\API\Cache;
+use Statamic\Importing\Statamic\StatamicImporter;
 
 class ImportController extends CpController
 {
     public function index()
     {
-        $this->access('importer');
-
-        return view('import.index', ['title' => t('nav_import')]);
+        return view('import.upload');
     }
 
-    public function ui($name)
+    public function upload()
     {
         $this->access('importer');
 
-        $importer = $this->importer($name);
-
-        $title = t('nav_import');
-
-        return view('import.import', compact('importer', 'title'));
-    }
-
-    public function details($name)
-    {
-        $this->access('importer');
-
-        $importer = $this->importer($name);
-
-        $instructions = markdown($importer->instructions());
-
-        $json = Cache::get("importer.$name.json");
-
-        return compact('instructions', 'json');
-    }
-
-    public function export($name)
-    {
-        $this->access('importer');
-
-        $importer = $this->importer($name);
-
-        $export_url = $importer->exportUrl($this->request->input('url'));
+        $stream = fopen($this->request->file('file'), 'r+');
+        $contents = stream_get_contents($stream);
+        fclose($stream);
 
         try {
-            $client = new Client;
-            $response = $client->get($export_url);
-            $json = $response->getBody()->getContents();
+            $prepared = $this->importer()->prepare($contents);
         } catch (\Exception $e) {
-            return response(['success' => false, 'error' => $e->getMessage()], 500);
+            return back()->withErrors($e->getMessage());
         }
 
-        Cache::put("importer.$name.json", $json);
+        Cache::put('importer.statamic.prepared', $prepared);
 
-        try {
-            $importer->prepare($json);
-        } catch (Exception $e) {
-            return response(['success' => false, 'error' => $e->getMessage()], 500);
-        }
-
-        return ['success' => true, 'summary' => $importer->summary()];
+        return redirect()->route('import.configure');
     }
 
-    public function import($name)
+    public function configure()
     {
-        $importer = $this->importer($name);
+        $this->access('importer');
 
-        $importer->import($this->request->input('summary'));
+        if (! $data = Cache::get('importer.statamic.prepared')) {
+            return redirect()->route('import');
+        }
+
+        return view('import.import', [
+            'summary' => $this->importer()->summary($data)
+        ]);
+    }
+
+    public function import()
+    {
+        $this->access('importer');
+
+        $prepared = Cache::get('importer.statamic.prepared');
+
+        $summary = $this->request->input('summary');
+
+        $this->importer()->import($prepared, $summary);
 
         return ['success' => true];
     }
 
-    private function importer($name)
+    private function importer()
     {
-        $this->access('importer');
-
-        $studly = Str::studly($name);
-        $class = "Statamic\\Importing\\$studly\\{$studly}Importer";
-
-        return new $class;
+        return new StatamicImporter;
     }
 }

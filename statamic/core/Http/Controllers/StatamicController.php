@@ -2,7 +2,6 @@
 
 namespace Statamic\Http\Controllers;
 
-use Exception;
 use Statamic\API\Str;
 use Statamic\API\URL;
 use Statamic\API\Path;
@@ -12,10 +11,10 @@ use Statamic\Http\View;
 use Statamic\API\Config;
 use Statamic\API\Folder;
 use Statamic\API\Content;
-use Statamic\API\Pattern;
-use Statamic\API\Fieldset;
 use Illuminate\Http\Request;
+use Statamic\Routing\Router;
 use Statamic\CP\Publish\SneakPeek;
+use Statamic\Routing\ExceptionRoute;
 use DebugBar\DataCollector\ConfigCollector;
 
 /**
@@ -49,15 +48,22 @@ class StatamicController extends Controller
     private $sneak_peek;
 
     /**
+     * @var Router
+     */
+    private $routeHelper;
+
+    /**
      * Create a new StatamicController
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Statamic\Http\View      $view
+     * @param \Statamic\Http\View $view
+     * @param Router $router
      */
-    public function __construct(Request $request, View $view)
+    public function __construct(Request $request, View $view, Router $router)
     {
         $this->request = $request;
         $this->view = $view;
+        $this->routeHelper = $router;
     }
 
     /**
@@ -147,12 +153,13 @@ class StatamicController extends Controller
         $this->response = response('');
 
         $segments = $this->parseUrl($segments);
+        $url = URL::tidy('/' . preg_replace('#^'.SITE_ROOT.'#', '', '/'.$segments));
 
         // Are we sneaking a peek?
         if ($this->peeking = $this->request->has('preview')) {
             // Are we allowed to be sneaking a peek?
             if (! User::loggedIn() || ! User::getCurrent()->hasPermission('cp:access')) {
-                return $this->notFoundResponse();
+                return $this->notFoundResponse($url);
             }
 
             $this->sneak_peek = new SneakPeek($this->request);
@@ -160,10 +167,8 @@ class StatamicController extends Controller
 
         // Prevent continuing if we're looking for a missing favicon
         if ($segments === 'favicon.ico') {
-            return $this->notFoundResponse();
+            return $this->notFoundResponse($url);
         }
-
-        $url = URL::tidy('/' . preg_replace('#^'.SITE_ROOT.'#', '', '/'.$segments));
 
         // Perform a redirect if this is a vanity URL
         if ($vanity = $this->vanityRedirect($url)) {
@@ -179,7 +184,7 @@ class StatamicController extends Controller
         // a route, or nada. If there's nothing, we'll send a 404.
         $this->data = $this->getDataForUri($url);
         if ($this->data === false) {
-            return $this->notFoundResponse();
+            return $this->notFoundResponse($url);
         }
 
         // Check for a redirect within the data
@@ -191,7 +196,7 @@ class StatamicController extends Controller
         $this->protect();
 
         // Unpublished content can only be viewed on the front-end if the user has appropriate permission
-        if (is_object($this->data) && ! $this->data->published()) {
+        if ($this->data instanceof \Statamic\Contracts\Data\Content\Content && ! $this->data->published()) {
             $user = User::getCurrent();
 
             if (! $user || ! $user->hasPermission('content:view_drafts_on_frontend')) {
@@ -252,7 +257,7 @@ class StatamicController extends Controller
         $requested_uri = $uri;
 
         // First we'll attempt to find a matching route.
-        if ($route = $this->getRoute($uri)) {
+        if ($route = $this->routeHelper->getRoute($uri)) {
             return $route;
         }
 
@@ -286,80 +291,13 @@ class StatamicController extends Controller
     }
 
     /**
-     * Attempt to get the data for a route that matches a $url
-     *
-     * @param string $url
-     * @return array|null
-     */
-    private function getRoute($url)
-    {
-        $standard_routes = [];
-
-        $url = URL::prependSiteUrl($url);
-
-        // The routes array is organized with the route as the key and either a string specifying a template,
-        // or an array containing data. If just a string was provided, we'll transform it into an array so
-        // everything is consistent. We aren't concerned with the collections and taxonomies arrays since
-        // they would have been picked up earlier on when we were checking for content.
-        foreach (array_get(Config::getRoutes(), 'routes', []) as $route_url => $route) {
-            if (! is_array($route)) {
-                $route = ['template' => $route];
-            }
-
-            $standard_routes[URL::prependSiteUrl($route_url)] = $route;
-        }
-
-        // At this point we have all the routes organized nicely into a route/data array.
-        // We'll iterate over them and if there's a match, we'll return the route data.
-        foreach ($standard_routes as $route => $data) {
-            // Convert standard wildcards
-            if (strpos($route, '*')) {
-                $i = 0;
-                $route = preg_replace_callback('/\*/', function ($matches) use (&$i) {
-                    $i++;
-                    return "{wildcard_$i}";
-                }, $route);
-            }
-
-            // Check for named wildcards
-            if (strpos($route, '{')) {
-                // Get the named keys out of the route
-                preg_match_all('/{\s*([a-zA-Z0-9_\-]+)\s*}/', $route, $matches);
-                $named_keys = $matches[1];
-
-                // Create a regex that we can use to get the wildcard values
-                $regex = preg_replace('/{\s*[a-zA-Z0-9_\-]+\s*}/', '([^/]*)', str_replace('*', '\.', $route));
-
-                // Check for a URL match
-                if (preg_match('#^' . $regex . '$#i', $url, $matches)) {
-                    array_shift($matches); // The first match is the whole URL. Remove it.
-
-                    $wildcard_data = array_combine($named_keys, $matches);
-
-                    return array_merge($data, $wildcard_data);
-                }
-            }
-
-            // Regular check
-            if ($url == $route) {
-                return $data;
-            }
-        }
-
-        // No matching route
-        return null;
-    }
-
-    /**
      * Get a redirect response from data, if one has been specified using a `redirect` variable.
      *
      * @return null|RedirectResponse
      */
     private function getRedirectFromData()
     {
-        $data = (is_object($this->data)) ? $this->data->toArray() : $this->data;
-
-        if ($redirect = array_get($data, 'redirect')) {
+        if ($redirect = $this->data->get('redirect')) {
             if ($redirect == '404') {
                 abort(404);
             }
@@ -403,9 +341,7 @@ class StatamicController extends Controller
         // First try to get a protection scheme from the system
         // settings then fall back to a scheme inside the data.
         if (! $scheme = Config::get('system.protect')) {
-            $scheme = (is_object($this->data))
-                ? $this->data->get('protect')
-                : array_get($this->data, 'protect');
+            $scheme = $this->data->get('protect');
         }
 
         // If there's no protection scheme then we can move along.
@@ -439,34 +375,34 @@ class StatamicController extends Controller
     }
 
     /**
+     * @param string $url
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
-    private function notFoundResponse()
+    private function notFoundResponse($url)
     {
         $this->loadKeyVars();
 
-        $data = datastore()->getAll();
-
         $template = Str::removeLeft(Path::assemble(Config::get('theming.error_template_folder'), '404'), '/');
-        $layout = array_get($data, 'layout', Config::get('theming.default_layout'));
 
-        datastore()->merge([
+        $route = new ExceptionRoute($url, [
             'response_code' => 404,
-            'template' => $template,
-            'layout' => $layout
+            'template' => $template
         ]);
+
+        $this->response->setContent($this->view->render($route));
+        $this->response->setStatusCode(404);
 
         $this->setUpDebugBar();
 
-        return response($this->view->render([], $template), 404);
+        return $this->response;
     }
 
     /**
      * Adjust the content type header of the request, if we want something other than HTML.
      */
-    private function adjustResponseContentType($data)
+    private function adjustResponseContentType()
     {
-        $content_type = array_get($data, 'content_type', 'html');
+        $content_type = $this->data->get('content_type', 'html');
 
         // If it's html, we don't need to continue.
         if ($content_type === 'html') {
@@ -499,10 +435,8 @@ class StatamicController extends Controller
      */
     private function modifyResponse()
     {
-        $data = (is_object($this->data)) ? $this->data->toArray() : $this->data;
-
         // Modify the response if we're attempting to serve something other than just HTML.
-        $this->adjustResponseContentType($data);
+        $this->adjustResponseContentType();
 
         // Add a powered-by header, but only if it's cool with them.
         if (Config::get('system.send_powered_by_header')) {
@@ -510,9 +444,7 @@ class StatamicController extends Controller
         }
 
         // Allow users to set custom headers
-        $headers = array_get($data, 'headers', []);
-
-        foreach ($headers as $header => $value) {
+        foreach ($this->data->get('headers', []) as $header => $value) {
             $this->response->header($header, $value);
         }
 

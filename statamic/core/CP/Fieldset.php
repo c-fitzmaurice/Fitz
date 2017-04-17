@@ -393,6 +393,7 @@ class Fieldset implements FieldsetContract
             $config['display'] = $this->getDisplayText($name, $config);
             $config['instructions'] = $this->getInstructionsText($name, $config);
             $config['required'] = Str::contains(array_get($config, 'validate'), 'required');
+            $config['localizable'] = $name === 'title' ? true : array_get($config, 'localizable', false);
 
             $contents['fields'][] = $this->preProcess($config);
         }
