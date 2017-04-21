@@ -199,8 +199,7 @@ module.exports = {
         },
 
         sortBy: function (col) {
-            const sort = col.field;
-
+            let sort = col.field;
             let sortOrder = 'desc';
 
             // If the current sort order was clicked again, change the direction.

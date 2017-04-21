@@ -101,7 +101,11 @@ module.exports = {
         },
 
         shouldShowMeta: function() {
-            return !this.isUser && !this.isSettings && !this.isAddon && (this.shouldShowSlug || this.shouldShowDate || this.shouldShowLocales);
+            if (this.isUser && this.shouldShowTaxonomies) {
+                return true;
+            }
+
+            return !this.isSettings && !this.isAddon && (this.shouldShowSlug || this.shouldShowDate || this.shouldShowLocales);
         },
 
         shouldShowTitle: function() {
@@ -140,7 +144,19 @@ module.exports = {
         },
 
         shouldShowTaxonomies: function() {
-            return typeof this.taxonomies !== 'string' && this.isEntry;
+            if (typeof this.taxonomies === 'string') {
+                return false;
+            }
+
+            // Taxonomy logic for users and pages is backwards.
+            // Usually, if no taxonomies are specified in the fieldset, we'll show them all.
+            // However, for users and pages, we only want to show taxonomies if they are
+            // defined, since taxonomizing users is a pretty uncommon thing to do.
+            if ((this.isUser || this.isPage) && !this.fieldset.taxonomies) {
+                return false;
+            }
+
+            return true;
         },
 
         shouldShowSneakPeek: function() {
@@ -199,6 +215,7 @@ module.exports = {
                 if (data.success) {
                     window.location = data.redirect;
                 } else {
+                    this.saving = false;
                     this.errors = data.errors;
                 }
             });

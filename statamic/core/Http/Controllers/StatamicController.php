@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Statamic\Routing\Router;
 use Statamic\CP\Publish\SneakPeek;
 use Statamic\Routing\ExceptionRoute;
+use Statamic\Contracts\Data\LocalizedData;
 use DebugBar\DataCollector\ConfigCollector;
 
 /**
@@ -196,11 +197,11 @@ class StatamicController extends Controller
         $this->protect();
 
         // Unpublished content can only be viewed on the front-end if the user has appropriate permission
-        if ($this->data instanceof \Statamic\Contracts\Data\Content\Content && ! $this->data->published()) {
+        if ($this->data instanceof LocalizedData && ! $this->data->published()) {
             $user = User::getCurrent();
 
             if (! $user || ! $user->hasPermission('content:view_drafts_on_frontend')) {
-                return $this->notFoundResponse();
+                return $this->notFoundResponse($url);
             }
 
             $this->response->header('X-Statamic-Draft', true);

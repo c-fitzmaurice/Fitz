@@ -1945,6 +1945,24 @@ class BaseModifiers extends Modifier
     }
 
     /**
+     * Filters the data by a given key / value pair
+     *
+     * @param array $value
+     * @param $params
+     *
+     * @return Collection
+     */
+    public function where($value, $params)
+    {
+        $key = array_get($params, 0);
+        $val = array_get($params, 1);
+
+        $collection = collect($value)->whereLoose($key, $val);
+
+        return $collection->all();
+    }
+
+    /**
      * Attempts to prevent widows in a string by adding
      * <nobr> tags between the last two words of each paragraph.
      *

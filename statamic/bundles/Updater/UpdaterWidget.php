@@ -10,7 +10,17 @@ class UpdaterWidget extends Widget
 {
     public function html()
     {
-        return $this->view('widget')->withUpdates($this->getUpdateCount());
+        $success = true;
+
+        try {
+            $updates = $this->getUpdateCount();
+        } catch (\Exception $e) {
+            \Log::error($e);
+            $success = false;
+            $updates = null;
+        }
+
+        return $this->view('widget')->with(compact('success', 'updates'));
     }
 
     private function getUpdateCount()

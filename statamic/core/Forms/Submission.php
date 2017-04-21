@@ -214,7 +214,9 @@ class Submission implements SubmissionContract
             }
 
             // Define the attribute (friendly name) so it doesn't appear as field.fieldname
-            $attributes[$field_name] = array_get($field_config, 'display', $field_name) . ' field';
+            $attributes[$field_name] = translate('cp.attribute_field_name', [
+                'attribute' => array_get($field_config, 'display', $field_name),
+            ]);
         }
 
         $validator = app('validator')->make($data, $rules, [], $attributes);

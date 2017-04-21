@@ -5,6 +5,7 @@ namespace Statamic\Http\Controllers;
 use Illuminate\Http\Request;
 use Statamic\API\Page;
 use Statamic\API\URL;
+use Statamic\API\Fieldset;
 
 /**
  * @todo  For the methods `create` and `edit`, not sure which is much cleaner,
@@ -45,6 +46,7 @@ class PublishPageController extends PublishController
             'locales'           => $this->getLocales(),
             'fieldset'          => $fieldset,
             'content_data'      => $this->populateWithBlanks($fieldset),
+            'taxonomies'        => $this->getTaxonomies(Fieldset::get($fieldset)),
         ]);
     }
 
@@ -82,6 +84,7 @@ class PublishPageController extends PublishController
             'locale'            => $locale,
             'is_default_locale' => $page->isDefaultLocale(),
             'locales'           => $this->getLocales($page->id()),
+            'taxonomies'        => $this->getTaxonomies($page->fieldset()),
             'extra'             => [
                 'is_home'    => $page->uri() === '/',
                 'parent_url' => URL::parent($url)
