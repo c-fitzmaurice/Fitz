@@ -21,6 +21,13 @@ class PagesTags extends CollectionTags
 
         $this->collection = $this->getPage()->children($depth);
 
+        // Convert taxonomy fields to actual taxonomy terms.
+        // This will allow taxonomy term data to be available in the template without additional tags.
+        // If terms are not needed, there's a slight performance benefit in disabling this.
+        if ($this->getBool('supplement_taxonomies', true)) {
+            $this->collection = $this->collection->supplementTaxonomies();
+        }
+
         $this->filter();
 
         if ($this->collection->isEmpty()) {

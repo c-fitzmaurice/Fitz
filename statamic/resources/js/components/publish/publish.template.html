@@ -1,3 +1,4 @@
+<div class="content-type-{{ contentType }}">
 <div class="publish-form" id="publish-form" :class="{'no-meta' : ! shouldShowMeta}">
 
     <div v-if="loading" class="loading loading-blocker">
@@ -44,8 +45,8 @@
             </div>
 
             <div class="btn-group" v-if="!editingLayout">
-                <button type="button" class="btn btn-primary" v-on:click="publish">{{ translate('cp.save') }}</button>
-                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button type="button" class="btn btn-primary" v-on:click="publish" :disabled="saving">{{ translate('cp.save') }}</button>
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" :disabled="saving">
                     <span class="caret"></span>
                     <span class="sr-only">{{ translate('cp.toggle_dropdown') }}</span>
                 </button>
@@ -118,4 +119,5 @@
             </div>
         </div>
     </div>
+</div>
 </div>

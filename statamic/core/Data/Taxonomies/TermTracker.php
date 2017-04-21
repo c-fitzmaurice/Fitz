@@ -54,7 +54,7 @@ class TermTracker
             return;
         }
 
-        if (! $event->item instanceof Content) {
+        if (!method_exists($event->item, 'isTaxonomizable') || !$event->item->isTaxonomizable()) {
             return;
         }
 

@@ -97,7 +97,7 @@ module.exports = {
             var self = this;
 
             if (self.single) {
-                if (! _.findWhere(self.suggestions, { value: self.data })) {
+                if (! _.findWhere(self.suggestions, { value: self.data[0] })) {
                     self.data = null;
                 }
             } else {

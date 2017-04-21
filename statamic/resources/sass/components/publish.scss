@@ -310,51 +310,60 @@ code.parent-url {
     }
 }
 
-@media (min-width: 1400px) {
-
-    body:not(.sneak-peeking) {
-        #publish-form {
-            display: flex;
-            align-items: flex-start;
-            justify-content: flex-start;
-            flex-wrap: wrap;
-            &.no-meta {
-                display: block;
-            }
-        }
-
-        #publish-fields .title-field { display: block; }
-        #publish-meta .title-field { display: none; }
-
-        #publish-controls,
-        #publish-controls-sticky-wrapper { flex-basis: 100%; }
-
-        #publish-fields { width: 100%; }
-
-        .publishing #publish-fields {
-            flex-basis: 70%;
-            width: auto;
-        }
-
-        #publish-meta {
-            order: 3;
-            flex-basis: 30%;
-            padding-left: 30px;
-
-            .card { padding: 5px; }
-
-            .form-group, .form-group.inline {
-                flex-basis: 100%;
-                flex-wrap: wrap;
-
-                .form-group { flex-basis: 100%; }
-
-                &:last-child { margin-bottom: 0; }
-            }
-        }
-
-        .publish-errors {
-            flex-basis: 100%;
+@mixin makepublishsidebar {
+    #publish-form {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        &.no-meta {
+            display: block;
         }
     }
+
+    #publish-fields .title-field { display: block; }
+    #publish-meta .title-field { display: none; }
+
+    #publish-controls,
+    #publish-controls-sticky-wrapper { flex-basis: 100%; }
+
+    #publish-fields { width: 100%; }
+
+    #publish-fields {
+        flex-basis: 70%;
+        width: auto;
+    }
+
+    #publish-meta {
+        order: 3;
+        flex-basis: 30%;
+        padding-left: 30px;
+
+        .card { padding: 5px; }
+
+        .form-group, .form-group.inline {
+            flex-basis: 100%;
+            flex-wrap: wrap;
+
+            .form-group { flex-basis: 100%; }
+
+            &:last-child { margin-bottom: 0; }
+        }
+    }
+
+    .publish-errors {
+        flex-basis: 100%;
+    }
 }
+
+@media (min-width: 1400px) {
+    body:not(.sneak-peeking) {
+        @include makepublishsidebar;
+    }
+}
+
+.content-type-user {
+    @include makepublishsidebar;
+}
+
+

@@ -390,4 +390,14 @@ abstract class Content extends Data implements ContentContract
     {
         //
     }
+
+    /**
+     * Whether the data can be taxonomized
+     *
+     * @return bool
+     */
+    public function isTaxonomizable()
+    {
+        return true;
+    }
 }

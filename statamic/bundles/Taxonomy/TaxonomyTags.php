@@ -39,6 +39,9 @@ class TaxonomyTags extends Tags
     {
         $this->terms = Term::whereTaxonomy($taxonomy);
 
+        // Swap to the appropriate locale. By default it's the site locale.
+        $this->terms = $this->terms->localize($this->get('locale', site_locale()));
+
         $this->filter();
 
         if ($this->terms->isEmpty()) {

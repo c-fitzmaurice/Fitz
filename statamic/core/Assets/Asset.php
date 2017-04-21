@@ -606,4 +606,14 @@ class Asset extends Data implements AssetContract
     {
         return (in_array(strtolower($this->extension()), $filetypes));
     }
+
+    /**
+     * Whether the data can be taxonomized
+     *
+     * @return bool
+     */
+    public function isTaxonomizable()
+    {
+        return false;
+    }
 }

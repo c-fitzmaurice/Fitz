@@ -709,6 +709,13 @@ abstract class Data implements DataContract
     abstract public function delete();
 
     /**
+     * Whether the data can be taxonomized
+     *
+     * @return bool
+     */
+    abstract public function isTaxonomizable();
+
+    /**
      * Enable taxonomies to be added when supplementing occurs
      *
      * @return void

@@ -12,10 +12,6 @@ class RelateFieldtype extends SuggestFieldtype
 
         $data = (array) $data;
 
-        if ($max_items === 1) {
-            return array_get($data, 0);
-        }
-
         if ($max_items > 1) {
             return array_slice($data, 0, $max_items);
         }

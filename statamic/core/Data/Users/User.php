@@ -485,4 +485,14 @@ class User extends Data implements UserContract, Authenticatable, PermissibleCon
 
         $this->set('fieldset', $fieldset);
     }
+
+    /**
+     * Whether the data can be taxonomized
+     *
+     * @return bool
+     */
+    public function isTaxonomizable()
+    {
+        return true;
+    }
 }

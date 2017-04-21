@@ -2440,6 +2440,7 @@ return array(
     'Statamic\\Http\\Controllers\\EntriesController' => $baseDir . '/core/Http/Controllers/EntriesController.php',
     'Statamic\\Http\\Controllers\\FieldsetController' => $baseDir . '/core/Http/Controllers/FieldsetController.php',
     'Statamic\\Http\\Controllers\\FormsController' => $baseDir . '/core/Http/Controllers/FormsController.php',
+    'Statamic\\Http\\Controllers\\GetsTaxonomiesFromFieldsets' => $baseDir . '/core/Http/Controllers/GetsTaxonomiesFromFieldsets.php',
     'Statamic\\Http\\Controllers\\GlideController' => $baseDir . '/core/Http/Controllers/GlideController.php',
     'Statamic\\Http\\Controllers\\GlobalsController' => $baseDir . '/core/Http/Controllers/GlobalsController.php',
     'Statamic\\Http\\Controllers\\ImportController' => $baseDir . '/core/Http/Controllers/ImportController.php',

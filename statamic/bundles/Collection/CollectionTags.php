@@ -144,9 +144,13 @@ class CollectionTags extends Tags
     {
         // If a boolean taxonomy parameter has been provided, retrieve the collection
         // associated with the URI. Otherwise, get it from any taxonomy parameters.
-        $taxonomyCollection = ($this->get('taxonomy', false) === 'true')
-            ? $this->getTaxonomyCollectionFromUri()
-            : $this->getTaxonomyCollectionFromParams($collection);
+        if ($this->get('taxonomy') === 'false') {
+            return false;
+        } elseif ($this->get('taxonomy') === 'true') {
+            $taxonomyCollection = $this->getTaxonomyCollectionFromUri();
+        } else {
+            $taxonomyCollection = $this->getTaxonomyCollectionFromParams($collection);
+        }
 
         // If neither option returns a collection, then a taxonomy option
         // wasn't selected. We'll just stop right here and move along.
@@ -157,7 +161,9 @@ class CollectionTags extends Tags
         // Make sure the entries belong to the specified collection(s)
         $collections = Helper::ensureArray($collection);
 
-        return $taxonomyCollection->filter(function ($entry) use ($collections) {
+        return $taxonomyCollection->filter(function ($entry) {
+            return $entry instanceof \Statamic\Contracts\Data\Entries\Entry;
+        })->filter(function ($entry) use ($collections) {
             return in_array($entry->collectionName(), $collections);
         });
     }

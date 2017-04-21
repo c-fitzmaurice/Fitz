@@ -12,6 +12,8 @@ use Statamic\Addons\User\PasswordReset;
 
 class UsersController extends CpController
 {
+    use GetsTaxonomiesFromFieldsets;
+
     /**
      * @var \Statamic\Contracts\Data\Users\User|\Statamic\Contracts\Permissions\Permissible
      */
@@ -88,7 +90,8 @@ class UsersController extends CpController
             'uri'               =>  null,
             'locale'            => default_locale(),
             'is_default_locale' => true,
-            'locales'           => []
+            'locales'           => [],
+            'taxonomies'        => $this->getTaxonomies(Fieldset::get($fieldset))
         ]);
     }
 
@@ -134,7 +137,8 @@ class UsersController extends CpController
             'status'            => $this->user->status(),
             'locale'            => default_locale(),
             'is_default_locale' => true,
-            'locales'           => []
+            'locales'           => [],
+            'taxonomies'         => $this->getTaxonomies($this->user->fieldset())
         ]);
     }
 
