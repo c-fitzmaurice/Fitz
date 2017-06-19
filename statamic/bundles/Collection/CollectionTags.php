@@ -601,6 +601,10 @@ class CollectionTags extends Tags
             $this->collection = Entry::whereCollection($collection);
         }
 
+        if ($this->getBool('supplement_taxonomies', true)) {
+            $this->collection = $this->collection->supplementTaxonomies();
+        }
+
         $this->filter(false);
 
         if ($direction === 'previous') {

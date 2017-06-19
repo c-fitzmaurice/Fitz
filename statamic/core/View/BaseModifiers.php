@@ -426,6 +426,18 @@ class BaseModifiers extends Modifier
     }
 
     /**
+     * Returns the file extension of a given filename.
+     *
+     * @param $value
+     * @param $params
+     * @return string
+     */
+    public function extension($value, $params)
+    {
+        return pathinfo($value, PATHINFO_EXTENSION);
+    }
+
+    /**
      * Generate a link to a Favicon file.
      *
      * @param $value
@@ -1585,6 +1597,12 @@ class BaseModifiers extends Modifier
 
         if ($key === 'random') {
             return $this->shuffle($value);
+        }
+
+        // Using sort="true" will allow primitive arrays to be sorted.
+        if ($key === 'true') {
+            natcasesort($value);
+            return $is_descending ? $this->reverse($value) : $value;
         }
 
         return collect($value)->sortBy($key, SORT_REGULAR, $is_descending)->values()->toArray();

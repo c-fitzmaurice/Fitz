@@ -2,14 +2,9 @@
 
 namespace Statamic\Http\Controllers;
 
-use Lang;
-use Carbon\Carbon;
 use Statamic\API\Str;
 use Statamic\API\File;
 use Statamic\API\YAML;
-use Statamic\API\User;
-use Statamic\API\Helper;
-use Statamic\API\Config;
 use Statamic\API\Folder;
 use Illuminate\Http\Request;
 
@@ -30,8 +25,6 @@ class CpController extends Controller
      */
     public function __construct(Request $request)
     {
-        $this->setLocale();
-
         $this->request = $request;
     }
 
@@ -94,33 +87,5 @@ class CpController extends Controller
         }
 
         return $themes;
-    }
-
-    /**
-     * Set the locale the translator will use within the control panel.
-     *
-     * Users can set their own locale in their files. If unspecified, it will fall back
-     * to the locale setting in cp.yaml. Finally, it will fall back to the site locale.
-     *
-     * @return void
-     */
-    private function setLocale()
-    {
-        $user_locale = (User::loggedIn()) ? User::getCurrent()->get('locale') : null;
-
-        $locale = Helper::pick(
-            $user_locale,
-            Config::get('cp.locale'),
-            Config::getDefaultLocale()
-        );
-
-        try {
-            Carbon::setLocale($locale);
-        } catch (\Exception $e) {
-            // Just in case Carbon doesn't support the locale provided,
-            // we wouldn't want things to break.
-        }
-
-        Lang::setLocale($locale);
     }
 }

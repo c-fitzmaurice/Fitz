@@ -589,7 +589,7 @@ function refreshing_addons()
  */
 function cp_middleware()
 {
-    return ['locale', 'outpost'];
+    return ['enforce-default-cp-locale', 'set-cp-locale', 'outpost'];
 }
 
 /**
