@@ -23,7 +23,7 @@
         "barryvdh/laravel-debugbar": "^2.2",
         "mmanos/laravel-search": "dev-master",
         "zendframework/zendsearch": "dev-master",
-        "algolia/algoliasearch-client-php": "^1.6",
+        "algolia/algoliasearch-client-php": "^1.18",
         "league/csv": "^8.0",
         "socialiteproviders/manager": "^2.1",
         "twistor/flysystem-guzzle": "^6.0",

@@ -107,6 +107,7 @@ module.exports = {
                 slug: this.slug,
                 fieldset: this.fieldset
             }).success(function(data) {
+                this.$dispatch('changesMade', false);
                 window.location = data.redirect;
             });
         }
