@@ -125,4 +125,19 @@ class PublishTaxonomyController extends PublishController
             'slug'  => $term->slug(),
         ]);
     }
+
+    /**
+     * Whether the user is authorized to publish the object.
+     *
+     * @param Request $request
+     * @return bool
+     */
+    protected function canPublish(Request $request)
+    {
+        $taxonomy = $request->input('extra.group');
+
+        return $request->user()->can(
+            $request->new ? "taxonomies:$taxonomy:create" : "taxonomies:$taxonomy:edit"
+        );
+    }
 }

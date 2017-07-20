@@ -35,4 +35,15 @@ class PublishUserController extends PublishController
 
         return $user == $current && ! $user->hasPermission('user:manage');
     }
+
+    /**
+     * Whether the user is authorized to publish the object.
+     *
+     * @param Request $request
+     * @return bool
+     */
+    protected function canPublish(Request $request)
+    {
+        return ! $this->cannotManageUsers($request->user());
+    }
 }

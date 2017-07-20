@@ -27,4 +27,16 @@ class OldTags extends Tags
 
         return $value;
     }
+
+    /**
+     * Unfortunately hacky workaround for {{ old:email }} calling $this->email(), resulting in
+     * an instance of Statamic\Email\Builder instead of retrieving the old "email" value.
+     * Helper methods were made public to facilitate testing, with this side effect.
+     *
+     * @return mixed
+     */
+    public function email()
+    {
+        return $this->__call('email', []);
+    }
 }

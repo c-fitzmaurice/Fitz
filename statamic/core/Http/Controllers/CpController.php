@@ -29,30 +29,6 @@ class CpController extends Controller
     }
 
     /**
-     * 404
-     */
-    public function pageNotFound()
-    {
-        abort(404);
-    }
-
-    /**
-     * Set the successful flash message
-     *
-     * @param string $message
-     * @param null   $text
-     * @return array
-     */
-    protected function success($message, $text = null)
-    {
-        $this->request->session()->flash('success', $message);
-
-        if ($text) {
-            $this->request->session()->flash('success_text', $text);
-        }
-    }
-
-    /**
      * Get all the template names from the current theme
      *
      * @return array

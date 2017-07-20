@@ -34,6 +34,7 @@ class Kernel extends HttpKernel
         'configurable' => 'Statamic\Http\Middleware\CP\Configurable',
         'installer' => 'Statamic\Http\Middleware\Installer',
         'outpost' => 'Statamic\Http\Middleware\Outpost',
+        'cp-enabled' => 'Statamic\Http\Middleware\CpEnabled',
         'enforce-default-cp-locale' => 'Statamic\Http\Middleware\CP\DefaultLocale',
         'set-cp-locale' => 'Statamic\Http\Middleware\CP\Localize',
         'staticcache' => 'Statamic\StaticCaching\Middleware\Cache',
