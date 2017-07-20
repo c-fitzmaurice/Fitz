@@ -44,7 +44,7 @@ abstract class DataCollection extends IlluminateCollection
 
         $arr = $this->all();
 
-        usort($arr, function ($a, $b) use ($sorts) {
+        uasort($arr, function ($a, $b) use ($sorts) {
             foreach ($sorts as $sort) {
                 $bits = explode(':', $sort);
                 $sort_by = $bits[0];

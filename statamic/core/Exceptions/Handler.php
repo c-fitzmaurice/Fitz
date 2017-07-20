@@ -76,10 +76,6 @@ class Handler extends ExceptionHandler
             return $this->appKeyResponse();
         }
 
-        if ($e instanceof UnlicensedException) {
-            return response()->view('errors.unlicensed');
-        }
-
         if ($e instanceof UnauthorizedHttpException) {
             if (! $request->header('referer')) {
                 return $this->renderHttpException($e);

@@ -34,6 +34,7 @@ var vm = new Vue({
         version: Statamic.version,
         flashSuccess: false,
         flashError: false,
+        flashSuccessTimer: null,
         draggingNonFile: false
     },
 
@@ -131,8 +132,16 @@ var vm = new Vue({
     },
 
     events: {
-        'setFlashSuccess': function (msg) {
+        'setFlashSuccess': function (msg, timeout) {
             this.flashSuccess = msg
+
+            clearTimeout(this.flashSuccessTimer);
+
+            if (timeout) {
+                this.flashSuccessTimer = setTimeout(() => {
+                    this.flashSuccess = null;
+                }, timeout);
+            }
         },
         'setFlashError': function (msg) {
             this.flashError = msg

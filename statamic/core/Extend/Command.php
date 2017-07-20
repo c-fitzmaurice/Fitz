@@ -18,6 +18,7 @@ class Command extends LaravelCommand
     {
         parent::__construct();
 
+        $this->bootstrap();
         $this->init();
     }
 }
