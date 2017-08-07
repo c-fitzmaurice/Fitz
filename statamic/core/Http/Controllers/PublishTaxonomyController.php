@@ -33,7 +33,7 @@ class PublishTaxonomyController extends PublishController
         );
 
         $extra = [
-            'group' => $group_name,
+            'taxonomy' => $group_name,
             'route' => $group->route()
         ];
 
@@ -134,7 +134,7 @@ class PublishTaxonomyController extends PublishController
      */
     protected function canPublish(Request $request)
     {
-        $taxonomy = $request->input('extra.group');
+        $taxonomy = $request->input('extra.taxonomy');
 
         return $request->user()->can(
             $request->new ? "taxonomies:$taxonomy:create" : "taxonomies:$taxonomy:edit"
