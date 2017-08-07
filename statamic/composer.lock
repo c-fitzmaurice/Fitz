@@ -1521,7 +1521,7 @@
         },
         {
             "name": "marbles/sitemap",
-            "version": "dev-master",
+            "version": "dev-dev",
             "dist": {
                 "type": "path",
                 "url": "../site/addons/Sitemap",

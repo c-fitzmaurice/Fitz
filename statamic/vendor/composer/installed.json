@@ -3671,8 +3671,8 @@
     },
     {
         "name": "marbles/sitemap",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
+        "version": "dev-dev",
+        "version_normalized": "dev-dev",
         "dist": {
             "type": "path",
             "url": "../site/addons/Sitemap",

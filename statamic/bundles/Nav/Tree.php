@@ -102,7 +102,9 @@ class Tree
     {
         foreach ($branches as $branch) {
             $branch['page']->supplementTaxonomies();
-            $branch['children'] = $this->performTaxonomySupplementing($branch['children']);
+            if ($branch['page'] instanceof Page) {
+                $branch['children'] = $this->performTaxonomySupplementing($branch['children']);
+            }
         }
 
         return $branches;
