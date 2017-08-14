@@ -215,7 +215,7 @@ module.exports = {
 
                 if (data.success) {
                     this.$dispatch('changesMade', false);
-                    if (! this.formData.continue) {
+                    if (! this.formData.continue || this.isNew) {
                         localStorage.setItem('continuing', false)
                         window.location = data.redirect;
                         return;

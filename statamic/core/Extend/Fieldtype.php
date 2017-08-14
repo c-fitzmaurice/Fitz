@@ -83,7 +83,7 @@ class Fieldtype implements FieldtypeInterface
 
     public function getHandle()
     {
-        $name = Str::snake($this->getFieldtypeName());
+        $name = $this->snake_name ?: Str::snake($this->getFieldtypeName());
 
         if (! $this->isPrimaryFieldtype()) {
             $name = Str::snake($this->getAddonName()) . '.' . $name;

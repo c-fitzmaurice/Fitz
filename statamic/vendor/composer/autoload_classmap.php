@@ -2299,6 +2299,7 @@ return array(
     'Statamic\\Console\\Commands\\Update\\UpdateHousekeepingCommand' => $baseDir . '/core/Console/Commands/Update/UpdateHousekeepingCommand.php',
     'Statamic\\Console\\Commands\\Update\\UpdateStatamicCommand' => $baseDir . '/core/Console/Commands/Update/UpdateStatamicCommand.php',
     'Statamic\\Console\\Commands\\VersionCommand' => $baseDir . '/core/Console/Commands/VersionCommand.php',
+    'Statamic\\Console\\EnhancesCommands' => $baseDir . '/core/Console/EnhancesCommands.php',
     'Statamic\\Console\\Kernel' => $baseDir . '/core/Console/Kernel.php',
     'Statamic\\Console\\Please' => $baseDir . '/core/Console/Please.php',
     'Statamic\\Contracts\\Assets\\Asset' => $baseDir . '/core/Contracts/Assets/Asset.php',

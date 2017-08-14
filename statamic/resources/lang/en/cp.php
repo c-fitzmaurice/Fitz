@@ -371,7 +371,7 @@ return [
 
     // Swap Release
     'swapping_files' => 'Swapping files...',
-    'swapping_files_instructions' => 'Your smelly old Statamic files are being swapped for sparkly clean new ones.',
+    'swapping_files_instructions' => 'Statamic is being injected with software growth hormone (SGH). Results will be visible mere moments.',
     'files_swapped' => 'Files swapped.',
 
     // Clean Up

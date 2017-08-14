@@ -500,7 +500,7 @@ class CollectionTags extends Tags
 
         $paginator = new LengthAwarePaginator($items, $count, $this->limit, $page);
 
-        $paginator->setPath(URL::getCurrent());
+        $paginator->setPath(request()->url());
         $paginator->appends(Request::all());
 
         $this->pagination_data = [

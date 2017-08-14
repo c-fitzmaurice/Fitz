@@ -55,6 +55,8 @@ abstract class Controller extends BaseController
         $post = ($request->isMethod('post')) ? sanitize_array($request->request->all()) : [];
         $get_post = sanitize_array($request->all());
 
+        $old = (empty(old())) ? [] : collect(old())->map(function($value) { return e($value); })->all();
+
         datastore()->merge(array_merge(
             [
                 'site_url'     => Config::getSiteUrl(),
@@ -68,6 +70,7 @@ abstract class Controller extends BaseController
                 'get'          => $get,
                 'post'         => $post,
                 'get_post'     => $get_post,
+                'old'          => $old,
                 'response_code' => 200,
                 'logged_in'    => \Auth::check(),
                 'logged_out'   => !\Auth::check(),
