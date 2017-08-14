@@ -31,22 +31,22 @@ class FieldsetController extends CpController
 
     public function get()
     {
-        $fieldsets = [];
-
-        foreach (Fieldset::all() as $fieldset) {
+        $fieldsets = collect(Fieldset::all())->sort(function ($fieldset) {
+            return $fieldset->title();
+        })->map(function ($fieldset) {
             // If we've decided to omit hidden fieldsets, and this one should be
             // hidden, we'll just move right along.
             if (bool($this->request->query('hidden', true)) === false && $fieldset->hidden()) {
-                continue;
+                return null;
             }
 
-            $fieldsets[] = [
+            return [
                 'title'    => $fieldset->title(),
                 'id'       => $fieldset->name(), // vue uses this as an id
                 'uuid'     => $fieldset->name(), // keeping this here temporarily, just in case.
                 'edit_url' => $fieldset->editUrl()
             ];
-        }
+        })->filter()->values()->all();
 
         return ['columns' => ['title'], 'items' => $fieldsets];
     }

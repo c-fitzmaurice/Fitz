@@ -109,7 +109,7 @@ abstract class PublishController extends CpController
 
         $successMessage = translate('cp.thing_saved', ['thing' => ucwords($request->type)]);
 
-        if (! $request->continue) {
+        if (! $request->continue || $request->new) {
             $this->success($successMessage);
         }
 

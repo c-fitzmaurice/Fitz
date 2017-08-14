@@ -32,7 +32,7 @@ var vm = new Vue({
         showShortcuts: false,
         navVisible: false,
         version: Statamic.version,
-        flashSuccess: false,
+        flashSuccess: Statamic.flashSuccess,
         flashError: false,
         flashSuccessTimer: null,
         draggingNonFile: false
@@ -124,6 +124,11 @@ var vm = new Vue({
             this.$broadcast('close-selector');
             this.$broadcast('close-dropdown', null);
         }.bind(this), 'keyup');
+
+        // Clear the initial flash message after a second.
+        this.flashSuccessTimer = setTimeout(() => {
+            this.flashSuccess = null;
+        }, 1000);
 
         // Keep track of whether something other than a file is being dragged
         // so that components can tell when a file is being dragged.

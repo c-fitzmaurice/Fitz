@@ -153,6 +153,7 @@ class RolesController extends CpController
 
         $data = [
             'title' => $title,
+            'slug' => $this->request->input('slug', Str::snake($title)),
             'permissions' => $this->request->input('permissions', [])
         ];
 

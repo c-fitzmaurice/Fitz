@@ -16,24 +16,19 @@ class PublishUserController extends PublishController
      */
     protected function redirect(Request $request, $user)
     {
-        if ($request->continue || $this->cannotManageUsers($user)) {
-            return route('user.edit', $user->username());
+        $currentUser = User::getCurrent();
+        $edit = route('user.edit', $user->username());
+        $index = route('users');
+
+        if ($request->continue) {
+            return $edit;
         }
 
-        return route('users');
-    }
+        if ($currentUser->hasPermission('users:edit')) {
+            return $index;
+        }
 
-    /**
-     * Check if the current logged user can manage all the users.
-     *
-     * @param  \Statamic\Contracts\Data\Users\User  $user
-     * @return bool
-     */
-    private function cannotManageUsers($user)
-    {
-        $current = User::getCurrent();
-
-        return $user == $current && ! $user->hasPermission('user:manage');
+        return $edit;
     }
 
     /**
@@ -44,6 +39,9 @@ class PublishUserController extends PublishController
      */
     protected function canPublish(Request $request)
     {
-        return ! $this->cannotManageUsers($request->user());
+        $user = User::find($request->uuid);
+        $currentUser = User::getCurrent();
+
+        return $currentUser === $user || $currentUser->hasPermission('users:edit');
     }
 }
