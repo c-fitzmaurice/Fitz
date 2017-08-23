@@ -216,7 +216,6 @@ module.exports = {
                 if (data.success) {
                     this.$dispatch('changesMade', false);
                     if (! this.formData.continue || this.isNew) {
-                        localStorage.setItem('continuing', false)
                         window.location = data.redirect;
                         return;
                     }
@@ -226,6 +225,7 @@ module.exports = {
                     this.title = this.formData.fields.title;
                     this.$dispatch('setFlashSuccess', data.message, 1000);
                 } else {
+                    this.$dispatch('setFlashError', translate('cp.error'));
                     this.saving = false;
                     this.errors = data.errors;
                     $('html, body').animate({ scrollTop: 0 });
@@ -237,9 +237,16 @@ module.exports = {
             });
         },
 
+        publishWithoutContinuing: function () {
+            localStorage.setItem('statamic.publish.continue', false);
+
+            this.publish();
+        },
+
         publishAndContinue: function() {
             this.continuing = true;
             this.formData.continue = true;
+            localStorage.setItem('statamic.publish.continue', true);
 
             this.publish();
         },
@@ -392,6 +399,10 @@ module.exports = {
             this.isSlugModified = (this.$slugify(title) !== slug);
         },
 
+        getInitialContinue: function () {
+            return localStorage.getItem('statamic.publish.continue') === 'true';
+        }
+
     },
 
     ready: function() {
@@ -407,6 +418,8 @@ module.exports = {
         if (this.locales) {
             this.locales = JSON.parse(this.locales);
         }
+
+        this.continuing = this.getInitialContinue();
 
         this.initFormData();
 

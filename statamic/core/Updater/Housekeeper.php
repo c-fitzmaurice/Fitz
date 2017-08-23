@@ -2,6 +2,7 @@
 
 namespace Statamic\Updater;
 
+use Statamic\API\Cache;
 use Illuminate\Console\Command;
 use Statamic\Events\StatamicUpdated;
 
@@ -55,6 +56,8 @@ class Housekeeper
 
             $update->update();
         }
+
+        Cache::clear();
 
         // Fire an event for devs etc.
         event(new StatamicUpdated($version, $previousVersion));

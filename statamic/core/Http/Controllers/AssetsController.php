@@ -117,7 +117,7 @@ class AssetsController extends CpController
             : Asset::all();
 
         $assets = $assets->filterWithKey(function ($asset, $path) use ($term) {
-            return str_contains($path, $term);
+            return str_contains(mb_strtolower($path), mb_strtolower($term));
         });
 
         $assets = $this->supplementAssetsForDisplay($assets);
@@ -378,7 +378,7 @@ class AssetsController extends CpController
     public function rename($container_id, $path)
     {
         $this->validate($this->request, [
-            'filename' => 'required|alpha_dash'
+            'filename' => 'required|alpha_dash|unique_asset_filename:'.$container_id.','.$path
         ]);
 
         $container = AssetContainer::find($container_id);

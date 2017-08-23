@@ -88,6 +88,7 @@ var CodeMirror = require('codemirror');
 
 require('codemirror/addon/edit/closebrackets');
 require('codemirror/addon/edit/matchbrackets');
+require('codemirror/addon/display/autorefresh');
 require('codemirror/mode/htmlmixed/htmlmixed');
 require('codemirror/mode/xml/xml');
 require('codemirror/mode/markdown/markdown');
@@ -440,6 +441,7 @@ module.exports = {
             lineWrapping: true,
             viewportMargin: Infinity,
             tabindex: 0,
+            autoRefresh: true
         });
 
         self.codemirror.on('change', function (cm) {
