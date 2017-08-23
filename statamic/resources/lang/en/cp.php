@@ -213,6 +213,7 @@ return [
     'folders_unwritable' => 'The following directories need to be writable:',
 
     // Error Pages
+    'error' => 'Error',
     'permission_denied' => 'Permission Denied',
     'permission_denied_instructions' => "You don't have permission to view this page.",
     'page_not_found' => 'Page not found',

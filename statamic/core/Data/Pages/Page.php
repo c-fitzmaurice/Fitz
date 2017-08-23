@@ -114,6 +114,9 @@ class Page extends Content implements PageContract
                 $this->set('slug', $slug);
             }
         }
+
+        // The path relies on the slug. We'll update it now.
+        $this->attributes['path'] = $this->buildPath();
     }
 
     /**
@@ -476,5 +479,20 @@ class Page extends Content implements PageContract
     public function structure()
     {
         return new PageStructure($this->id());
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function published($published = null)
+    {
+        if (is_null($published)) {
+            return array_get($this->attributes, 'published', true);
+        }
+
+        $this->attributes['published'] = $published;
+
+        // The path relies on the published state. We'll update it now.
+        $this->attributes['path'] = $this->buildPath();
     }
 }

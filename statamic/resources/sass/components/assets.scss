@@ -361,7 +361,7 @@
 
     .asset-meta {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         padding-top: 10px;
         font-size: 13px;
         color: $color_gray_light;
@@ -376,6 +376,8 @@
     .asset-filesize {
         text-align: right;
         white-space: nowrap;
+        opacity: .5;
+        padding-left: 8px;
     }
 
     &.is-folder .asset-filename {
