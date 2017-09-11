@@ -447,6 +447,7 @@ class Asset extends Data implements AssetContract
                 'last_modified'  => (string) $this->lastModified(),
                 'last_modified_timestamp' => $this->lastModified()->timestamp,
                 'last_modified_instance'  => $this->lastModified(),
+                'focus_css' => \Statamic\View\Modify::value($this->get('focus'))->backgroundPosition()->fetch(),
             ]);
         }
 

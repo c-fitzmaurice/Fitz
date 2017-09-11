@@ -3,6 +3,7 @@
 namespace Statamic\Extend\Management;
 
 use Statamic\API\Str;
+use Statamic\API\Path;
 use Statamic\API\Addon;
 use Statamic\FileCollection;
 
@@ -207,13 +208,19 @@ class AddonRepository
     /**
      * Filter by the filename
      *
-     * @param string $filename
+     * @param string $filename  The filename to find.
+     * @param string $directory  The directory to look inside, relative to the addon.
      * @return static
      */
-    public function filename($filename)
+    public function filename($filename, $directory = null)
     {
-        $files = $this->files->filter(function ($path) use ($filename) {
-            return Str::endsWith($path, '/'.$filename);
+        $files = $this->files->filter(function ($path) use ($filename, $directory) {
+            $relativePath = explode('/', $path, 4)[3];
+            $directory = trim($directory, '/');
+
+            return ($directory)
+                ? $relativePath === Path::tidy($directory . '/' . $filename)
+                : Str::endsWith($path, '/'.$filename);
         });
 
         return new static($files);

@@ -96,7 +96,7 @@
         </div>
     </div>
 
-    <div id="publish-fields">
+    <div id="publish-fields" v-if="formDataInitialized">
         <div class="card">
             <div :class="{ 'editing-layout': editingLayout }">
                 <div class="publish-main">
@@ -108,7 +108,8 @@
                         </div>
                     </div>
 
-                    <publish-fields :errors="errors"
+                    <publish-fields v-if="formDataInitialized"
+                                    :errors="errors"
                                     :fieldset-name="fieldsetName"
                                     :uuid="uuid"
                                     :locale="locale"

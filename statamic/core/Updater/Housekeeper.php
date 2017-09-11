@@ -3,6 +3,7 @@
 namespace Statamic\Updater;
 
 use Statamic\API\Cache;
+use Statamic\API\Folder;
 use Illuminate\Console\Command;
 use Statamic\Events\StatamicUpdated;
 
@@ -57,6 +58,7 @@ class Housekeeper
             $update->update();
         }
 
+        Folder::delete(temp_path('update-unzipped'));
         Cache::clear();
 
         // Fire an event for devs etc.

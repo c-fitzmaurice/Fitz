@@ -1,5 +1,51 @@
 [
     {
+        "name": "funkjedi/composer-include-files",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/funkjedi/composer-include-files.git",
+            "reference": "5e96f2e46537d99b8b72662796955dba739e251f"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/funkjedi/composer-include-files/zipball/5e96f2e46537d99b8b72662796955dba739e251f",
+            "reference": "5e96f2e46537d99b8b72662796955dba739e251f",
+            "shasum": ""
+        },
+        "require": {
+            "composer-plugin-api": "^1.0"
+        },
+        "time": "2016-12-23 18:15:30",
+        "type": "composer-plugin",
+        "extra": {
+            "class": "ComposerIncludeFiles\\Plugin"
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "ComposerIncludeFiles\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Tim Robertson",
+                "email": "funkjedi@gmail.com"
+            }
+        ],
+        "description": "Include files at a higher priority than autoload files.",
+        "homepage": "https://github.com/funkjedi/composer-include-files",
+        "keywords": [
+            "autoload",
+            "composer"
+        ]
+    },
+    {
         "name": "algolia/algoliasearch-client-php",
         "version": "1.18.0",
         "version_normalized": "1.18.0.0",
@@ -3158,23 +3204,23 @@
     },
     {
         "name": "michelf/php-markdown",
-        "version": "1.6.0",
-        "version_normalized": "1.6.0.0",
+        "version": "1.7.0",
+        "version_normalized": "1.7.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/michelf/php-markdown.git",
-            "reference": "156e56ee036505ec637d761ee62dc425d807183c"
+            "reference": "1f51cc520948f66cd2af8cbc45a5ee175e774220"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/michelf/php-markdown/zipball/156e56ee036505ec637d761ee62dc425d807183c",
-            "reference": "156e56ee036505ec637d761ee62dc425d807183c",
+            "url": "https://api.github.com/repos/michelf/php-markdown/zipball/1f51cc520948f66cd2af8cbc45a5ee175e774220",
+            "reference": "1f51cc520948f66cd2af8cbc45a5ee175e774220",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.0"
         },
-        "time": "2015-12-24 01:37:31",
+        "time": "2016-10-29 18:58:20",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -3668,25 +3714,5 @@
             }
         ],
         "description": "A Laravel 5 package to output to the console from outside of command classes"
-    },
-    {
-        "name": "marbles/sitemap",
-        "version": "dev-dev",
-        "version_normalized": "dev-dev",
-        "dist": {
-            "type": "path",
-            "url": "../site/addons/Sitemap",
-            "reference": "4777f45f06d54171aef1d2f46c5d387be2b69e21",
-            "shasum": null
-        },
-        "type": "library",
-        "installation-source": "dist",
-        "license": [
-            "MIT"
-        ],
-        "description": "Automatically add a Sitemap.xml to your website",
-        "transport-options": {
-            "symlink": false
-        }
     }
 ]

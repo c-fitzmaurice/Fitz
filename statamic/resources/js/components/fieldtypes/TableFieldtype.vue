@@ -38,12 +38,13 @@
 <script>
 module.exports = {
 
-    props: ['name', 'data', 'config'],
+    mixins: [Fieldtype],
 
     data: function () {
         return {
             max_rows: this.config.max_rows || null,
-            max_columns: this.config.max_columns || null
+            max_columns: this.config.max_columns || null,
+            autoBindChangeWatcher: false
         }
     },
 
@@ -153,6 +154,8 @@ module.exports = {
         if ( ! this.data) {
             this.data = [];
         }
+
+        this.bindChangeWatcher();
 
         $(this.$el).find('tbody').sortable({
             axis: "y",
