@@ -76,12 +76,13 @@ var Vue = require('vue');
 
 module.exports = {
 
-    props: ['name', 'data', 'config'],
+    mixins: [Fieldtype],
 
     data: function() {
         return {
             blank: {},
-            sortableOptions: {}
+            sortableOptions: {},
+            autoBindChangeWatcher: false
         };
     },
 
@@ -98,6 +99,7 @@ module.exports = {
         }
 
         this.sortable();
+        this.bindChangeWatcher();
     },
 
     methods: {

@@ -54,8 +54,7 @@ abstract class Controller extends BaseController
         $get = sanitize_array($request->query->all());
         $post = ($request->isMethod('post')) ? sanitize_array($request->request->all()) : [];
         $get_post = sanitize_array($request->all());
-
-        $old = (empty(old())) ? [] : collect(old())->map(function($value) { return e($value); })->all();
+        $old = sanitize_array(old());
 
         datastore()->merge(array_merge(
             [

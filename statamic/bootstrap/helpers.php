@@ -397,7 +397,13 @@ function format_url($url)
  */
 function markdown($content)
 {
-    return MarkdownExtra::defaultTransform($content);
+    $parser = new MarkdownExtra;
+
+    if (Config::get('theming.markdown_hard_wrap')) {
+        $parser->hard_wrap = true;
+    }
+
+    return $parser->transform($content);
 }
 
 /**

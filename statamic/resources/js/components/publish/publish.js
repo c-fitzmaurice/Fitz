@@ -59,6 +59,7 @@ module.exports = {
             contentData: null,
             taxonomies: null,
             formData: { extra: {}, fields: {} },
+            formDataInitialized: false,
             isSlugModified: false,
             iframeLoading: false,
             previewRequestQueued: false,
@@ -102,6 +103,8 @@ module.exports = {
         },
 
         shouldShowMeta: function() {
+            if (! this.formDataInitialized) return false;
+
             if (this.isUser && this.shouldShowTaxonomies) {
                 return true;
             }
@@ -192,6 +195,8 @@ module.exports = {
                 extra: this.extra,
                 fields: this.contentData
             };
+
+            this.formDataInitialized = true;
         },
 
         publish: function() {
@@ -447,14 +452,6 @@ module.exports = {
         this.$on('fieldsetLoaded', function(fieldset) {
             this.fieldset = fieldset;
         });
-
-        // Add the watcher after a small delay.
-        // Give things enough time to stop initially modifying the data.
-        setTimeout(() => {
-            this.$watch('formData', function () {
-                this.$dispatch('changesMade', true);
-            }, { deep: true });
-        }, 1000);
 
         Mousetrap.bindGlobal('mod+s', function(e) {
             e.preventDefault();

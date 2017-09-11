@@ -101,12 +101,12 @@ require('codemirror/mode/yaml/yaml');
 
 module.exports = {
 
+    mixins: [Fieldtype],
+
     components: {
         selector: require('../assets/Selector.vue'),
         Uploader: require('../assets/Uploader.vue')
     },
-
-    props: ['data', 'name', 'config'],
 
     data: function() {
         return {

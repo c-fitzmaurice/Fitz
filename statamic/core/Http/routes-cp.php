@@ -114,6 +114,8 @@ Route::group(['prefix' => CP_ROUTE, 'middleware' => ['auth']], function () {
                 '.*')->name('assets.folder.update');
         });
 
+        get('thumbnails/{asset}/{size?}', 'AssetThumbnailController@show')->name('asset.thumbnail');
+
         post('replace-edited-image', 'AssetsController@replaceEditedImage');
         get('image-editor-auth', 'AssetsController@editorAuth');
 

@@ -30,7 +30,7 @@ class JavascriptComposer
             return '';
         }
 
-        $scripts = $this->repo->thirdParty()->filename('scripts.js')->files();
+        $scripts = $this->repo->thirdParty()->filename('scripts.js', 'resources/assets/js')->files();
 
         $str = '';
 

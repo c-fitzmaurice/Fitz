@@ -15,7 +15,8 @@
     	'urlPath': '/{!! request()->path() !!}',
     	'resourceUrl': '{!! cp_resource_url('/') !!}',
     	'locales': {!! json_encode(Statamic\API\Config::getLocales()) !!},
-    	'flashSuccess': '{{ session('success') }}'
+    	'flashSuccess': '{{ session('success') }}',
+        'markdownHardWrap': {{ bool_str(Statamic\API\Config::get('theming.markdown_hard_wrap')) }}
     };
 </script>
 
