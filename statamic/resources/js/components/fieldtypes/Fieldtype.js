@@ -1,6 +1,13 @@
 export default {
 
-    props: ['data', 'config', 'name'],
+    props: {
+        data: {},
+        config: {},
+        name: {},
+        leaveAlert: {
+            default: false
+        }
+    },
 
     data() {
         return {
@@ -18,6 +25,7 @@ export default {
     methods: {
 
         bindChangeWatcher() {
+            if (!this.leaveAlert) return;
             if (this.changeWatcherIsBound) return;
 
             this.$watch('data', function () {

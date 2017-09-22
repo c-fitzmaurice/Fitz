@@ -175,6 +175,8 @@ abstract class Content extends Data implements ContentContract
 
         $this->ensureId();
 
+        $original = $this->original;
+
         // Write files to disk. One for each locale stored in this data.
         $this->writeFiles();
 
@@ -186,7 +188,7 @@ abstract class Content extends Data implements ContentContract
         $this->syncOriginal();
 
         // Whoever wants to know about it can do so now.
-        event('content.saved', $this);
+        event('content.saved', [$this, $original]);
 
         return $this;
     }

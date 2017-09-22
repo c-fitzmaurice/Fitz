@@ -112,6 +112,18 @@ class ContentCollection extends DataCollection
     }
 
     /**
+     * Remove published content
+     *
+     * @return static
+     */
+    public function removePublished()
+    {
+        return new static ($this->reject(function ($item) {
+            return (method_exists($item, 'published')) ? $item->published() : true;
+        }));
+    }
+
+    /**
      * Removes content with a date in the future
      *
      * @return static

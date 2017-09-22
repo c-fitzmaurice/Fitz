@@ -80,7 +80,7 @@
 
                     <div class="form-group major" v-if="shouldShowDate">
                         <label class="block">{{ translate('cp.date_and_time') }}</label>
-                        <date-fieldtype name="date" :data.sync="formData.extra.datetime" ></date-fieldtype>
+                        <date-fieldtype name="date" :data.sync="formData.extra.datetime" :leave-alert="true"></date-fieldtype>
                     </div>
 
                     <locale-selector v-if="shouldShowLocales" :locales="locales"></locale-selector>

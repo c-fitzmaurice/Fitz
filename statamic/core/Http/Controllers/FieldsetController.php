@@ -31,7 +31,7 @@ class FieldsetController extends CpController
 
     public function get()
     {
-        $fieldsets = collect(Fieldset::all())->sort(function ($fieldset) {
+        $fieldsets = collect(Fieldset::all())->sortBy(function ($fieldset) {
             return $fieldset->title();
         })->map(function ($fieldset) {
             // If we've decided to omit hidden fieldsets, and this one should be

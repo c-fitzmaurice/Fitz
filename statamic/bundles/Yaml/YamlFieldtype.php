@@ -29,6 +29,10 @@ class YamlFieldtype extends Fieldtype
             $data = YAML::parse($data);
         }
 
+        if (empty($data)) {
+            $data = null;
+        }
+
         return $data;
     }
 }
