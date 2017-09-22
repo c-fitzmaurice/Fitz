@@ -61,7 +61,7 @@ class AssetsTags extends Tags
             return $this->parseNoResults();
         }
 
-        $this->assets = $container->assets($this->get('folder'));
+        $this->assets = $container->assets($this->get('folder'), $this->getBool('recursive', false));
 
         return $this->output();
     }

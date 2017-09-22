@@ -105,6 +105,8 @@ class Page extends Content implements PageContract
             $uri = URL::replaceSlug($this->uri(), $slug);
             $this->uri($uri);
 
+            // The path relies on the slug. We'll update it now.
+            $this->attributes['path'] = $this->buildPath();
         } else {
             // If this is *not* the default locale, we want to store the slug
             // in the front-matter and leave the property as-is. Also, we
@@ -114,9 +116,6 @@ class Page extends Content implements PageContract
                 $this->set('slug', $slug);
             }
         }
-
-        // The path relies on the slug. We'll update it now.
-        $this->attributes['path'] = $this->buildPath();
     }
 
     /**
@@ -214,10 +213,12 @@ class Page extends Content implements PageContract
      */
     protected function completeSave()
     {
-        // If any pages were renamed, their files will have been moved, but
-        // the empty folder will remain in tact. We'll just clean that up.
-        if (Folder::disk('content')->isEmpty($dir = Path::directory($this->originalPath()))) {
-            Folder::disk('content')->delete($dir);
+        // If a page has been renamed, its child pages will need to be moved too.
+        if ($this->originalPath() !== $this->path()) {
+            Folder::disk('content')->rename(
+                Path::directory($this->originalPath()),
+                Path::directory($this->path())
+            );
         }
     }
 

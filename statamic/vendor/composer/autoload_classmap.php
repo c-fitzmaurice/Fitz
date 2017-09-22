@@ -2549,7 +2549,6 @@ return array(
     'Statamic\\Http\\Middleware\\CP\\Localize' => $baseDir . '/core/Http/Middleware/CP/Localize.php',
     'Statamic\\Http\\Middleware\\CP\\StartPage' => $baseDir . '/core/Http/Middleware/CP/StartPage.php',
     'Statamic\\Http\\Middleware\\CpEnabled' => $baseDir . '/core/Http/Middleware/CpEnabled.php',
-    'Statamic\\Http\\Middleware\\Glide' => $baseDir . '/core/Http/Middleware/Glide.php',
     'Statamic\\Http\\Middleware\\Installer' => $baseDir . '/core/Http/Middleware/Installer.php',
     'Statamic\\Http\\Middleware\\Outpost' => $baseDir . '/core/Http/Middleware/Outpost.php',
     'Statamic\\Http\\Middleware\\PersistStache' => $baseDir . '/core/Http/Middleware/PersistStache.php',

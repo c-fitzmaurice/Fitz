@@ -4,6 +4,7 @@ namespace Statamic\Data\Services;
 
 use Statamic\API\Content;
 use Statamic\API\Helper;
+use Statamic\API\URL;
 use Statamic\API\Page;
 use Statamic\API\Path;
 use Statamic\API\Pattern;
@@ -27,6 +28,11 @@ class PageStructureService extends BaseService
     )
     {
         $locale = $locale ?: default_locale();
+
+        // If a localized URL was requested, we'll get the unlocalized version since that's what's stored in the structure array.
+        if ($locale !== default_locale()) {
+            $base_url = URL::unlocalize($base_url, $locale);
+        }
 
         $structure = $this->all()->map(function ($item, $id) {
             $item = $item->toArray();
