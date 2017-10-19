@@ -29,6 +29,14 @@ module.exports = {
                 delete this.options[value];
             }
         });
+    },
+
+    methods: {
+
+        focus() {
+            this.$els.tags.selectize.focus();
+        }
+
     }
 };
 </script>

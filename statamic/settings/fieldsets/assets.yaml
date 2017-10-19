@@ -14,6 +14,8 @@ fields:
     type: toggle
   image_manipulation_cached_path:
     type: text
+    show_when:
+      image_manipulation_cached: true
   image_manipulation_presets:
     type: yaml
   thumbnail_max_width:

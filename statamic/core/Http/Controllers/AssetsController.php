@@ -306,38 +306,6 @@ class AssetsController extends CpController
         ]);
     }
 
-    public function replaceEditedImage()
-    {
-        $asset = Asset::find($this->request->id);
-
-        $handle = fopen($this->request->new_url, 'rb');
-        $contents = stream_get_contents($handle);
-        fclose($handle);
-
-        $asset->replace($contents);
-
-        return [
-            'success' => true,
-            'thumbnail' => $this->thumbnail($asset, 'large')
-        ];
-    }
-
-    public function editorAuth()
-    {
-        $apiKey = '';
-        $apiSecret = '';
-        $salt = rand(0, 1000);
-        $time = time();
-        $sig = sha1($apiKey . $apiSecret . $time . $salt);
-
-        return [
-            'timestamp' => $time,
-            'salt' => $salt,
-            'encryptionMethod' => 'sha1',
-            'signature' => $sig
-        ];
-    }
-
     public function download($container_id, $path)
     {
         $container = AssetContainer::find($container_id);

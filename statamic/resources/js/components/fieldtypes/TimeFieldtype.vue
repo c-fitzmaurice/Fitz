@@ -120,6 +120,10 @@ module.exports = {
 
         focusMinute: function() {
             $(this.$els.minute).focus().select();
+        },
+
+        focus() {
+            this.$els.hour.focus();
         }
     }
 };

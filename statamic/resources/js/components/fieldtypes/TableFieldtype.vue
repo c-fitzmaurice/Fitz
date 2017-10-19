@@ -44,7 +44,8 @@ module.exports = {
         return {
             max_rows: this.config.max_rows || null,
             max_columns: this.config.max_columns || null,
-            autoBindChangeWatcher: false
+            autoBindChangeWatcher: false,
+            sortableInitialized: false
         }
     },
 
@@ -96,6 +97,41 @@ module.exports = {
     },
 
     methods: {
+
+        sortable() {
+            if (this.sortableInitialized || this.data.length === 0) return;
+
+            var self = this,
+                start = '';
+
+            $(this.$el).find('tbody').sortable({
+                axis: "y",
+                revert: 175,
+                handle: '.drag-handle',
+                placeholder: "table-row-placeholder",
+                forcePlaceholderSize: true,
+
+                start: function(e, ui) {
+                    start = ui.item.index();
+                    ui.placeholder.height(ui.item.height());
+                },
+
+                update: function(e, ui) {
+                    var end  = ui.item.index(),
+                        swap = self.data.splice(start, 1)[0];
+
+                    self.data.splice(end, 0, swap);
+                }
+            });
+
+            this.sortableInitialized = true;
+        },
+
+        destroySortable() {
+            $(this.$el).find('tbody').sortable('destroy');
+            this.sortableInitialized = false;
+        },
+
     	addRow: function() {
             // If there are no columns, we will add one when we add a row.
             var count = (this.columnCount === 0) ? 1 : this.columnCount;
@@ -144,38 +180,37 @@ module.exports = {
                     self.data[i].cells.splice(index, 1);
                 }
             });
+        },
+
+        getReplicatorPreviewText() {
+            // Join all values with commas. Exclude any empties.
+            return _(this.data)
+                .map(row => row.cells.filter(cell => !!cell).join(', '))
+                .filter(row => !!row).join(', ');
         }
     },
 
     ready: function() {
-        var self = this,
-            start = '';
-
         if ( ! this.data) {
             this.data = [];
         }
 
         this.bindChangeWatcher();
+        this.sortable();
+    },
 
-        $(this.$el).find('tbody').sortable({
-            axis: "y",
-            revert: 175,
-            handle: '.drag-handle',
-            placeholder: "table-row-placeholder",
-            forcePlaceholderSize: true,
+    watch: {
 
-            start: function(e, ui) {
-                start = ui.item.index();
-                ui.placeholder.height(ui.item.height());
-            },
+        data(data) {
+            this.$nextTick(() => {
+                if (this.data.length) {
+                    this.sortable();
+                } else {
+                    this.destroySortable();
+                }
+            });
+        }
 
-            update: function(e, ui) {
-                var end  = ui.item.index(),
-                    swap = self.data.splice(start, 1)[0];
-
-                self.data.splice(end, 0, swap);
-            }
-        });
     }
 }
 </script>

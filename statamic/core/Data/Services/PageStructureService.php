@@ -74,11 +74,6 @@ class PageStructureService extends BaseService
                 continue;
             }
 
-            // Draft?
-            if (! $show_drafts && in_array($data['status'], ['draft', 'hidden'])) {
-                continue;
-            }
-
             // Is this in the excluded URLs list?
             if (in_array($url, $exclude)) {
                 continue;
@@ -87,6 +82,11 @@ class PageStructureService extends BaseService
             // Get information
             $content = Page::whereUri($url)->in($locale)->get();
             $content->setSupplement('depth', $current_depth);
+
+            // Draft?
+            if (! $show_drafts && ! $content->published()) {
+                continue;
+            }
 
             // Get entries belonging to this page. We'll treat them as child
             // pages and merge them into the children array later.

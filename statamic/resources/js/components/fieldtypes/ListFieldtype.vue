@@ -18,9 +18,10 @@
 	</li>
 	<li>
 		<input type="text" class="form-control new-item" v-model="newItem"
-		       @keydown.enter.prevent="addItem"
-               @blur="addItem"
-			   @keyup.up="goUp"
+            placeholder="{{ translate('cp.add_another_item')}}..."
+            @keydown.enter.prevent="addItem"
+            @blur="addItem"
+            @keyup.up="goUp"
 		/>
 	</li>
 </ul>
@@ -103,6 +104,10 @@ module.exports = {
 
         deleteItem: function(item) {
             this.data.$remove(item);
+        },
+
+        getReplicatorPreviewText() {
+            return this.data.join(', ');
         }
     },
 

@@ -48,6 +48,35 @@ class GlideTags extends Tags
     }
 
     /**
+     * Maps to {{ glide:batch }}
+     *
+     * A tag pair that converts all image URLs to Glide URLs.
+     *
+     * @return string
+     */
+    public function batch()
+    {
+        $content = $this->parse([]);
+
+        preg_match_all('/<img[^>]*src="([^"]*)"/i', $content, $matches, PREG_SET_ORDER);
+
+        if (empty($matches)) {
+            return $content;
+        }
+
+        $matches = collect($matches)->map(function ($match) {
+            return [
+                $match[0],
+                sprintf('<img src="%s"', $this->generateGlideUrl($match[1]))
+            ];
+        })->transpose();
+
+        $content = str_replace($matches[0], $matches[1], $content);
+
+        return $content;
+    }
+
+    /**
      * Maps to {{ glide:generate }} ... {{ /glide:generate }}
      *
      * Generates the image and makes variables available within the pair.

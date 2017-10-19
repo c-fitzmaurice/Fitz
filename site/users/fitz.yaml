@@ -1,6 +1,8 @@
+roles:
+  - d32e14fb-08c9-44c2-aaf8-21200852bafd
 email: colin@fitz-maurice.com
 first_name: Colin
 last_name: Fitz-Maurice
 id: ca45dc08-ac39-486f-8b76-db275a33fb50
 super: true
-password_hash: $2y$10$iEXvzBLzUQKH2bCWubYX3uxIie.LNr/4Mj7D.j1dmUnkUdyQxjLj6
+password_hash: $2y$10$NpKn.FFpbuqcf3R5Sfql4OR53M1tg8OrQWccNvXxT0gUMAsHKsclq

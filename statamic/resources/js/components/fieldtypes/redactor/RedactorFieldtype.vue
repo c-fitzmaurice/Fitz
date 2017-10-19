@@ -122,6 +122,18 @@ module.exports = {
 
         closeAssetSelector() {
             this.showAssetSelector = false;
+        },
+
+        getReplicatorPreviewText() {
+            if (! this.data) return '';
+
+            return $(this.$els.redactor)
+                .redactor('clean.getTextFromHtml', this.data)
+                .replace(/\n/g, ' ');
+        },
+
+        focus() {
+            $(this.$els.redactor).redactor('focus.setEnd');
         }
     },
 

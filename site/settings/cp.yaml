@@ -1,5 +1,6 @@
 start_page: dashboard
 date_format: Y/n/d
+pagination_size: 50
 widgets:
   - 
     type: collection
@@ -25,5 +26,3 @@ widgets:
     collection: jobs
     limit: 5
     importance: 3
-  - 
-    type: updater

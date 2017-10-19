@@ -119,7 +119,7 @@ class Kernel extends ConsoleKernel
     {
         // In each addon's task class, we'll pass along the scheduler
         // instance and let the class define its own schedule.
-        foreach ($this->repo()->tasks()->classes() as $class) {
+        foreach ($this->repo()->tasks()->installed()->classes() as $class) {
             app($class)->schedule($schedule);
         }
     }

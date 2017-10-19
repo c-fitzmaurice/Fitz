@@ -1,7 +1,11 @@
 <template>
     <div
         class="assets-fieldtype"
-        :class="{ 'max-files-reached': maxFilesReached, 'empty': ! assets.length }"
+        :class="{
+            'max-files-reached': maxFilesReached,
+            'empty': ! assets.length,
+            'solo': soloAsset && maxFilesReached
+        }"
         @dragover="dragOver"
         @dragleave="dragStop"
         @drop="dragStop">
@@ -27,12 +31,12 @@
                 <template v-else>
                     <button
                         type="button"
-                        class="btn btn-with-icon"
+                        class="btn btn-with-icon mr-8"
                         @click="openSelector"
                         @keyup.space.enter="openSelector"
                         tabindex="0">
                         <span class="icon icon-folder-images"></span>
-                        {{ translate('cp.add_asset') }}
+                        {{ translate('cp.browse_assets') }}
                     </button>
 
                     <button
@@ -62,21 +66,40 @@
                 :uploads="uploads">
             </uploads>
 
-            <div class="asset-grid-listing" v-if="expanded" v-el:assets>
+            <template v-if="expanded && ! soloAsset">
 
-                <asset
+                <div class="asset-grid-listing" v-if="displayMode === 'grid'" v-el:assets>
+
+                    <asset-tile
+                        v-for="asset in assets"
+                        :asset="asset"
+                        @removed="assetRemoved">
+                    </asset-tile>
+
+                </div>
+
+                <div class="asset-table-listing" v-if="displayMode === 'list'">
+
+                    <table>
+                        <tbody v-el:assets>
+                            <tr is="assetRow"
+                                v-for="asset in assets"
+                                :asset="asset"
+                                @removed="assetRemoved">
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </template>
+
+            <div class="asset-solo-container" v-if="expanded && soloAsset" v-el:assets>
+                <asset-tile
                     v-for="asset in assets"
                     :asset="asset"
                     @removed="assetRemoved">
-                </asset>
-
-                <!-- hack for flexbox spacing the last row properly. -->
-                <div class="asset-tile ghost"></div>
-                <div class="asset-tile ghost"></div>
-                <div class="asset-tile ghost"></div>
-                <div class="asset-tile ghost"></div>
-                <div class="asset-tile ghost"></div>
-
+                </asset-tile>
             </div>
         </template>
 
@@ -125,7 +148,8 @@ import DetectsFileDragging from '../../DetectsFileDragging';
 export default {
 
     components: {
-        asset: require('./Asset.vue'),
+        assetTile: require('./AssetTile.vue'),
+        assetRow: require('./AssetRow.vue'),
         selector: require('../../assets/Selector.vue'),
         uploader: require('../../assets/Uploader.vue'),
         uploads: require('../../assets/Uploads.vue')
@@ -144,7 +168,8 @@ export default {
             draggingFile: false,
             uploads: [],
             innerDragging: false,
-            autoBindChangeWatcher: false
+            autoBindChangeWatcher: false,
+            displayMode: 'grid'
         };
     },
 
@@ -203,6 +228,13 @@ export default {
             if (this.maxFiles === 0) return false;
 
             return this.assets.length >= this.maxFiles;
+        },
+
+        /**
+         * True if a single asset.
+         */
+        soloAsset() {
+            return this.maxFiles === 1;
         },
 
         /**
@@ -340,6 +372,12 @@ export default {
                     }
                 }
             });
+        },
+
+        getReplicatorPreviewText() {
+            return _.map(this.data, (asset) => {
+                return asset.substring(asset.lastIndexOf('/') + 1);
+            }).join(', ');
         }
 
     },
@@ -360,6 +398,10 @@ export default {
 
 
     ready() {
+        this.displayMode = this.isInsideGridField
+            ? 'list'
+            : this.config.mode || 'grid';
+
         this.selectorViewMode = Cookies.get('statamic.assets.listing_view_mode') || 'grid';
 
         // We only have URLs in the field data, so we'll need to request the asset data from the server.

@@ -167,6 +167,16 @@ class Outpost
     }
 
     /**
+     * How many updates are between the installed version and the latest.
+     *
+     * @return int
+     */
+    public function getUpdateCount()
+    {
+        return $this->isUpdateAvailable() ? array_get($this->response, 'update_count') : 0;
+    }
+
+    /**
      * What's the latest version?
      *
      * @return string
@@ -256,6 +266,7 @@ class Outpost
             'license_key'      => $this->getLicenseKey(),
             'latest_version'   => STATAMIC_VERSION,
             'update_available' => false,
+            'update_count'     => 0,
             'license_valid'    => false
         ];
     }

@@ -9,9 +9,9 @@ module.exports = {
 
     components: {
         'publish-fields': require('./fields'),
-        'locale-selector': require('./locale-selector'),
         'user-options': require('./user-options'),
-        'taxonomy-fields': require('./TaxonomyFields.vue')
+        'taxonomy-fields': require('./TaxonomyFields.vue'),
+        'status-field': require('./StatusField.vue')
     },
 
     deep: true,
@@ -109,7 +109,11 @@ module.exports = {
                 return true;
             }
 
-            return !this.isSettings && !this.isAddon && (this.shouldShowSlug || this.shouldShowDate || this.shouldShowLocales);
+            if ((this.isGlobal || this.isHomePage) && this.locales.length > 1) {
+                return true;
+            }
+
+            return !this.isSettings && !this.isAddon && (this.shouldShowSlug || this.shouldShowDate);
         },
 
         shouldShowTitle: function() {
@@ -121,11 +125,11 @@ module.exports = {
         },
 
         shouldShowStatus: function() {
-            return !this.isSettings && !this.isAddon && this.isDefaultLocale && !this.isGlobal && !this.isTaxonomy && !this.isUser && !this.isHomePage;
+            return !this.isSettings && !this.isAddon && !this.isTaxonomy && !this.isUser && !this.isHomePage;
         },
 
-        shouldShowLocales: function() {
-            return this.locales && this.locales.length > 1 && !this.isNew;
+        allowStatuses: function () {
+            return !this.isTaxonomy && !this.isGlobal && !this.isHomePage;
         },
 
         shouldShowDate: function() {
@@ -164,7 +168,7 @@ module.exports = {
         },
 
         shouldShowSneakPeek: function() {
-            return !this.isGlobal && !this.isSettings && !this.isUser && !this.isAddon;
+            return !this.isGlobal && !this.isSettings && !this.isUser && !this.isAddon && !this.editingLayout;
         },
 
         canEditLayout: function() {
@@ -176,7 +180,7 @@ module.exports = {
         },
 
         hasAnyMetaData: function () {
-            return this.shouldShowTitle || this.shouldShowSlug || this.shouldShowDate || this.shouldShowLocales || this.shouldShowStatus;
+            return this.shouldShowTitle || this.shouldShowSlug || this.shouldShowDate || this.shouldShowStatus;
         },
 
     },
@@ -199,6 +203,34 @@ module.exports = {
             this.formDataInitialized = true;
         },
 
+        getFilteredFormData() {
+            // Make a copy so we don't modify the original formData
+            const formData = JSON.parse(JSON.stringify(this.formData));
+
+            const raw = formData.fields;
+            const vm = this.$refs.publishFields;
+            const fields = vm.fields;
+
+            let allowed = Object.keys(raw).filter(name => {
+                const field = _.findWhere(fields, { name });
+
+                // Fields that aren't in the fieldset (like title) should be
+                // included since we would have explicitly added them.
+                if (! field) return true;
+
+                return vm.peekaboo(field);
+            });
+
+            formData.fields = Object.keys(raw)
+                .filter(key => allowed.includes(key))
+                .reduce((obj, key) => {
+                    obj[key] = raw[key];
+                    return obj;
+                }, {});
+
+            return formData;
+        },
+
         publish: function() {
             var self = this;
 
@@ -213,7 +245,7 @@ module.exports = {
                 var url = this.submitUrl;
             }
 
-            var request = this.$http.post(url, this.formData)
+            var request = this.$http.post(url, this.getFilteredFormData())
 
             request.success(function(data) {
                 self.loading = false;
@@ -272,8 +304,9 @@ module.exports = {
         },
 
         initPreview: function() {
-            var $iframe = $('<iframe frameborder="0" id="sneak-peek-iframe">').appendTo('#sneak-peek');
-            var iframe = $iframe.get(0);
+            if (! $('#sneak-peek-iframe').length) {
+                $('<iframe frameborder="0" id="sneak-peek-iframe">').appendTo('#sneak-peek');
+            }
             this.updatePreview();
         },
 

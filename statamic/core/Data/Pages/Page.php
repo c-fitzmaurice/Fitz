@@ -159,6 +159,9 @@ class Page extends Content implements PageContract
     {
         $attr = $this->original['attributes'];
 
+        $attr['default_published'] = $defaultPublished = $this->original['attributes']['published'];
+        $attr['published'] = array_get($this->original, 'data.published', $defaultPublished);
+
         return $this->buildPath($attr);
     }
 
@@ -172,6 +175,7 @@ class Page extends Content implements PageContract
     {
         $attr = $this->original['attributes'];
 
+        $attr['default_published'] = $this->original['attributes']['published'];
         $attr['locale'] = $locale;
 
         return $this->buildPath($attr);
@@ -190,6 +194,7 @@ class Page extends Content implements PageContract
             ->uri(array_get($data, 'uri', $this->uri()))
             ->extension(array_get($data, 'data_type', $this->dataType() ?: Config::get('system.default_extension')))
             ->published(array_get($data, 'published', $this->published()))
+            ->defaultPublished(array_get($data, 'default_published', $this->in(default_locale())->published()))
             ->order(array_get($data, 'order', $this->order()))
             ->locale(array_get($data, 'locale', $this->locale()));
 
@@ -396,7 +401,7 @@ class Page extends Content implements PageContract
         $parent_uri = $this->defaultUri();
 
         // Get all the children
-        $children = \Statamic\API\Page::all()->filter(function($page) use ($parent_uri) {
+        $children = \Statamic\API\Page::all()->filter(function ($page) use ($parent_uri) {
             return Str::startsWith($page->uri(), Str::ensureRight($parent_uri, '/'));
         });
 
@@ -408,7 +413,7 @@ class Page extends Content implements PageContract
                 $parent_slashes = 0;
             }
 
-            $children = $children->filter(function($page) use ($parent_uri, $parent_slashes, $depth) {
+            $children = $children->filter(function ($page) use ($parent_uri, $parent_slashes, $depth) {
                 return $depth >= substr_count($page->uri(), '/') - $parent_slashes;
             });
         }
@@ -488,14 +493,14 @@ class Page extends Content implements PageContract
     public function published($published = null)
     {
         if (is_null($published)) {
-            return array_get($this->attributes, 'published', true);
+            return parent::published();
         }
 
-        $this->attributes['published'] = $published;
+        parent::published($published);
 
         // The path relies on the published state. We'll update it now.
-        // But, only if it's initialized.
-        if ($this->original) {
+        // But, only if it's initialized and using the default locale.
+        if ($this->original && $this->isDefaultLocale()) {
             $this->attributes['path'] = $this->buildPath();
         }
     }

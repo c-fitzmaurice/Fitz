@@ -8,7 +8,7 @@
     	<div v-if="hasDate" class="date-time-container">
 
     		<div class="col-date">
-    			<div class="daterange daterange--single" :data-datetime="date" @focus="openCalendar()" @blur="closeCalendar()">
+    			<div class="daterange daterange--single" :data-datetime="date" v-el:date>
     				<span class="icon icon-calendar"></span>
     				<span class="icon icon-remove" @click="removeDate" v-if="blankAllowed">&times;</span>
     			</div>
@@ -152,13 +152,9 @@ module.exports = {
             });
         },
 
-        openCalendar: function () {
-            // this.calendar.calendarOpen();
-        },
-
-        closeCalendar: function () {
-            // this.calendar.calendarClose();
-        },
+        focus() {
+            setTimeout(() => $(this.$els.date).find('.dr-input .dr-date').click(), 200);
+        }
 
     },
 
