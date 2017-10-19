@@ -1,46 +1,90 @@
-.content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+/* ==========================================================================
+   MAIN CONTROL PANEL LAYOUT
+   ========================================================================== */
+
+html, body {
+    height: 100%;
+}
+
+body {
+    background: $bg;
+    color: $color_gray_dark;
+	font-family: $font;
+    font-size: 16px;
+}
+
+// svg sprite
+body > svg { display: none; }
+
+.application-grid {
+    display: grid;
+    grid-template-columns: 200px auto;
+}
+
+@media (max-width: 980px) {
+    .application-grid {
+        grid-template-columns: 140px 1fr auto;
+    }
+}
+
+@media (max-width: $screen-xs-max) {
+    .application-grid {
+        display: block;
+        padding-left: 0;
+        padding-right: 0;
+    }
 }
 
 .cp-head {
-	@extend .z-depth-1;
-	@extend .no-select;
 	position: relative;
-	height: 53px;
-	background: #fff;
-	padding: 10px 45px;
+	display: flex;
+    align-items: center;
+    justify-content: space-between;
+	padding: 24px;
+    margin-bottom: 8px;
 	font-size: 14px;
 
+    #typeahead {
+        @extend .z-depth-1;
+        border-radius: 4px;
+        background: #fff;
+        padding: 0 8px;
+        width: 100%;
+        max-width: 400px;
+        margin-right: 16px;
+    }
 
 	.search {
-		background: #fff;
-		font-size: 16px;
+        background: #fff;
+		font-size: 14px;
+        max-width: 400px;
+        width: 100%;
 		&:focus {
 			outline: 0;
 		}
 	}
 
-	.view {
-		font-size: 14px;
-		right: 47px;
-		top: 16px;
-        position: absolute;
-		.icon {
-			position: relative;
-			top: 1px;
-			padding-right: 5px;
-			fill: $brand-darker;
-		}
-		&:hover {
-			.svg-icon { fill: $brand-primary; }
-		}
-	}
+    .head-links {
+        position: relative;
+    }
 }
 
+.site-status-stripe {
+    background: $brand-darker;
+    box-shadow: inset 0 -2px 3px rgba(0,0,0,.1);
+    padding: 8px 24px;
+    font-size: 14px;
+    color: #fff;
+}
+
+
+
+
+/* Page Wrapper
+  ========================================================================== */
+
 .page-wrapper {
-	padding: 45px;
+	padding: 0 24px;
 	width: 100%;
 
 	hr {
@@ -84,40 +128,6 @@
 				@include background('../img/list.png', 16px 14px, transparent, center);
 			}
 		}
-
-		@include minMaxWidth(700px, 800px) {
-			h1 {
-				margin-bottom: 10px;
-			}
-			h1.pull-left,
-			.btn-group.pull-right,
-			.btn-primary.pull-right,
-			.btn-upload.pull-right,
-			.views.pull-right {
-				float: none !important;
-			}
-			.views {
-				display: block;
-				margin-right: 0;
-			}
-		}
-
-		@include maxWidth(600px) {
-			h1 {
-				margin-bottom: 10px;
-			}
-			h1.pull-left,
-			.btn-group.pull-right,
-			.btn-primary.pull-right,
-			.btn-upload.pull-right,
-			.views.pull-right {
-				float: none !important;
-			}
-			.views {
-				display: block;
-				margin-right: 0;
-			}
-		}
 	}
 
 	.actions {
@@ -148,16 +158,12 @@
 		flex-direction: row;
 		justify-content: flex-end;
 	}
-
-    .search {
-        margin-left: 20px;
-    }
 }
 
 .outside {
 	background: url('../img/blurry.jpg') top center no-repeat fixed;
 	background-size: cover;
-	padding-top: 75px;
+	padding-top: 48px;
     padding-left: 0;
 
 	#wrapper {
@@ -172,10 +178,10 @@
 
 	.logo {
 		svg {
-			width: 100px;
-			margin: 0 auto 50px;
+			width: 120px;
+			margin: 0 auto 32px;
 			display: block;
-			fill: rgba(0,0,0,.3);
+			path { fill: rgba(0,0,0,.25); }
 		}
 	}
 }
@@ -186,9 +192,4 @@
 
 .head .btn-icon {
 	margin-right: 10px;
-}
-
-@media (max-width: 940px) {
-    .page-wrapper { padding: 0 !important; }
-    .cp-head { border-bottom: 1px solid $border; }
 }

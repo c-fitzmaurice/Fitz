@@ -116,7 +116,12 @@ function cp_route($route, $params = [])
 
 function cp_resource_url($url)
 {
-    return URL::assemble(SITE_ROOT, pathinfo(request()->getScriptName())['basename'], RESOURCES_ROUTE, 'cp', $url);
+    return resource_url('cp/' . $url);
+}
+
+function resource_url($url)
+{
+    return URL::assemble(SITE_ROOT, pathinfo(request()->getScriptName())['basename'], RESOURCES_ROUTE, $url);
 }
 
 function path($from, $extra = null)

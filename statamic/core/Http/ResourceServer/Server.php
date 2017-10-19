@@ -11,6 +11,7 @@ class Server
 {
     const RESOURCE_ADDON = 'addon';
     const RESOURCE_CP = 'cp';
+    const RESOURCE_HELPER = 'helpers';
 
     /**
      * @var Illuminate\Filesystem\Filesystem
@@ -107,6 +108,8 @@ class Server
         } elseif (Str::startsWith($uri, '/addon')) {
             $this->resource_type = self::RESOURCE_ADDON;
             $this->addon = explode('/', $uri)[2];
+        } elseif (Str::startsWith($uri, '/helpers') && !Str::endsWith($uri, '.php')) {
+            $this->resource_type = self::RESOURCE_HELPER;
         } else {
             $this->serve404Response();
         }
@@ -124,7 +127,7 @@ class Server
 
         $parts = explode('/', $uri);
 
-        if ($this->resource_type === self::RESOURCE_CP) {
+        if ($this->resource_type === self::RESOURCE_CP || $this->resource_type === self::RESOURCE_HELPER) {
             $parts = array_slice($parts, 2);
         } elseif ($this->resource_type === self::RESOURCE_ADDON) {
             $parts = array_slice($parts, 3);
@@ -144,6 +147,8 @@ class Server
             $this->base_path = realpath(__DIR__ . '/../../../resources/dist');
         } elseif ($this->resource_type === self::RESOURCE_ADDON) {
             $this->base_path = realpath(__DIR__.'/../../../../site/addons/'.$this->addon.'/resources/assets');
+        } elseif ($this->resource_type === self::RESOURCE_HELPER) {
+            $this->base_path = realpath(__DIR__.'/../../../../site/helpers');
         }
     }
 
@@ -241,7 +246,11 @@ class Server
 
     private function getUri()
     {
-        $pattern = '#^['.SITE_ROOT.'|'.$_SERVER['SCRIPT_NAME'].'\/]+'.RESOURCES_ROUTE.'\/(.*)$#';
+        $pattern = vsprintf('#^[%s|%s\/]+%s\/(.*)$#', [
+            preg_quote(SITE_ROOT),
+            preg_quote($_SERVER['SCRIPT_NAME']),
+            RESOURCES_ROUTE
+        ]);
 
         preg_match($pattern, $_SERVER['REQUEST_URI'], $matches);
 

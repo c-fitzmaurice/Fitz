@@ -33,6 +33,14 @@ module.exports = {
         }
 
         this.bindChangeWatcher();
+    },
+
+    methods: {
+
+        focus() {
+            document.getElementById(`${this.name}-0`).focus();
+        }
+
     }
 };
 </script>

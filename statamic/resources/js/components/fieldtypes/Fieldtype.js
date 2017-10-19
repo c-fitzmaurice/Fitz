@@ -12,8 +12,32 @@ export default {
     data() {
         return {
             autoBindChangeWatcher: true,
-            changeWatcherIsBound: false
+            changeWatcherIsBound: false,
+            changeWatcherWatchDeep: true
         };
+    },
+
+    computed: {
+
+        /**
+         * Whether this field is nested somewhere inside a Grid fieldtype.
+         */
+        isInsideGridField() {
+            let vm = this;
+
+            while (true) {
+                let parent = vm.$parent;
+
+                if (! parent) return false;
+
+                if (parent.constructor.name === 'GridFieldtype') {
+                    return true;
+                }
+
+                vm = parent;
+            }
+        }
+
     },
 
     ready() {
@@ -30,9 +54,17 @@ export default {
 
             this.$watch('data', function () {
                 this.$dispatch('changesMade', true);
-            }, { deep: true });
+            }, { deep: this.changeWatcherWatchDeep });
 
             this.changeWatcherIsBound = true;
+        },
+
+        getReplicatorPreviewText() {
+            return this.data;
+        },
+
+        focus() {
+            this.$el.focus();
         }
 
     }

@@ -13,19 +13,31 @@ module.exports = {
 
     mixins: [Fieldtype],
 
-    ready: function() {
-        var self = this;
+    data() {
+        return {
+            codemirror: null       // The CodeMirror instance
+        }
+    },
 
-        var cm = CodeMirror(this.$els.codemirror, {
+    ready: function() {
+        this.codemirror = CodeMirror(this.$els.codemirror, {
             value: this.data || '',
             mode: 'yaml',
             lineNumbers: true,
             viewportMargin: Infinity
         });
 
-        cm.on('change', function (cm) {
-            self.data = cm.doc.getValue();
+        this.codemirror.on('change', (cm) => {
+            this.data = cm.doc.getValue();
         });
+    },
+
+    methods: {
+
+        focus() {
+            this.codemirror.focus();
+        }
+
     }
 
 };

@@ -38,11 +38,9 @@ class DashboardController extends CpController
     {
         return collect(Config::get('cp.widgets', []))->map(function ($config) use ($loader) {
             $widget = $loader->load(array_get($config, 'type'), $config);
-
             return [
-                'width' => $widget->getConfig('width', 100),
-                'html' => (string) $widget->html(),
-                'importance' => $widget->getConfig('importance', 2)
+                'width' => $widget->get('width', 'half'),
+                'html' => (string) $widget->html()
             ];
         });
     }
