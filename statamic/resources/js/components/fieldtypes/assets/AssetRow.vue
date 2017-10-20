@@ -19,9 +19,9 @@
                 <span v-else>{{ asset.basename }}</span>
             </span>
         </td>
-        <td class="pr-0 text-right">
+        <td class="pr-8" style="width: 32px;">
 
-            <span class="remove-asset" @click="remove"></span>
+            <span class="remove-asset text-right" @click="remove"></span>
 
             <asset-editor
                 v-if="editing"

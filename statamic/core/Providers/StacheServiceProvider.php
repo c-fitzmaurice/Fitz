@@ -218,9 +218,7 @@ class StacheServiceProvider extends ServiceProvider
      */
     private function outputRefreshResponse()
     {
-        $url = Str::ensureLeft(request()->path(), '/');
-
-        $html = sprintf('<meta http-equiv="refresh" content="1; URL=\'%s\'" />', $url);
+        $html = sprintf('<meta http-equiv="refresh" content="1; URL=\'%s\'" />', request()->getUri());
 
         exit($html);
     }
