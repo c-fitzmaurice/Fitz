@@ -80,6 +80,8 @@ class LocalesTags extends Tags
         return $locales->map(function ($locale, $key) {
             $localized = $this->getLocalizedData($key);
             $localized['locale'] = $locale;
+            $localized['current'] = site_locale();
+            $localized['is_current'] = $key === site_locale();
             return $localized;
         });
     }

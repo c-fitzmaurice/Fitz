@@ -476,6 +476,7 @@ return [
     'save_order' => 'Save Order',
     'toggle_dropdown' => 'Toggle Dropdown',
     'confirm_delete_items' => 'This item will be deleted|The selected items will be deleted',
+    'confirm_delete_page' => 'This page will be deleted along with all its children',
     'confirm_delete_folder' => 'This folder will be deleted',
     'configure' => 'Configure',
     'browse' => 'Browse',

@@ -110,7 +110,7 @@ export default {
             swal({
                 type: 'warning',
                 title: translate('cp.are_you_sure'),
-                text: translate_choice('cp.confirm_delete_items', 1),
+                text: translate_choice('cp.confirm_delete_page', 1),
                 confirmButtonText: translate('cp.yes_im_sure'),
                 cancelButtonText: translate('cp.cancel'),
                 showCancelButton: true

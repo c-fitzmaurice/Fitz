@@ -136,14 +136,11 @@ class GlideTags extends Tags
      */
     private function generateGlideUrl($item)
     {
-        // In a subfolder installation, the subfolder will likely be passed in
-        // with the path. We don't want it in there, so we'll strip it out.
-        $url = Str::removeLeft($item, Config::getSiteUrl());
-
         try {
-            $url = $this->getManipulator($url)->build();
+            $url = $this->getManipulator($item)->build();
         } catch (\Exception $e) {
             \Log::error($e->getMessage());
+            return;
         }
 
         $url = ($this->getBool('absolute')) ? URL::makeAbsolute($url) : URL::makeRelative($url);
@@ -170,13 +167,40 @@ class GlideTags extends Tags
      */
     private function getManipulator($item = null)
     {
-        $manipulator = Image::manipulate($item);
+        $manipulator = Image::manipulate($this->normalizeItem($item));
 
         $this->getManipulationParams()->each(function ($value, $param) use ($manipulator) {
             $manipulator->$param($value);
         });
 
         return $manipulator;
+    }
+
+    /**
+     * Normalize an item to be passed into the manipulator.
+     *
+     * @param  string $item  An asset ID, asset URL, or external URL.
+     * @return string|Statamic\Contracts\Assets\Asset
+     */
+    private function normalizeItem($item)
+    {
+        // External URLs are already fine as-is.
+        if (Str::startsWith($item, ['http://', 'https://'])) {
+            return $item;
+        }
+
+        // In a subfolder installation, the subfolder will likely be passed in
+        // with the path. We don't want it in there, so we'll strip it out.
+        // We'll need it to have a leading slash to be treated as a URL.
+        $item = Str::ensureLeft(Str::removeLeft($item, Config::getSiteUrl()), '/');
+
+        // In order for auto focal cropping to happen, we need to provide an
+        // actual asset instance to the manipulator instead of just a URL.
+        if ($asset = Asset::find($item)) {
+            $item = $asset;
+        }
+
+        return $item;
     }
 
     /**
