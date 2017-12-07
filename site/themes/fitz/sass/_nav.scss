@@ -139,7 +139,7 @@ label {
                 transition: all ease .3s;
                 -webkit-transition: all ease .3s;
 
-                &:hover {
+                &.active, &:hover {
                     padding-right: 15px;
                     border-right: 3px solid $color__fitz;
                 }

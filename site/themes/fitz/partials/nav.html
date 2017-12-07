@@ -19,8 +19,8 @@
     <div class="navigation-wrapper">
         <ul class="navigation">
             {{ nav from="/" include_home="true" scope="tag" }}
-                <li{{ if is_current or is_parent }} class="active"{{ /if }}>
-                    <a href="{{ link_active url }}">{{ tag:nav_title or title }}</a>
+                <li>
+                    <a{{ if is_current or is_parent }} class="active"{{ /if }} href="{{ url }}">{{ tag:nav_title or title }}</a>
                 </li>
             {{ /nav }}
         </ul>
