@@ -14,12 +14,12 @@ body {
     font-size: 16px;
     border-top: 6px solid $color__fitz;
     color: #909090;
-}
 
-body.home {
-    border: 6px solid $color__fitz;
-    height: 100%;
-    width: 100%;
+    &.home {
+        border: 6px solid $color__fitz;
+        height: 100%;
+        width: 100%;
+    }
 }
 
 a {
@@ -30,6 +30,7 @@ a {
         background-color: $color__gray !important;
     }
 }
+
 a.lb-prev, a.lb-next, a.lb-close {
     &:hover {
         background-color: transparent !important;
@@ -64,12 +65,14 @@ button {
     width: 100%;
     padding-top: 15px;
 }
+
 #logo {
     margin-top: 3em;
     &:hover {
         background-color: transparent;
     }
 }
+
 .logo-link {
     &:hover {
         background-color: transparent !important;

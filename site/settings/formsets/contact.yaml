@@ -1,5 +1,4 @@
 title: Get in touch
-honeypot: spam
 fields:
   name:
     display: Name
@@ -17,17 +16,18 @@ columns:
   - name
   - email
   - subject
+  - message
 metrics:
-  -
+  - 
     type: total
     label: Total
 email:
-  -
+  - 
     to: colin@fitz-maurice.com
-    subject: FITZ | Contact Form
+    subject: Contact Form
     automagic: true
     reply_to: '{{ email }}'
-  -
+  - 
     to: '{{ email }}'
-    subject: 'Thanks for reaching out'
+    subject: Thanks for reaching out
     template: thank-you

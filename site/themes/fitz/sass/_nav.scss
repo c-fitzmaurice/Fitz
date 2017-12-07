@@ -3,6 +3,7 @@ $thickness: 5px;
 $gap: 5px;
 $color: $color__fitz;
 $roundCap: true;
+
 // HAMBURGER -----------------------------------
 .menu-icon-wrapper {
     padding: 0;
@@ -138,7 +139,7 @@ label {
                 transition: all ease .3s;
                 -webkit-transition: all ease .3s;
 
-                &:hover {
+                &.active, &:hover {
                     padding-right: 15px;
                     border-right: 3px solid $color__fitz;
                 }

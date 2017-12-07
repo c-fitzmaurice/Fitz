@@ -26,3 +26,6 @@ widgets:
     collection: jobs
     limit: 5
     importance: 3
+  - 
+    type: CacheManager
+    width: 33

@@ -3,11 +3,15 @@ textarea {
     resize: none;
     outline: none;
 }
+
 .spam { display: none; }
 
-.form-control:focus {
-    border-color: $color__fitz;
+.form-control {
+    &:focus {
+        border-color: $color__fitz;
+    }
 }
+
 .btn-primary {
     background-color: $color__fitz;
     border-color: $color__fitz;
