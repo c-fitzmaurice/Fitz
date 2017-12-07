@@ -9,10 +9,7 @@ elixir.config.publicPath = './';
 
 elixir(function(mix) {
     mix
-
     .sass(theme + '.scss', 'css/' + theme + '.css')
-
     .scripts(theme + '-raw.js', 'js/' + theme + '.js')
-
     .svgSprite('./svg','./svg');
 });
