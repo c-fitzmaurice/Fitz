@@ -1,0 +1,5 @@
+form: []
+error_message: reCAPTCHA failed.
+site_key:
+secret:
+invisible: false

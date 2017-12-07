@@ -39,6 +39,9 @@
         {{ if environment === "prod" }}
             {{ google_analytics }}
         {{ endif }}
+
+        <!-- Extra Stack -->
+        {{ yield:stack }}
     </head>
     <body class="{{ title }}">
         <div class="sticky-page container">
