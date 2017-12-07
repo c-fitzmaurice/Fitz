@@ -1,5 +1,4 @@
 title: Get in touch
-honeypot: spam
 fields:
   name:
     display: Name
@@ -13,9 +12,6 @@ fields:
   message:
     display: Message
     validate: required|min:15
-  color:
-    type: colorpicker
-    display: Color
 columns:
   - name
   - email
@@ -31,7 +27,6 @@ email:
     subject: Contact Form
     automagic: true
     reply_to: '{{ email }}'
-    from: '{{ name }}'
   - 
     to: '{{ email }}'
     subject: Thanks for reaching out
