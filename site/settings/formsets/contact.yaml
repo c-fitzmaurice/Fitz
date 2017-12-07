@@ -21,7 +21,6 @@ columns:
   - email
   - subject
   - message
-  - color
 metrics:
   - 
     type: total
@@ -32,6 +31,7 @@ email:
     subject: Contact Form
     automagic: true
     reply_to: '{{ email }}'
+    from: '{{ name }}'
   - 
     to: '{{ email }}'
     subject: Thanks for reaching out
