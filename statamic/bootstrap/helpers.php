@@ -570,17 +570,40 @@ function cp_middleware()
 }
 
 /**
+ * Sanitizes a string
+ *
+ * @param bool $antlers  Whether Antlers (curly braces) should be escaped.
+ * @return string
+ */
+
+function sanitize($value, $antlers = true)
+{
+    if (is_array($value)) {
+        return sanitize_array($value, $antlers);
+    }
+
+    $value = htmlentities($value);
+
+    if ($antlers) {
+        $value = str_replace(['{', '}'], ['&lbrace;', '&rbrace;'], $value);
+    }
+
+    return $value;
+}
+
+/**
  * Recusive friendly method of sanitizing an array.
  *
+ * @param bool $antlers  Whether Antlers (curly braces) should be escaped.
  * @return array
  */
-function sanitize_array($array)
+function sanitize_array($array, $antlers = true)
 {
     $result = array();
 
     foreach ($array as $key => $value) {
         $key = htmlentities($key);
-        $result[$key] = is_array($value) ? sanitize_array($value) : htmlentities($value);
+        $result[$key] = sanitize($value);
     }
 
     return $result;
