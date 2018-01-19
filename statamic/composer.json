@@ -29,7 +29,7 @@
         "predis/predis": "^1.1",
         "wilderborn/partyline": "^1.0",
         "funkjedi/composer-include-files": "^1.0",
-        "marbles/sitemap": "*@dev"
+        "guzzlehttp/guzzle": "^6.3"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

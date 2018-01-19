@@ -376,11 +376,10 @@ function active_for($url)
  */
 function nav_is($url)
 {
-    $url = URL::makeRelative($url);
-    $url = ltrim(URL::removeSiteRoot($url), '/');
     $url = preg_replace('/^index\.php\//', '', $url);
+    $current = request()->url();
 
-    return request()->is($url . '*');
+    return $url === $current || Str::startsWith($current, $url.'/');
 }
 
 /**
@@ -669,4 +668,33 @@ if (! function_exists('tap')) {
         $callback($value);
         return $value;
     }
+}
+
+if (! function_exists('mb_str_word_count')) {
+    /**
+     * Multibyte version of str_word_count
+     *
+     * @param string $string
+     * @param int $format
+     * @param string $charlist
+     *
+     * @link https://stackoverflow.com/a/17725577/1569621
+     */
+    function mb_str_word_count($string, $format = 0, $charlist = '[]')
+    {
+        $words = empty($string = trim($string)) ? [] : preg_split('~[^\p{L}\p{N}\']+~u', $string);
+
+        switch ($format) {
+            case 0:
+                return count($words);
+                break;
+            case 1:
+            case 2:
+                return $words;
+                break;
+            default:
+                return $words;
+                break;
+        }
+    };
 }

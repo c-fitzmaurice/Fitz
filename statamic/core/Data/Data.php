@@ -407,19 +407,9 @@ abstract class Data implements DataContract
      */
     public function processedData()
     {
-        $data = $this->dataWithDefaultLocale();
-
-        $fieldtypes = collect($this->fieldset()->fieldtypes())->keyBy(function($fieldtype) {
-            return $fieldtype->getFieldConfig('name');
-        });
-
-        foreach ($data as $field_name => $field_data) {
-            if ($fieldtype = $fieldtypes->get($field_name)) {
-                $data[$field_name] = $fieldtype->preProcess($field_data);
-            }
-        }
-
-        return $data;
+        return (new Processor($this->fieldset()))->preProcess(
+            $this->dataWithDefaultLocale()
+        );
     }
 
     /**
