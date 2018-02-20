@@ -214,12 +214,12 @@
 
                 let opts = {
                     toolbar: { buttons },
-                    autoLink: true,
+                    autoLink: this.$parent.config.autolink || false,
                     placeholder: false,
-                    paste: {
-                        forcePlainText: false,
-                        cleanPastedHTML: true
-                    },
+                    paste: this.$parent.config.paste || {forcePlainText: false, cleanPastedHTML: true},
+                    spellcheck: this.$parent.config.spellcheck || true,
+                    targetBlank: this.$parent.config.target_blank || false,
+                    linkValidation: this.$parent.config.link_validation || false,
                     extensions
                 };
 

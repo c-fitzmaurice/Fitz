@@ -13,6 +13,7 @@ use Statamic\API\Taxonomy;
 use Illuminate\Http\Request;
 use Statamic\Contracts\Data\Users\User;
 use Statamic\Exceptions\PublishException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 abstract class Publisher
 {
@@ -86,7 +87,10 @@ abstract class Publisher
         $this->prepare();
 
         // Fieldtypes may modify the values submitted by the user.
-        $this->fields = $this->processFields($this->content->fieldset(), $this->fields);
+        // We will remove the null values for everything except Eloquent-managed users. They need the nulls to override
+        // what's going on the DB. @todo: Do this better. Don't judge me.
+        $removeNulls = $this->content instanceof User && Config::get('users.driver') === 'eloquent' ? false : true;
+        $this->fields = $this->processFields($this->content->fieldset(), $this->fields, $removeNulls);
 
         // Update the submission with the modified data
         $submission = array_merge($this->request->all(), ['fields' => $this->fields]);
@@ -198,13 +202,77 @@ abstract class Publisher
      */
     protected function validate($rules, $messages = [], $attributes = [])
     {
-        $validator = app('validator')->make($this->request->all(), $rules, $messages, $attributes);
+        $validator = app('validator')->make(
+            $this->preparedRequest($rules),
+            $this->prepareRules($rules),
+            $messages,
+            $attributes
+        );
 
         if ($validator->fails()) {
             $e = new PublishException;
             $e->setErrors($validator->errors()->toArray());
             throw $e;
         }
+    }
+
+    private function preparedRequest($rules)
+    {
+        $request = clone $this->request;
+
+        collect($rules)->each(function ($rules, $key) use ($request) {
+            $fields = $request->fields;
+
+            if (is_string($rules)) {
+                $rules = explode('|', $rules);
+            }
+
+            $hasMime = array_filter($rules, function ($rule) {
+                return str_contains($rule, 'mime');
+            });
+
+            if (! $hasMime) {
+                return;
+            }
+
+            if (! str_contains($key, 'fields')) {
+                return;
+            }
+
+            $fields[str_replace('fields.', '', $key)] = collect($request->input($key))->map(function ($file) {
+                return new UploadedFile(
+                    root_path($file),
+                    pathinfo($file, PATHINFO_BASENAME),
+                    mime_content_type(root_path($file)),
+                    $size  = null,
+                    $error = false,
+                    $test  = true
+                );
+            })->toArray();
+
+            $request->replace(['fields' => $fields]);
+        });
+
+        return $request->all();
+    }
+
+    private function prepareRules($rules)
+    {
+        $new = [];
+
+        collect($rules)->each(function ($rule, $key) use (&$new) {
+            if (! is_array($this->request->input($key))) {
+                $new[$key] = $rule;
+
+                return;
+            }
+
+            foreach($this->request->input($key) as $index => $value) {
+                $new[$key . '.' . $index] = $rule;
+            }
+        });
+
+        return $new;
     }
 
     /**

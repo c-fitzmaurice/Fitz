@@ -21,7 +21,7 @@ module.exports = {
 
     ready: function() {
         this.codemirror = CodeMirror(this.$els.codemirror, {
-            value: this.data || '',
+            value: this.config.default || '',
             mode: 'yaml',
             lineNumbers: true,
             viewportMargin: Infinity
