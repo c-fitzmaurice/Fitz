@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit054fd2ad75257bd346fd292bc129af5f
+class ComposerStaticInit8d64ee9196c33d7b07a43e2d1360fbfe
 {
     public static $files = array (
         '95a22d2145ae40de20dc7ea7be07a610' => __DIR__ . '/../..' . '/bootstrap/helpers.php',
@@ -2539,9 +2539,11 @@ class ComposerStaticInit054fd2ad75257bd346fd292bc129af5f
         'Statamic\\Addons\\Hidden\\HiddenFieldtype' => __DIR__ . '/../..' . '/bundles/Hidden/HiddenFieldtype.php',
         'Statamic\\Addons\\In\\InAPI' => __DIR__ . '/../..' . '/bundles/In/InAPI.php',
         'Statamic\\Addons\\In\\InTags' => __DIR__ . '/../..' . '/bundles/In/InTags.php',
+        'Statamic\\Addons\\Increment\\IncrementTags' => __DIR__ . '/../..' . '/bundles/Increment/IncrementTags.php',
         'Statamic\\Addons\\Integer\\IntegerFieldtype' => __DIR__ . '/../..' . '/bundles/Integer/IntegerFieldtype.php',
         'Statamic\\Addons\\Is\\IsAPI' => __DIR__ . '/../..' . '/bundles/Is/IsAPI.php',
         'Statamic\\Addons\\Is\\IsTags' => __DIR__ . '/../..' . '/bundles/Is/IsTags.php',
+        'Statamic\\Addons\\Iterate\\IterateTags' => __DIR__ . '/../..' . '/bundles/Iterate/IterateTags.php',
         'Statamic\\Addons\\Link\\LinkTags' => __DIR__ . '/../..' . '/bundles/Link/LinkTags.php',
         'Statamic\\Addons\\Lists\\ListsFieldtype' => __DIR__ . '/../..' . '/bundles/Lists/ListsFieldtype.php',
         'Statamic\\Addons\\LocaleSettings\\LocaleSettingsFieldtype' => __DIR__ . '/../..' . '/bundles/LocaleSettings/LocaleSettingsFieldtype.php',
@@ -3660,10 +3662,10 @@ class ComposerStaticInit054fd2ad75257bd346fd292bc129af5f
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit054fd2ad75257bd346fd292bc129af5f::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit054fd2ad75257bd346fd292bc129af5f::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit054fd2ad75257bd346fd292bc129af5f::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit054fd2ad75257bd346fd292bc129af5f::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit8d64ee9196c33d7b07a43e2d1360fbfe::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit8d64ee9196c33d7b07a43e2d1360fbfe::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit8d64ee9196c33d7b07a43e2d1360fbfe::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit8d64ee9196c33d7b07a43e2d1360fbfe::$classMap;
 
         }, null, ClassLoader::class);
     }

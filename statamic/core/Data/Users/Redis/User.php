@@ -2,6 +2,7 @@
 
 namespace Statamic\Data\Users\Redis;
 
+use Carbon\Carbon;
 use Statamic\API\Config;
 use Statamic\Data\Users\User as FileUser;
 
