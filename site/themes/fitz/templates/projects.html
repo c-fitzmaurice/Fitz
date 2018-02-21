@@ -40,21 +40,4 @@
 
     {{ /collection:projects }}
 
-    <div class="row">
-        <div class="col-xs-12 text-xs-center">
-            <br><br>
-            <p>Other websites I have worked on...</p>
-        </div>
-    </div>
-
-    {{ collection:sites sort="order:asc"}}
-        {{ if index|%:2 == 1 || index == 0 }}<div class="row text-xs-center">{{ endif }}
-            <div class="col-md-6">
-
-                <a href="{{ site_url }}" target="_blank">{{ title }}</a>
-
-            </div>
-        {{ if index|%:2 == 0 && index != 0 || last }}</div>{{ endif }}
-    {{ /collection:sites }}
 </div>
-
