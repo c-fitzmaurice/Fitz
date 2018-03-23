@@ -217,7 +217,7 @@ class Fieldset implements FieldsetContract
             } elseif ($sets = array_get($item, 'sets')) {
 
                 foreach ($sets as $set => $config) {
-                    $sets[$set]['fields'] = $this->inlinePartials($config['fields']);
+                    $sets[$set]['fields'] = $this->inlinePartials(array_get($config, 'fields'));
                 }
 
                 $item['sets'] = $sets;

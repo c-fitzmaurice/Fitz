@@ -10,9 +10,9 @@ class MaxMetric extends AbstractMetric
             throw new \Exception('Cannot get sum metric without specifying a field.');
         }
 
-        $max = return $this->submissions()->filter(function ($submission) use($field) {
+        $max = $this->submissions()->filter(function ($submission) use($field) {
             return is_numeric($submission->get($field));
-        })->->sortByDesc(function ($submission) use ($field) {
+        })->sortByDesc(function ($submission) use ($field) {
             return $submission->get($field);
         })->first();
 
