@@ -199,8 +199,30 @@
                 this.text = this.editor.getContent();
             },
 
+            localizeButtons(buttons) {
+                let localizations = {
+                    'bold':   'bold',
+                    'italic': 'italic',
+                    'anchor': 'link',
+                    'h2':     'h2',
+                    'h3':     'h3',
+                    'quote':  'blockquote',
+                }
+
+                return buttons.map((button) => {
+                    if (! localizations.hasOwnProperty(button)) {
+                        return button;
+                    }
+
+                    return {
+                        name: button,
+                        aria: translate('cp.' + localizations[button]),
+                    };
+                })
+            },
+
             initMedium() {
-                let buttons = this.$parent.config.buttons || ['bold', 'italic', 'anchor', 'h2', 'h3', 'quote'];
+                let buttons = this.localizeButtons(this.$parent.config.buttons || ['bold', 'italic', 'anchor', 'unorderedlist', 'orderedlist', 'h2', 'h3', 'quote']);
 
                 let extensions = Object.assign({
                     imageDragging: {},
@@ -213,13 +235,17 @@
                 }
 
                 let opts = {
-                    toolbar: { buttons },
-                    autoLink: this.$parent.config.autolink || false,
-                    placeholder: false,
-                    paste: this.$parent.config.paste || {forcePlainText: false, cleanPastedHTML: true},
-                    spellcheck: this.$parent.config.spellcheck || true,
-                    targetBlank: this.$parent.config.target_blank || false,
+                    toolbar:        { buttons },
+                    autoLink:       this.$parent.config.autolink || false,
+                    placeholder:    false,
+                    paste:          { forcePlainText: this.$parent.config.force_plain_text, cleanPastedHTML: this.$parent.config.clean_pasted_html },
+                    spellcheck:     this.$parent.config.spellcheck || true,
+                    targetBlank:    this.$parent.config.target_blank || false,
                     linkValidation: this.$parent.config.link_validation || false,
+                    anchor: {
+                        placeholderText: translate('cp.paste_or_type_link'),
+                        aria: translate('cp.link'),
+                    },
                     extensions
                 };
 
@@ -296,7 +322,7 @@
                     name: 'assets',
                     tagNames: ['a'],
                     contentDefault: '<span class="icon icon-images"></span>',
-                    aria: 'Assets',
+                    aria: translate('cp.nav_assets'),
                     handleClick: function () {
                         let toolbar = this.base.getExtensionByName('toolbar');
                         if (toolbar) toolbar.hideToolbar();

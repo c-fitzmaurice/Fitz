@@ -29,7 +29,7 @@
                 </div>
             </div>
 
-            <div v-show="!isHidden || goingSolo" :class="{'list-group-item': ! goingSolo}">
+            <div v-show="!isHidden || goingSolo" :class="{'list-group-item': ! goingSolo}" v-if="config.fields.length">
                 <div class="row">
                     <div v-for="field in config.fields" class="{{ colClass(field.width) }}">
                         <div class="form-group {{ field.type }}-fieldtype">
