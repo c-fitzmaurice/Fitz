@@ -2103,6 +2103,7 @@ return array(
     'Statamic\\API\\User' => $baseDir . '/core/API/User.php',
     'Statamic\\API\\UserGroup' => $baseDir . '/core/API/UserGroup.php',
     'Statamic\\API\\UserGroups' => $baseDir . '/core/API/UserGroups.php',
+    'Statamic\\API\\Widont' => $baseDir . '/core/API/Widont.php',
     'Statamic\\API\\YAML' => $baseDir . '/core/API/YAML.php',
     'Statamic\\API\\Zip' => $baseDir . '/core/API/Zip.php',
     'Statamic\\Addons\\Arr\\ArrFieldtype' => $baseDir . '/bundles/Arr/ArrFieldtype.php',

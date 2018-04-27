@@ -416,7 +416,7 @@ class Asset extends Data implements AssetContract
 
         $extra = [
             'id'             => $this->id(),
-            'title'          => $this->get('title', $this->filename()),
+            'title'          => $this->get('title'),
             'url'            => $this->url(),
             'permalink'      => $this->absoluteUrl(),
             'path'           => $this->path(),
@@ -453,6 +453,7 @@ class Asset extends Data implements AssetContract
                 'last_modified'  => (string) $this->lastModified(),
                 'last_modified_timestamp' => $this->lastModified()->timestamp,
                 'last_modified_instance'  => $this->lastModified(),
+                'focus' => $this->get('focus', '50-50'),
                 'focus_css' => \Statamic\View\Modify::value($this->get('focus'))->backgroundPosition()->fetch(),
             ]);
         }
@@ -505,16 +506,11 @@ class Asset extends Data implements AssetContract
 
     private function getSafeFilename($string)
     {
-        $replacements = [
-            ' ' => '-',
-            '#' => '-',
-        ];
-
         $str = Stringy::create($string)->toAscii();
 
-        foreach ($replacements as $from => $to) {
-            $str = $str->replace($from, $to);
-        }
+        $str = preg_replace(['/[^\w\(\).-]/i', '/(_)\1+/'], '-', $str);
+
+        $str = rtrim($str, '-');
 
         return (string) $str;
     }
