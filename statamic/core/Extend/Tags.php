@@ -95,9 +95,9 @@ abstract class Tags
     {
         foreach ($params as $param => $value) {
             // Values in parameters prefixed with a colon should be treated as the corresponding
-            // field's value in the context. If it doesn't exist, the value remains the literal.
+            // field's value in the context. As with all variables, it is null by default.
             if (Str::startsWith($param, ':')) {
-                $params[substr($param, 1)] = array_get($this->context, $value, $value);
+                $params[substr($param, 1)] = array_get($this->context, $value, null);
                 unset($params[$param]);
             }
 

@@ -214,10 +214,11 @@ class User extends Data implements UserContract, Authenticatable, PermissibleCon
      * Secure the password
      *
      * @param bool $save  Whether to save the user
+     * @param bool $false  Whether to secure it again
      */
-    public function securePassword($save = true)
+    public function securePassword($save = true, $force = false)
     {
-        if ($this->isSecured()) {
+        if (!$force && $this->isSecured()) {
             return;
         }
 
