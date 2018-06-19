@@ -3,7 +3,6 @@
 namespace Statamic\Assets;
 
 use Carbon\Carbon;
-use Stringy\Stringy;
 use Statamic\API\Str;
 use Statamic\API\URL;
 use Statamic\API\File;
@@ -480,18 +479,15 @@ class Asset extends Data implements AssetContract
      */
     public function upload(UploadedFile $file)
     {
-        $ext       = $file->getClientOriginalExtension();
-        $filename  = $this->getSafeFilename(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
-        $basename  = $filename . '.' . $ext;
+        $extension = $file->getClientOriginalExtension();
+        $filename  = Path::safeFilename($file->getClientOriginalName());
 
         $directory = $this->folder();
         $directory = ($directory === '.') ? '/' : $directory;
-        $path      = Path::tidy($directory . '/' . $filename . '.' . $ext);
+        $path      = Path::tidy($directory . '/' . $filename . '.' . $extension);
 
-        // If the file exists, we'll append a timestamp to prevent overwriting.
         if ($this->disk()->exists($path)) {
-            $basename = $filename . '-' . time() . '.' . $ext;
-            $path = Str::removeLeft(Path::assemble($directory, $basename), '/');
+            $path = Path::appendTimestamp($path);
         }
 
         $this->performUpload($file, $path);
@@ -502,17 +498,6 @@ class Asset extends Data implements AssetContract
 
         // Legacy/Deprecated. @todo: Remove in 2.3
         event('asset.uploaded', $path);
-    }
-
-    private function getSafeFilename($string)
-    {
-        $str = Stringy::create($string)->toAscii();
-
-        $str = preg_replace(['/[^\w\(\).-]/i', '/(_)\1+/'], '-', $str);
-
-        $str = rtrim($str, '-');
-
-        return (string) $str;
     }
 
     /**

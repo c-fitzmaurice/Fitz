@@ -3,6 +3,7 @@
 namespace Statamic\View;
 
 use Statamic\API\Arr;
+use Statamic\API\URL;
 use Statamic\API\Data;
 use Statamic\API\File;
 use Statamic\API\Path;
@@ -565,10 +566,8 @@ class BaseModifiers extends Modifier
      */
     public function fullUrls($value, $params)
     {
-        $domain = Config::getSiteURL();
-
-        return preg_replace_callback('/="(\/[^"]+)"/ism', function($item) use ($domain) {
-            return '="' . Path::tidy($domain . $item[1]) . '"';
+        return preg_replace_callback('/="(\/[^"]+)"/ism', function($item) {
+            return '="' . URL::makeAbsolute($item[1]) . '"';
         }, $value);
     }
 
@@ -813,6 +812,17 @@ class BaseModifiers extends Modifier
     }
 
     /**
+     * Return true if the string is an email address.
+     *
+     * @param $value
+     * @return bool
+     */
+    public function isEmail($value)
+    {
+        return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
+    }
+
+    /**
      * Checks to see if an array is empty. Like, for realsies.
      *
      * @param $value
@@ -909,6 +919,17 @@ class BaseModifiers extends Modifier
     public function isUppercase($value)
     {
         return Stringy::isUpperCase($value);
+    }
+
+    /**
+     * Returns true if the string is a URL
+     *
+     * @param $value
+     * @return bool
+     */
+    public function isUrl($value)
+    {
+        return filter_var($value, FILTER_VALIDATE_URL) !== false;
     }
 
     /**

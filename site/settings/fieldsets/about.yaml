@@ -3,7 +3,7 @@ hide: true
 taxonomies: false
 fields:
   title:
-    type: title
+    type: text
     display: Title
     localizable: false
   content:

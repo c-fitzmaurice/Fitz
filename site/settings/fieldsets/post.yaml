@@ -1,11 +1,8 @@
 title: Blog Post
 hide: true
-taxonomies:
-  tags:
-    display: Tags
 fields:
   title:
-    type: title
+    type: text
     display: Title
     localizable: true
   sub_title:
@@ -29,3 +26,7 @@ fields:
     display: Content
     localizable: true
     cheatsheet: false
+  tags:
+    type: taxonomy
+    taxonomy: tags
+    display: Tags
