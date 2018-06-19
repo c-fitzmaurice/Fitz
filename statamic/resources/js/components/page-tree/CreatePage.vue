@@ -60,7 +60,7 @@ export default {
         },
 
         getFieldsets: function() {
-            var url = cp_url('fieldsets/get?url='+this.parent+'&hidden=false');
+            var url = cp_url('fieldsets-json?url='+this.parent+'&hidden=false');
 
             this.$http.get(url, function(data) {
                 var fieldsets = [];

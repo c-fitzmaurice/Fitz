@@ -204,21 +204,7 @@ abstract class Tags
      */
     protected function formOpen($action)
     {
-        $attr_str = '';
-        if ($attrs = $this->getList('attr')) {
-            foreach ($attrs as $attr) {
-                $bits = explode(':', $attr);
-
-                $param = array_get($bits, 0);
-                $value = array_get($bits, 1);
-
-                $attr_str .= $param;
-
-                if ($value) {
-                    $attr_str .= '="' . $value . '" ';
-                }
-            }
-        }
+        $attr_str = $this->getAttributeString();
 
         if ($this->getBool('files')) {
             $attr_str .= 'enctype="multipart/form-data"';
@@ -229,5 +215,24 @@ abstract class Tags
         $html = '<form method="POST" action="'.$action.'" '.$attr_str.'>'.csrf_field();
 
         return $html;
+    }
+
+    protected function getAttributeString()
+    {
+        $attr_str = '';
+
+        if ($attrs = $this->getList('attr')) {
+            foreach ($attrs as $attr) {
+                $bits = explode(':', $attr);
+
+                $param = array_get($bits, 0);
+                $value = array_get($bits, 1);
+
+                $attr_str .= $param;
+                $attr_str .= ($value) ? '="' . $value . '" ' : ' ';
+            }
+        }
+
+        return $attr_str;
     }
 }

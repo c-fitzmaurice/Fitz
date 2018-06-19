@@ -6,6 +6,8 @@ use Statamic\Addons\Replicator\ReplicatorFieldtype;
 
 class BardFieldtype extends ReplicatorFieldtype
 {
+    public $category = ['text', 'structured'];
+
     public function preProcess($data)
     {
         if (is_string($data)) {
