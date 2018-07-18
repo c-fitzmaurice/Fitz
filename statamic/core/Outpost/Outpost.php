@@ -1,6 +1,6 @@
 <?php
 
-namespace Statamic;
+namespace Statamic\Outpost;
 
 use Log;
 use GuzzleHttp\Client;
@@ -38,6 +38,9 @@ class Outpost
      */
     private $addonRepo;
 
+    private $message;
+    private $licenses;
+
     /**
      * Create a new Outpost instance
      *
@@ -58,7 +61,8 @@ class Outpost
     public function radio()
     {
         if ($this->hasCachedResponse()) {
-            return $this->response = $this->getCachedResponse();
+            $this->response = $this->getCachedResponse();
+            return $this->response;
         }
 
         $this->performRequest();
@@ -95,8 +99,8 @@ class Outpost
 
     public function areAddonLicensesValid()
     {
-        foreach (array_get($this->response, 'addons', []) as $addon) {
-            if (! $addon['licensed']) {
+        foreach ($this->addonRepo->thirdParty()->addons() as $addon) {
+            if (! $this->isAddonLicenseValid($addon)) {
                 return false;
             }
         }
@@ -106,11 +110,47 @@ class Outpost
 
     public function isAddonLicenseValid(Addon $addon)
     {
-        $addons = collect(array_get($this->response, 'addons', []));
+        if (!$this->isAddonCommercial($addon)) {
+            return true;
+        }
 
-        $match = $addons->where('addon', $addon->id())->first();
+        return $this->doesAddonLicenseExist($addon)
+            && $this->isAddonLicenseOnCorrectDomain($addon);
+    }
+
+    public function isAddonCommercial($addon)
+    {
+        $match = $this->getAddonFromPayload($addon);
+
+        return $match['commercial'];
+    }
+
+    public function doesAddonLicenseExist($addon)
+    {
+        $match = $this->getAddonFromPayload($addon);
 
         return $match['licensed'];
+    }
+
+    public function isAddonLicenseOnCorrectDomain($addon)
+    {
+        $match = $this->getAddonFromPayload($addon);
+
+        return $match['correct_domain'];
+    }
+
+    public function addonDomain($addon)
+    {
+        $match = $this->getAddonFromPayload($addon);
+
+        return $match['domain'];
+    }
+
+    protected function getAddonFromPayload($addon)
+    {
+        $addons = collect(array_get($this->response, 'addons', []));
+
+        return $addons->where('addon', $addon->id())->first();
     }
 
     /**
@@ -120,10 +160,6 @@ class Outpost
      */
     public function isTrialMode()
     {
-        if ($this->isLicenseValid()) {
-            return false;
-        }
-
         return !$this->isOnPublicDomain();
     }
 
@@ -144,10 +180,6 @@ class Outpost
      */
     public function isOnCorrectDomain()
     {
-        if (! $this->isOnPublicDomain()) {
-            return true;
-        }
-
         return array_get($this->response, 'correct_domain');
     }
 
@@ -267,7 +299,10 @@ class Outpost
             'latest_version'   => STATAMIC_VERSION,
             'update_available' => false,
             'update_count'     => 0,
-            'license_valid'    => false
+            'license_valid'    => false,
+            'domain'           => null,
+            'correct_domain'   => false,
+            'addons'           => [],
         ];
     }
 
@@ -300,5 +335,33 @@ class Outpost
                  'license_key' => $addon->licenseKey(),
              ];
         })->all();
+    }
+
+    public function licensingMessage()
+    {
+        return $this->message()->get();
+    }
+
+    public function licensingMessageStatus()
+    {
+        return $this->message()->status();
+    }
+
+    protected function message()
+    {
+        if ($this->message) {
+            return $this->message;
+        }
+
+        return $this->message = (new Message($this))->build();
+    }
+
+    public function licenses()
+    {
+        if ($this->licenses) {
+            return $this->licenses;
+        }
+
+        return $this->licenses = new Licenses($this->response);
     }
 }
