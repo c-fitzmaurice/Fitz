@@ -8,6 +8,8 @@ use Statamic\API\Hash;
 use Statamic\API\Role;
 use Statamic\Data\Users\User as FileUser;
 use Statamic\Data\Users\Eloquent\Model as UserModel;
+use Statamic\Events\Data\UserDeleted;
+use Statamic\Events\Data\UserSaved;
 
 class User extends FileUser
 {
@@ -28,15 +30,31 @@ class User extends FileUser
         $this->model = $model;
     }
 
+    /**
+     * Save the user.
+     *
+     * @return $this
+     */
     public function save()
     {
         $this->updateRoles();
 
         $this->model()->save();
 
-        event('user.saved', $this);
+        event('user.saved', $this); // Deprecated! Please listen on UserSaved event instead!
+        event(new UserSaved($this, []));
 
         return $this;
+    }
+
+    /**
+     * Delete the user.
+     */
+    public function delete()
+    {
+        $this->model()->delete();
+
+        event(new UserDeleted($this->id(), []));
     }
 
     private function updateRoles()
@@ -205,12 +223,17 @@ class User extends FileUser
     }
 
     /**
-     * Get the roles for the user
+     * Get or set the roles for the user
      *
+     * @param null|array $roles
      * @return \Illuminate\Support\Collection
      */
-    public function roles()
+    public function roles($roles = null)
     {
+        if ($roles) {
+            return $this->set('roles', $roles);
+        }
+
         if ($this->roles) {
             return $this->roles;
         }

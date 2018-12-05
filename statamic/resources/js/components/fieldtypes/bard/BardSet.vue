@@ -32,21 +32,21 @@
             <div v-show="!isHidden || goingSolo" :class="{'list-group-item p-0': ! goingSolo}" v-if="config.fields.length">
                 <div class="publish-fields">
                     <div v-for="field in config.fields" :class="fieldClasses(field)">
-                            <div :class="{'bard-drag-handle': goingSolo}">
-                                <label v-if="hasMultipleFields" class="block" :class="{'bold': field.bold}">
-                                    <template v-if="field.display">{{ field.display }}</template>
-                                    <template v-if="!field.display">{{ field.name | capitalize }}</template>
-                                    <i class="required" v-if="field.required">*</i>
-                                </label>
+                        <div :class="{'bard-drag-handle': goingSolo}">
+                            <label v-if="hasMultipleFields" class="block" :class="{'bold': field.bold}">
+                                <template v-if="field.display">{{ field.display }}</template>
+                                <template v-if="!field.display">{{ field.name | capitalize }}</template>
+                                <i class="required" v-if="field.required">*</i>
+                            </label>
 
-                                <small class="help-block" v-if="field.instructions" v-html="field.instructions | markdown"></small>
-                            </div>
+                            <small class="help-block" v-if="field.instructions" v-html="field.instructions | markdown"></small>
+                        </div>
 
-                            <component :is="componentName(field.type)"
-                                    :name="parentName + '.' + index + '.' + field.name"
-                                    :data.sync="data[field.name]"
-                                    :config="field">
-                            </component>
+                        <component :is="componentName(field.type)"
+                                :name="parentName + '.' + index + '.' + field.name"
+                                :data.sync="data[field.name]"
+                                :config="field">
+                        </component>
                     </div>
                 </div>
             </div>

@@ -34,6 +34,16 @@ export default {
             return this.field.type + '-fieldtype';
         }
 
+    },
+
+    watch: {
+
+        isVisible(visible) {
+            // When showing fields, dispatch a resize event. Fields like Grid may be
+            // listening for it to know whether they should be in stacked/table layout.
+            if (visible) window.dispatchEvent(new Event('resize'));
+        }
+
     }
 
 }
