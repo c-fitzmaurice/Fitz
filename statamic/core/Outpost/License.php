@@ -2,6 +2,8 @@
 
 namespace Statamic\Outpost;
 
+use Statamic\API\Addon;
+
 class License
 {
     private $data;
@@ -25,7 +27,7 @@ class License
     {
         $id = $this->data['id'];
 
-        return ($id === 'statamic') ? 'Statamic' : addon($id)->name();
+        return ($id === 'statamic') ? 'Statamic' : Addon::create($id)->name();
     }
 
     public function valid()

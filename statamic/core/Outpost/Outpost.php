@@ -24,6 +24,11 @@ class Outpost
     const RESPONSE_CACHE_KEY = 'outpost_response';
 
     /**
+     * Where the previous payload will be stored
+     */
+    const PAYLOAD_CACHE_KEY = 'outpost_payload';
+
+    /**
      * @var Illuminate\Http\Request
      */
     private $request;
@@ -60,9 +65,12 @@ class Outpost
      */
     public function radio()
     {
+        if ($this->payloadHasChanged()) {
+            $this->clearCachedResponse();
+        }
+
         if ($this->hasCachedResponse()) {
-            $this->response = $this->getCachedResponse();
-            return $this->response;
+            return $this->response = $this->getCachedResponse();
         }
 
         $this->performRequest();
@@ -163,6 +171,13 @@ class Outpost
         return !$this->isOnPublicDomain();
     }
 
+    public function isReadyForProduction()
+    {
+        return !$this->licenses()->missingKeys()
+            && $this->licenses()->valid()
+            && $this->licenses()->onCorrectDomain();
+    }
+
     /**
      * Is the site on a publicly accessible domain?
      *
@@ -249,6 +264,7 @@ class Outpost
     private function cacheResponse()
     {
         Cache::put(self::RESPONSE_CACHE_KEY, $this->response, 60);
+        Cache::put(self::PAYLOAD_CACHE_KEY, $this->getPayload(), 60);
     }
 
     /**
@@ -259,7 +275,7 @@ class Outpost
     private function hasCachedResponse()
     {
         // No cache? That was simple.
-        if (! Cache::has(self::RESPONSE_CACHE_KEY)) {
+        if (! Cache::has(self::RESPONSE_CACHE_KEY) || ! Cache::has(self::PAYLOAD_CACHE_KEY)) {
             return false;
         }
 
@@ -284,6 +300,7 @@ class Outpost
     public function clearCachedResponse()
     {
         Cache::forget(self::RESPONSE_CACHE_KEY);
+        Cache::forget(self::PAYLOAD_CACHE_KEY);
     }
 
     /**
@@ -324,6 +341,22 @@ class Outpost
             ],
             'addons' => $this->getAddonsPayload()
         ];
+    }
+
+    private function getPreviousPayload()
+    {
+        return Cache::get(self::PAYLOAD_CACHE_KEY);
+    }
+
+    private function payloadHasChanged()
+    {
+        $prev = $this->getPreviousPayload();
+        $current = $this->getPayload();
+
+        // We don't want a different user's IP to be considered a change.
+        unset($prev['request']['ip'], $current['request']['ip']);
+
+        return $prev !== $current;
     }
 
     private function getAddonsPayload()

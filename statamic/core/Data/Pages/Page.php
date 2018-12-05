@@ -112,7 +112,7 @@ class Page extends Content implements PageContract
             // in the front-matter and leave the property as-is. Also, we
             // only need to store the slug if it's different from the
             // default locale slug.
-            if ($slug !== $this->getSlug()) {
+            if ($slug !== URL::slug($this->defaultUri())) {
                 $this->set('slug', $slug);
             }
         }
@@ -295,11 +295,12 @@ class Page extends Content implements PageContract
         $path = Path::directory(Path::clean(substr($this->path(), 5)));
 
         $segments = explode('/', $path);
+        $segments[0] = '/';
 
         $data = [];
 
         while (count($segments)) {
-            $path = join('/', $segments);
+            $path = Path::tidy(join('/', $segments));
 
             if ($folder = PageFolderAPI::whereHandle($path)) {
                 $data = array_merge($folder->data(), $data);

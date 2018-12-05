@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ site_locale() }}">
 <head>
       @include('partials.head')
 </head>
 
 <body id="statamic" :class="{ 'nav-visible': navVisible, 'overflow-hidden': modalOpen }">
 
-      @if ($outpost->isTrialMode() || (!$outpost->isLicenseValid() || !$outpost->isOnCorrectDomain()))
+      @if (!$outpost->isReadyForProduction())
             <div class="site-warning-stripe {{ $outpost->isTrialMode() ? 'status-trial' : '' }} flexy">
                   <div class="fill">
                         @if ($outpost->hasSuccessfulResponse() && $outpost->isTrialMode())
