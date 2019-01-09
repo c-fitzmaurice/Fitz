@@ -8,4 +8,6 @@
     <p>CSS test: <span class="test-css">text with border and padding</span></p>
 
     <p>JavaScript test: <a href="#" class="test-js">click me</a></p>
+
+    <code>const hello = world;</code>
 @endsection
