@@ -9,13 +9,8 @@ mix.webpackConfig({
   plugins: [
     build.jigsaw,
     build.browserSync(),
-    build.watch([
-      'source/**/*.md',
-      'source/**/*.php',
-      'source/**/*.scss',
-      '!source/**/_tmp/*'
-    ])
-  ]
+    build.watch(['source/**/*.md', 'source/**/*.php', 'source/**/*.scss', '!source/**/_tmp/*']),
+  ],
 });
 
 mix
@@ -26,10 +21,10 @@ mix
   .purgeCss({
     globs: [
       path.join(__dirname, 'source/**/*.blade.php'),
-      path.join(__dirname, 'source/_assets/**/*.blade.php')
-    ]
+      path.join(__dirname, 'source/_assets/**/*.blade.php'),
+    ],
   })
   .options({
-    processCssUrls: false
+    processCssUrls: false,
   })
   .version();

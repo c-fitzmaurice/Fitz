@@ -125,7 +125,7 @@ let colors = {
   pink: '#f66d9b',
   'pink-light': '#fa7ea8',
   'pink-lighter': '#ffbbca',
-  'pink-lightest': '#ffebef'
+  'pink-lightest': '#ffebef',
 };
 
 module.exports = {
@@ -167,7 +167,7 @@ module.exports = {
     sm: '576px',
     md: '768px',
     lg: '992px',
-    xl: '1200px'
+    xl: '1200px',
   },
 
   /*
@@ -185,12 +185,12 @@ module.exports = {
   | provided by the platform.
   |
   | Class name: .font-{name}
+  | CSS property: font-family
   |
   */
 
   fonts: {
     sans: [
-      'Open Sans',
       'system-ui',
       'BlinkMacSystemFont',
       '-apple-system',
@@ -202,7 +202,7 @@ module.exports = {
       'Fira Sans',
       'Droid Sans',
       'Helvetica Neue',
-      'sans-serif'
+      'sans-serif',
     ],
     serif: [
       'Constantia',
@@ -214,16 +214,9 @@ module.exports = {
       'Bitstream Vera Serif',
       'Liberation Serif',
       'Georgia',
-      'serif'
+      'serif',
     ],
-    mono: [
-      'Menlo',
-      'Monaco',
-      'Consolas',
-      'Liberation Mono',
-      'Courier New',
-      'monospace'
-    ]
+    mono: ['Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
   },
 
   /*
@@ -242,6 +235,7 @@ module.exports = {
   | prefer, be it rems, ems, pixels or other.
   |
   | Class name: .text-{size}
+  | CSS property: font-size
   |
   */
 
@@ -254,7 +248,7 @@ module.exports = {
     '2xl': '1.5rem', // 24px
     '3xl': '1.875rem', // 30px
     '4xl': '2.25rem', // 36px
-    '5xl': '3rem' // 48px
+    '5xl': '3rem', // 48px
   },
 
   /*
@@ -268,6 +262,7 @@ module.exports = {
   | all of these, so we recommend removing those you don't need.
   |
   | Class name: .font-{weight}
+  | CSS property: font-weight
   |
   */
 
@@ -280,7 +275,7 @@ module.exports = {
     semibold: 600,
     bold: 700,
     extrabold: 800,
-    black: 900
+    black: 900,
   },
 
   /*
@@ -292,6 +287,7 @@ module.exports = {
   | them in Tailwind, leadings.
   |
   | Class name: .leading-{size}
+  | CSS property: line-height
   |
   */
 
@@ -299,7 +295,7 @@ module.exports = {
     none: 1,
     tight: 1.25,
     normal: 1.5,
-    loose: 2
+    loose: 2,
   },
 
   /*
@@ -311,13 +307,14 @@ module.exports = {
   | them in Tailwind, tracking.
   |
   | Class name: .tracking-{size}
+  | CSS property: letter-spacing
   |
   */
 
   tracking: {
     tight: '-0.05em',
     normal: '0',
-    wide: '0.05em'
+    wide: '0.05em',
   },
 
   /*
@@ -330,6 +327,7 @@ module.exports = {
   | independently if that makes sense for your project.
   |
   | Class name: .text-{color}
+  | CSS property: color
   |
   */
 
@@ -345,6 +343,7 @@ module.exports = {
   | these independently if that makes sense for your project.
   |
   | Class name: .bg-{color}
+  | CSS property: background-color
   |
   */
 
@@ -360,13 +359,14 @@ module.exports = {
   | that are specific to your project here as well.
   |
   | Class name: .bg-{size}
+  | CSS property: background-size
   |
   */
 
   backgroundSize: {
     auto: 'auto',
     cover: 'cover',
-    contain: 'contain'
+    contain: 'contain',
   },
 
   /*
@@ -379,6 +379,7 @@ module.exports = {
   | width that will be used when you do not specify a border width.
   |
   | Class name: .border{-side?}{-width?}
+  | CSS property: border-width
   |
   */
 
@@ -387,7 +388,7 @@ module.exports = {
     '0': '0',
     '2': '2px',
     '4': '4px',
-    '8': '8px'
+    '8': '8px',
   },
 
   /*
@@ -404,6 +405,7 @@ module.exports = {
   | specify a border color.
   |
   | Class name: .border-{color}
+  | CSS property: border-color
   |
   */
 
@@ -422,6 +424,7 @@ module.exports = {
   | a good idea to put it first so other values are able to override it.
   |
   | Class name: .rounded{-side?}{-size?}
+  | CSS property: border-radius
   |
   */
 
@@ -430,7 +433,7 @@ module.exports = {
     sm: '.125rem',
     default: '.25rem',
     lg: '.5rem',
-    full: '9999px'
+    full: '9999px',
   },
 
   /*
@@ -450,6 +453,7 @@ module.exports = {
   | awesome classes like .w-2/3.
   |
   | Class name: .w-{size}
+  | CSS property: width
   |
   */
 
@@ -482,7 +486,7 @@ module.exports = {
     '1/6': '16.66667%',
     '5/6': '83.33333%',
     full: '100%',
-    screen: '100vw'
+    screen: '100vw',
   },
 
   /*
@@ -497,6 +501,7 @@ module.exports = {
   | needed.
   |
   | Class name: .h-{size}
+  | CSS property: height
   |
   */
 
@@ -518,7 +523,7 @@ module.exports = {
     '48': '12rem',
     '64': '16rem',
     full: '100%',
-    screen: '100vh'
+    screen: '100vh',
   },
 
   /*
@@ -532,12 +537,13 @@ module.exports = {
   | these values as needed.
   |
   | Class name: .min-w-{size}
+  | CSS property: min-width
   |
   */
 
   minWidth: {
     '0': '0',
-    full: '100%'
+    full: '100%',
   },
 
   /*
@@ -551,13 +557,14 @@ module.exports = {
   | values as needed.
   |
   | Class name: .min-h-{size}
+  | CSS property: min-height
   |
   */
 
   minHeight: {
     '0': '0',
     full: '100%',
-    screen: '100vh'
+    screen: '100vh',
   },
 
   /*
@@ -572,6 +579,7 @@ module.exports = {
   | modify these values as needed.
   |
   | Class name: .max-w-{size}
+  | CSS property: max-width
   |
   */
 
@@ -585,7 +593,7 @@ module.exports = {
     '3xl': '80rem',
     '4xl': '90rem',
     '5xl': '100rem',
-    full: '100%'
+    full: '100%',
   },
 
   /*
@@ -599,12 +607,13 @@ module.exports = {
   | these values as needed.
   |
   | Class name: .max-h-{size}
+  | CSS property: max-height
   |
   */
 
   maxHeight: {
     full: '100%',
-    screen: '100vh'
+    screen: '100vh',
   },
 
   /*
@@ -619,6 +628,7 @@ module.exports = {
   | values as needed.
   |
   | Class name: .p{side?}-{size}
+  | CSS property: padding
   |
   */
 
@@ -637,7 +647,7 @@ module.exports = {
     '16': '4rem',
     '20': '5rem',
     '24': '6rem',
-    '32': '8rem'
+    '32': '8rem',
   },
 
   /*
@@ -652,6 +662,7 @@ module.exports = {
   | values as needed.
   |
   | Class name: .m{side?}-{size}
+  | CSS property: margin
   |
   */
 
@@ -671,7 +682,7 @@ module.exports = {
     '16': '4rem',
     '20': '5rem',
     '24': '6rem',
-    '32': '8rem'
+    '32': '8rem',
   },
 
   /*
@@ -686,6 +697,7 @@ module.exports = {
   | values as needed.
   |
   | Class name: .-m{side?}-{size}
+  | CSS property: margin
   |
   */
 
@@ -704,7 +716,7 @@ module.exports = {
     '16': '4rem',
     '20': '5rem',
     '24': '6rem',
-    '32': '8rem'
+    '32': '8rem',
   },
 
   /*
@@ -720,6 +732,7 @@ module.exports = {
   | suffixed `.shadow` utility.
   |
   | Class name: .shadow-{size?}
+  | CSS property: box-shadow
   |
   */
 
@@ -729,7 +742,7 @@ module.exports = {
     lg: '0 15px 30px 0 rgba(0,0,0,0.11), 0 5px 15px 0 rgba(0,0,0,0.08)',
     inner: 'inset 0 2px 4px 0 rgba(0,0,0,0.06)',
     outline: '0 0 0 3px rgba(52,144,220,0.5)',
-    none: 'none'
+    none: 'none',
   },
 
   /*
@@ -742,6 +755,7 @@ module.exports = {
   | values as needed.
   |
   | Class name: .z-{index}
+  | CSS property: z-index
   |
   */
 
@@ -752,7 +766,7 @@ module.exports = {
     '20': 20,
     '30': 30,
     '40': 40,
-    '50': 50
+    '50': 50,
   },
 
   /*
@@ -765,6 +779,7 @@ module.exports = {
   | values as needed.
   |
   | Class name: .opacity-{name}
+  | CSS property: opacity
   |
   */
 
@@ -773,7 +788,7 @@ module.exports = {
     '25': '.25',
     '50': '.5',
     '75': '.75',
-    '100': '1'
+    '100': '1',
   },
 
   /*
@@ -787,11 +802,12 @@ module.exports = {
   | generated CSS file size down.
   |
   | Class name: .fill-{name}
+  | CSS property: fill
   |
   */
 
   svgFill: {
-    current: 'currentColor'
+    current: 'currentColor',
   },
 
   /*
@@ -805,11 +821,12 @@ module.exports = {
   | keep the generated CSS file size down.
   |
   | Class name: .stroke-{name}
+  | CSS property: stroke
   |
   */
 
   svgStroke: {
-    current: 'currentColor'
+    current: 'currentColor',
   },
 
   /*
@@ -862,7 +879,7 @@ module.exports = {
     objectFit: false,
     objectPosition: false,
     opacity: ['responsive', 'hover', 'focus'],
-    outline: ['responsive', 'hover', 'focus'],
+    outline: ['focus'],
     overflow: ['responsive', 'hover', 'focus'],
     padding: ['responsive', 'hover', 'focus'],
     pointerEvents: ['responsive', 'hover', 'focus'],
@@ -882,7 +899,7 @@ module.exports = {
     visibility: ['responsive', 'hover', 'focus'],
     whitespace: ['responsive', 'hover', 'focus'],
     width: ['responsive', 'hover', 'focus'],
-    zIndex: ['responsive', 'hover', 'focus']
+    zIndex: ['responsive', 'hover', 'focus'],
   },
 
   /*
@@ -902,8 +919,8 @@ module.exports = {
   plugins: [
     require('tailwindcss/plugins/container')({
       center: true,
-      padding: '1rem'
-    })
+      padding: '1rem',
+    }),
   ],
 
   /*
@@ -919,6 +936,6 @@ module.exports = {
   options: {
     prefix: '',
     important: false,
-    separator: ':'
-  }
+    separator: ':',
+  },
 };
