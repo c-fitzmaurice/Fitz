@@ -44,6 +44,7 @@ let defaultConfig = require('tailwindcss/defaultConfig')();
 
 let colors = {
   transparent: 'transparent',
+  fitz: '#465058',
 
   black: '#22292f',
   'grey-darkest': '#3d4852',

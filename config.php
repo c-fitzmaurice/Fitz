@@ -2,7 +2,7 @@
 
 return [
     'production' => false,
-    'baseUrl' => 'https://artisan-static-demo.netlify.com',
+    'baseUrl' => 'https://fitz-maurice.com',
     'site' => [
         'title' => 'Colin Fitz-Maurice',
         'description' => 'Hello World',
@@ -17,6 +17,7 @@ return [
     'services' => [
         'analytics' => 'UA-48741641-4',
         'disqus' => 'colin-fitz-maurice',
+        'cloudinary' => 'fitz'
     ],
     'collections' => [
         'posts' => [
@@ -41,5 +42,8 @@ return [
         return $page->isPost
             ? str_limit_soft(content_sanitize($page->getContent()), $limit, $end)
             : null;
+    },
+    'imageCdn' => function ($page, $path) {
+        return "https://res.cloudinary.com/{$page->services->cloudinary}/{$path}";
     },
 ];

@@ -1,4 +1,4 @@
-<header>
+<header class="container">
     <nav>
         <strong>{{ $page->site->title }}</strong><br>
         <ul>
