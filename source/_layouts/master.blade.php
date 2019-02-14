@@ -19,18 +19,21 @@
     <link rel="stylesheet" href="{{ mix('css/main.css', 'assets/build') }}">
 </head>
 <body class="bg-white border-solid border-t-4 border-fitz flex flex-col min-h-screen">
-    <main class="container flex-grow">
-        <aside>
-            {{-- Logo --}}
-            <img src="{{ $page->imageCdn('me/Colin_Fitz-Maurice.jpg') }}" class="h-48 w-48 border-2 border-grey-light rounded-full">
-        </aside>
-        <section>
-            @include('_partials.menu')
-            <article>
-                @yield('content')
-            </article>
-        </section>
-    </main>
+    <div class="container flex-grow pt-16">
+        <div class="flex flex-col md:flex-row">
+            <img src="{{ $page->imageCdn('me/Colin_Fitz-Maurice.jpg') }}" class="h-32 w-32 border-2 border-grey-light rounded-full">
+
+            <div>
+                <header class="flex flex-row">
+                    @include('_partials.menu')
+                </header>
+
+                <main>
+                    @yield('content')
+                </main>
+            </div>
+        </div>
+    </div>
 
     @include('_partials.footer')
 

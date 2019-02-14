@@ -8,8 +8,7 @@ return [
         'description' => 'Hello World',
         'image' => 'default-share.png',
     ],
-    'owner' => [
-        'name' => 'John Doe',
+    'social' => [
         'twitter' => 'https://twitter.com/C_FitzMaurice',
         'github' => 'https://github.com/c-fitzmaurice',
         'linkedin' => 'https://www.linkedin.com/in/colinfitzmaurice',

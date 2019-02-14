@@ -5,13 +5,13 @@
 @section('content')
     <h1>About</h1>
 
-    <p>My name is {{ $page->owner->name }}</p>
+    <p>My name is {{ $page->social->name }}</p>
 
     <h2>Links:</h2>
 
     <ul>
-        <li><a href="{{ $page->owner->twitter }}" target="_blank">Twitter</a></li>
-        <li><a href="{{ $page->owner->github }}" target="_blank">GitHub</a></li>
-        <li><a href="{{ $page->owner->linkedin }}" target="_blank">LinkedIn</a></li>
+        <li><a href="{{ $page->social->twitter }}" target="_blank">Twitter</a></li>
+        <li><a href="{{ $page->social->github }}" target="_blank">GitHub</a></li>
+        <li><a href="{{ $page->social->linkedin }}" target="_blank">LinkedIn</a></li>
     </ul>
 @endsection

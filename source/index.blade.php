@@ -1,6 +1,13 @@
 @extends('_layouts.master')
 
 @section('content')
+
+    <div class="flex flex-row">
+
+    </div>
+
+
+
     <h1>Welcome to Artisan Static for Jigsaw</h1>
 
     <h2>Asset Compilation Test</h2>
