@@ -13,17 +13,17 @@
         "browser-sync-webpack-plugin": "^2.0.1",
         "cross-env": "5.2.0",
         "hasbin": "^1.2.3",
-        "highlight.js": "^9.14.2",
-        "laravel-mix": "4.0.14",
+        "highlight.js": "9.15.*",
+        "laravel-mix": "^4.0.15",
         "node-cmd": "^3.0.0",
         "on-build-webpack": "^0.1.0",
-        "sass": "1.17.0",
+        "sass": "^1.17.3",
         "sass-loader": "7.*",
-        "sharer.js": "^0.3.3",
+        "sharer.js": "^0.3.6",
         "tailwindcss": "^0.7.4",
-        "vue-template-compiler": "^2.6.6",
+        "vue-template-compiler": "^2.6.10",
         "webpack-watch": "^0.2.0",
-        "yargs": "13.1.0"
+        "yargs": "13.2.*"
     },
     "dependencies": {
         "laravel-mix-purgecss": "^4.1.0",
