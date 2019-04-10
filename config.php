@@ -3,15 +3,16 @@
 return [
     'production' => false,
     'baseUrl' => 'https://fitz-maurice.com',
+    'email' => 'colin@fitz-maurice.com',
     'site' => [
         'title' => 'Colin Fitz-Maurice',
-        'description' => 'Hello World',
-        'image' => 'default-share.png',
+        'description' => 'Full-stack Laravel and Vue developer living in Philadelphia',
     ],
     'social' => [
         'twitter' => 'https://twitter.com/C_FitzMaurice',
         'github' => 'https://github.com/c-fitzmaurice',
         'linkedin' => 'https://www.linkedin.com/in/colinfitzmaurice',
+        'skookum' => 'https://twitter.com/Skookum',
     ],
     'services' => [
         'analytics' => 'UA-48741641-4',
@@ -19,6 +20,9 @@ return [
         'cloudinary' => 'fitz'
     ],
     'collections' => [
+        'projects' => [
+            'path' => 'projects/{filename}',
+        ],
         'posts' => [
             'path' => 'posts/{filename}',
             'sort' => '-date',

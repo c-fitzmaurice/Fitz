@@ -1,6 +1,8 @@
-<footer class="container px-0 flex flex-col sm:flex-row mt-6 font-sans border-solid border-t-2 border-fitz">
-    <div class="w-full sm:w-1/2 py-1 sm:py-3 flex items-center justify-center sm:justify-start text-sm text-grey-dark">&copy; {{ date('Y') }} {{ $page->site->title }}</div>
-    <div class="w-full sm:w-1/2 py-1 sm:py-3 flex items-center justify-center sm:justify-end">
+<footer class="container px-0 flex flex-col flex-col-reverse sm:flex-row mt-6 font-sans border-solid border-t-2 border-fitz">
+    <div class="w-full sm:w-1/2 py-1 sm:py-3 flex items-center justify-center sm:justify-start text-sm text-grey-dark">
+        &copy; {{ date('Y') }} {{ $page->site->title }}
+    </div>
+    <div class="w-full sm:w-1/2 pt-2 sm:py-3 flex items-center justify-center sm:justify-end">
         {{-- Twitter --}}
         <a href="{{ $page->social->twitter }}" target="_blank" class="ml-2 hover:text-fitz text-grey-light">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4">

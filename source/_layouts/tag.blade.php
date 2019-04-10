@@ -1,3 +1,4 @@
+{{-- WIP --}}
 @extends('_layouts.master')
 
 @section('title', "Posts tagged '{$page->name()}'")

@@ -5,9 +5,7 @@
 @section('content')
     <h1>Contact</h1>
 
-    <hr>
-
-    <form name="contact" action="/contact/sent" method="post" netlify-honeypot="bot-field" netlify>
+    <form name="contact" action="/contact/sent" method="post" class="w-full lg:w-2/3" netlify-honeypot="bot-field" netlify>
         {{-- Form Subject --}}
         <input type="hidden" name="subject" value="Fitz-Maurice Contact Page" />
         {{-- After Redirect --}}
@@ -16,23 +14,24 @@
         <input type="hidden" name="bot-field" />
 
         {{-- Name --}}
-        <div>
-            <label for="name">Name</label><br>
-            <input type="text" name="name" id="name" required>
+        <div class="mb-4">
+            <label for="name" class="block text-grey-darker text-sm font-bold mb-2">Full Name</label>
+            <input type="text" name="name" id="name" placeholder="Full name" class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" required>
         </div>
 
         {{-- Email --}}
-        <div>
-            <label for="email">Email</label><br>
-            <input type="email" name="email" id="email" required>
+        <div class="mb-4">
+            <label for="email" class="block text-grey-darker text-sm font-bold mb-2">Email</label>
+            <input type="email" name="email" id="email" placeholder="Email" class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" required>
         </div>
 
         {{-- Message --}}
-        <div>
-            <label for="message">Message</label><br>
-            <textarea name="message" id="message" required></textarea>
+        <div class="mb-4">
+            <label for="message" class="block text-grey-darker text-sm font-bold mb-2">Message</label>
+            <textarea name="message" id="message" placeholder="Message" class="resize-none shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline h-32 w-64" required></textarea>
         </div>
 
-        <input type="submit" value="Send">
+        {{-- Send --}}
+        <input type="submit" value="Send" class="bg-fitz text-white font-semibold rounded px-4 py-2">
     </form>
 @endsection

@@ -1,20 +1,15 @@
 @extends('_layouts.master')
 
 @section('content')
+<div class="text-lg text-grey-darkest leading-normal spaced-y-6 pt-6 w-full lg:w-2/3">
+    <p>Hello. I’m Colin Fitz-Maurice, a full-stack developer, building awesome products for <a class="link" href="{{ $page->social->skookum }}">@skookum</a> and living in Philadelphia.</p>
 
-    <div class="flex flex-row">
+    <p>
+        You can see some of my work on <a class="link" href="{{ $page->social->github }}">GitHub</a>,
+        follow me on <a class="link" href="{{ $page->social->twitter }}">Twitter</a>
+        or email me at <a class="link" href="mailto:{{ $page->email }}">{{ $page->email }}</a>.
+    </p>
 
-    </div>
-
-
-
-    <h1>Welcome to Artisan Static for Jigsaw</h1>
-
-    <h2>Asset Compilation Test</h2>
-
-    <p>CSS test: <span class="test-css">text with border and padding</span></p>
-
-    <p>JavaScript test: <a href="#" class="test-js">click me</a></p>
-
-    <code>const hello = world;</code>
+    <p>I’m taking on a select project list at the moment, if you want to chat, please submit a request <a class="link" href="/contact">here</a>.</p>
+</div>
 @endsection
