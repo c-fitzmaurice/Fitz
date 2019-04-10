@@ -1,6 +1,6 @@
 ---
-rank: 4
+rank: 3
 title: Goodworld
 link: https://goodworld.me/
-description: Laravel application for social donation through the Facebook and Twitter SDKs.
+description: Laravel application for social donations through the Facebook and Twitter SDKs and Stripe payment processing.
 ---
