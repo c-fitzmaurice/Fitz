@@ -3,7 +3,7 @@
 @section('title', 'Contact')
 
 @section('content')
-    <h1>Contact</h1>
+    <h1 class="text-3xl font-bold">Contact</h1>
 
     <form name="contact" action="/contact/sent" method="post" class="w-full lg:w-2/3" netlify-honeypot="bot-field" netlify>
         {{-- Form Subject --}}
@@ -15,20 +15,20 @@
 
         {{-- Name --}}
         <div class="mb-4">
-            <label for="name" class="block text-grey-darker text-sm font-bold mb-2">Full Name</label>
-            <input type="text" name="name" id="name" placeholder="Full name" class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" required>
+            <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
+            <input type="text" name="name" id="name" placeholder="Full name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
         </div>
 
         {{-- Email --}}
         <div class="mb-4">
-            <label for="email" class="block text-grey-darker text-sm font-bold mb-2">Email</label>
-            <input type="email" name="email" id="email" placeholder="Email" class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" required>
+            <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+            <input type="email" name="email" id="email" placeholder="Email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
         </div>
 
         {{-- Message --}}
         <div class="mb-4">
-            <label for="message" class="block text-grey-darker text-sm font-bold mb-2">Message</label>
-            <textarea name="message" id="message" placeholder="Message" class="resize-none shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline h-32 w-64" required></textarea>
+            <label for="message" class="block text-gray-700 text-sm font-bold mb-2">Message</label>
+            <textarea name="message" id="message" placeholder="Message" class="resize-none shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-32 w-64" required></textarea>
         </div>
 
         {{-- Send --}}

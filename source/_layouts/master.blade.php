@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-grey-light font-sans leading-tight antialiased">
+<html lang="en" class="bg-gray-300 font-sans leading-tight antialiased">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,9 +21,9 @@
 <body class="bg-white border-solid border-t-4 border-fitz flex flex-col min-h-screen">
     <div class="container flex-grow pt-6 md:pt-16">
         <div class="flex flex-col md:flex-row">
-            <a href="/" class="block mx-auto md:mx-0 flex-no-shrink">
+            <a href="/" class="block mx-auto md:mx-0 flex-shrink-0">
                 @if ($page->getFilename() === 'index')
-                    <img src="{{ $page->imageCdn('me/Colin_Fitz-Maurice.jpg') }}" class="h-32 w-32 border-2 border-grey-light rounded-full mb-4">
+                    <img src="{{ $page->imageCdn('me/Colin_Fitz-Maurice.jpg') }}" class="h-32 w-32 border-2 border-gray-300 rounded-full mb-4">
                 @else
                     <img src="{{ $page->imageCdn('logos/FITZ.jpg') }}" class="h-32 w-32 mb-4">
                 @endif
@@ -32,7 +32,7 @@
                 <header class="flex flex-row">
                     @include('_partials.menu')
                 </header>
-                <main class="container">
+                <main class="sm:px-0 md:px-8">
                     @yield('content')
                 </main>
             </div>

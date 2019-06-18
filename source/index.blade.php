@@ -1,7 +1,7 @@
 @extends('_layouts.master')
 
 @section('content')
-<div class="text-lg text-grey-darkest leading-normal spaced-y-6 pt-6 w-full lg:w-2/3">
+<div class="text-lg text-gray-700 leading-normal spaced-y-6 pt-6 w-full lg:w-2/3">
     <p>Hello. I’m Colin Fitz-Maurice, a full-stack developer, building awesome products for <a class="link" href="{{ $page->social->skookum }}">@skookum</a> and living in Philadelphia.</p>
 
     <p>
