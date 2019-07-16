@@ -14,16 +14,16 @@
         "cross-env": "5.2.0",
         "hasbin": "^1.2.3",
         "highlight.js": "^9.15.8",
-        "laravel-mix": "^4.0.16",
+        "laravel-mix": "4.1.*",
         "node-cmd": "^3.0.0",
         "on-build-webpack": "^0.1.0",
         "sass": "^1.21.0",
         "sass-loader": "7.*",
         "sharer.js": "^0.3.8",
-        "tailwindcss": "^1.0.4",
+        "tailwindcss": "^1.0.5",
         "vue-template-compiler": "^2.6.10",
         "webpack-watch": "^0.2.0",
-        "yargs": "^13.2.4"
+        "yargs": "13.3.*"
     },
     "dependencies": {
         "laravel-mix-purgecss": "^4.1.0",
