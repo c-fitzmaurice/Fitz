@@ -9,9 +9,11 @@
         "watch": "npm run local -- --watch"
     },
     "devDependencies": {
+        "braces": "^3.0.2",
         "browser-sync": "^2.26.7",
         "browser-sync-webpack-plugin": "^2.0.1",
         "cross-env": "6.0.3",
+        "fsevents": "^2.1.1",
         "hasbin": "^1.2.3",
         "highlight.js": "^9.16.2",
         "laravel-mix": "5.0.0",
@@ -26,7 +28,6 @@
         "yargs": "14.2.*"
     },
     "dependencies": {
-        "fsevents": "^2.1.1",
         "laravel-mix-purgecss": "^4.2.0",
         "laravel-mix-tailwind": "^0.1.0"
     }
