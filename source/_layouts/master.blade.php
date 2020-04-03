@@ -23,9 +23,9 @@
         <div class="flex flex-col md:flex-row">
             <a href="/" class="block mx-auto md:mx-0 flex-shrink-0">
                 @if ($page->getFilename() === 'index')
-                    <img src="{{ $page->imageCdn('me/Colin_Fitz-Maurice.jpg') }}" class="h-32 w-32 border-2 border-gray-300 rounded-full mb-4">
+                    <img loading="lazy" src="{{ $page->imageCdn('me/Colin_Fitz-Maurice.jpg') }}" class="h-32 w-32 border-2 border-gray-300 rounded-full mb-4">
                 @else
-                    <img src="{{ $page->imageCdn('logos/FITZ.jpg') }}" class="h-32 w-32 mb-4">
+                    <img loading="lazy" src="{{ $page->imageCdn('logos/FITZ.jpg') }}" class="h-32 w-32 mb-4">
                 @endif
             </a>
             <div class="w-full px-0 md:mx-4">
