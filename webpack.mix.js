@@ -6,8 +6,9 @@ mix.disableSuccessNotifications();
 mix.setPublicPath('source/assets/build');
 
 mix
-  .js('source/_assets/js/main.js', 'js')
-  .postCss('source/_assets/styles/main.css', 'css', [require('tailwindcss')])
+  .options({
+    processCssUrls: false,
+  })
   .jigsaw({
     watch: [
       'config.php',
@@ -17,8 +18,7 @@ mix
       '!source/**/_tmp/*',
     ],
   })
-  .options({
-    processCssUrls: false,
-  })
+  .js('source/_assets/js/main.js', 'js')
+  .postCss('source/_assets/styles/main.css', 'css', [require('tailwindcss')])
   .sourceMaps()
   .version();
