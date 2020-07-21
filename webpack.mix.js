@@ -1,33 +1,24 @@
 let mix = require('laravel-mix');
-let build = require('./tasks/build.js');
-require('laravel-mix-purgecss');
-require('laravel-mix-tailwind');
+
+require('laravel-mix-jigsaw');
 
 mix.disableSuccessNotifications();
 mix.setPublicPath('source/assets/build');
-mix.webpackConfig({
-    plugins: [
-        build.jigsaw,
-        build.browserSync(),
-        build.watch([
-            'source/**/*.md',
-            'source/**/*.php',
-            'source/**/*.scss',
-            '!source/**/_tmp/*',
-        ]),
-    ],
-});
 
-mix.js('source/_assets/js/main.js', 'js')
-    .sass('source/_assets/sass/main.scss', 'css')
-    .tailwind('./tailwind.config.js')
-    .purgeCss({
-        globs: [
-            path.join(__dirname, 'source/**/*.blade.php'),
-            path.join(__dirname, 'source/_assets/**/*.blade.php'),
-        ],
-    })
-    .options({
-        processCssUrls: false,
-    })
-    .version();
+mix
+  .js('source/_assets/js/main.js', 'js')
+  .postCss('source/_assets/styles/main.css', 'css', [require('tailwindcss')])
+  .jigsaw({
+    watch: [
+      'config.php',
+      'source/**/*.md',
+      'source/**/*.php',
+      'source/**/*.scss',
+      '!source/**/_tmp/*',
+    ],
+  })
+  .options({
+    processCssUrls: false,
+  })
+  .sourceMaps()
+  .version();
