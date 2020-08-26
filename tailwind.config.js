@@ -1,6 +1,13 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
 
 module.exports = {
+  experimental: {
+    applyComplexClasses: true,
+    uniformColorPalette: true,
+    extendedSpacingScale: true,
+    defaultLineHeights: true,
+    extendedFontSizeScale: true,
+  },
   purge: {
     content: [
       'source/**/*.html',

@@ -13,11 +13,7 @@ code {
 }
 
 .link {
-  @apply text-fitz no-underline font-bold;
-}
-
-.link:hover {
-  @apply underline;
+  @apply text-fitz no-underline font-bold hover:underline;
 }
 
 h1 {

@@ -1,14 +1,10 @@
 let mix = require('laravel-mix');
-
 require('laravel-mix-jigsaw');
 
-mix.disableSuccessNotifications();
+mix.disableNotifications();
 mix.setPublicPath('source/assets/build');
 
 mix
-  .options({
-    processCssUrls: false,
-  })
   .jigsaw({
     watch: [
       'config.php',
