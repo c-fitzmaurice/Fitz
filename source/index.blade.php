@@ -10,6 +10,6 @@
         or email me at <a class="link" href="mailto:{{ $page->email }}">{{ $page->email }}</a>.
     </p>
 
-    <p>I’m taking on a select project list at the moment, if you want to chat, please submit a request <a class="link" href="/contact">here</a> and check out some of my <a class="link" href="/contact">past projects</a>.</p>
+    <p>I’m taking on a select project list at the moment, if you want to chat, please submit a request <a class="link" href="/contact">here</a> and check out some of my <a class="link" href="/projects">past projects</a>.</p>
 </div>
 @endsection
