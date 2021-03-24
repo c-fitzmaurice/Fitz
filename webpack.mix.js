@@ -1,9 +1,6 @@
 let mix = require('laravel-mix');
 require('laravel-mix-jigsaw');
 
-mix.disableNotifications();
-mix.setPublicPath('source/assets/build');
-
 mix
   .jigsaw({
     watch: [
@@ -14,6 +11,8 @@ mix
       '!source/**/_tmp/*',
     ],
   })
+  .disableNotifications()
+  .setPublicPath('source/assets/build')
   .js('source/_assets/js/main.js', 'js')
   .postCss('source/_assets/styles/main.css', 'css', [require('tailwindcss')])
   .sourceMaps()

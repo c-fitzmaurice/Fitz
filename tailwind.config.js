@@ -1,13 +1,4 @@
-const defaultTheme = require('tailwindcss/defaultTheme');
-
 module.exports = {
-  experimental: {
-    applyComplexClasses: true,
-    uniformColorPalette: true,
-    extendedSpacingScale: true,
-    defaultLineHeights: true,
-    extendedFontSizeScale: true,
-  },
   purge: {
     content: [
       'source/**/*.html',
@@ -20,6 +11,7 @@ module.exports = {
       whitelist: [/language/, /hljs/, /mce/],
     },
   },
+  darkMode: false, // or 'media' or 'class'
   theme: {
     container: {
       center: true,
@@ -33,11 +25,16 @@ module.exports = {
         white: '#fff',
       },
       fontFamily: {
-        sans: ['Open Sans', ...defaultTheme.fontFamily.sans],
-        serif: ['Constantia', ...defaultTheme.fontFamily.serif],
+        sans: ['Open Sans', 'sans-serif'],
+        serif: ['Constantia', 'serif'],
       },
     },
   },
   variants: {},
   plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+    require('tailwindcss-children'),
+  ],
 };

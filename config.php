@@ -12,12 +12,12 @@ return [
         'twitter' => 'https://twitter.com/C_FitzMaurice',
         'github' => 'https://github.com/c-fitzmaurice',
         'linkedin' => 'https://www.linkedin.com/in/colinfitzmaurice',
-        'skookum' => 'https://twitter.com/Skookum',
+        'happycog' => 'https://twitter.com/happycog',
     ],
     'services' => [
         'analytics' => 'UA-48741641-4',
         'disqus' => 'colin-fitz-maurice',
-        'cloudinary' => 'fitz'
+        'cloudinary' => 'fitz',
     ],
     'collections' => [
         'projects' => [

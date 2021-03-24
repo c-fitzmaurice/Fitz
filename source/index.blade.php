@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="text-lg text-gray-700 leading-normal spaced-y-6 pt-6 w-full lg:w-2/3">
-    <p>Hello. I’m Colin Fitz-Maurice, a full-stack Laravel and Vue developer, building awesome products for <a class="link" href="{{ $page->social->skookum }}">@skookum</a> and living in Philadelphia.</p>
+    <p>Hello. I’m Colin Fitz-Maurice, a full-stack Laravel and Vue developer, building awesome products for <a class="link" href="{{ $page->social->happycog }}">@happycog</a> and living in Philadelphia.</p>
 
     <p>
         You can see some of my work on <a class="link" href="{{ $page->social->github }}">GitHub</a>,
