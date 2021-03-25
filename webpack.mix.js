@@ -13,7 +13,7 @@ mix
   })
   .disableNotifications()
   .setPublicPath('source/assets/build')
-  .js('source/_assets/js/main.js', 'js')
+//   .js('source/_assets/js/main.js', 'js') // Not using any JS at the moment
   .postCss('source/_assets/styles/main.css', 'css', [require('tailwindcss')])
   .sourceMaps()
   .version();

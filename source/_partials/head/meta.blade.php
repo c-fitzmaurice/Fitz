@@ -1,4 +1,3 @@
-<!-- search/social -->
 <meta name="referrer" content="always">
 <link rel="canonical" href="{{ $page->getUrl() }}">
 <meta name="description" content="{!! $page->excerpt() ?: $page->site->description !!}">
@@ -15,4 +14,3 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:site" content="{{ "@{$page->social->twitter}" }}">
 <meta name="twitter:creator" content="{{ "@{$page->social->twitter}" }}">
-<!-- end search/social -->

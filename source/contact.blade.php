@@ -16,22 +16,22 @@
         {{-- Name --}}
         <div class="mb-4">
             <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
-            <input type="text" name="name" id="name" placeholder="Full name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+            <input type="text" name="name" id="name" placeholder="Full name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-5 tracking-wide focus:outline-none focus:ring-fitz focus:ring-4 focus:ring-opacity-20 focus:border-fitz hover:border-4" required>
         </div>
 
         {{-- Email --}}
         <div class="mb-4">
             <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
-            <input type="email" name="email" id="email" placeholder="Email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+            <input type="email" name="email" id="email" placeholder="Email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-5 tracking-wide focus:outline-none focus:ring-fitz focus:ring-4 focus:ring-opacity-20 focus:border-fitz hover:border-4" required>
         </div>
 
         {{-- Message --}}
         <div class="mb-4">
             <label for="message" class="block text-gray-700 text-sm font-bold mb-2">Message</label>
-            <textarea name="message" id="message" placeholder="Message" class="resize-none shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-32 w-64" required></textarea>
+            <textarea name="message" id="message" placeholder="Message" class="resize-none shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-5 tracking-wide focus:outline-none focus:ring-fitz focus:ring-4 focus:ring-opacity-20 focus:border-fitz hover:border-4 h-32" required></textarea>
         </div>
 
         {{-- Send --}}
-        <input type="submit" value="Send" class="bg-fitz text-white font-semibold rounded px-4 py-2">
+        <input type="submit" value="Send" class="bg-fitz text-white font-semibold rounded px-4 py-2 cursor-pointer hover:shadow-lg">
     </form>
 @endsection
