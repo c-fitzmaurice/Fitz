@@ -11,11 +11,12 @@
     {{-- Extra Meta --}}
     @include('_partials.head.meta')
     {{-- CSS & Fonts --}}
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
+    @include('_partials.head.font')
     <link rel="stylesheet" href="{{ mix('css/main.css', 'assets/build') }}">
     {{-- Preconnect --}}
     <link rel="preconnect" href="https://www.googletagmanager.com">
     <link rel="preconnect" href="https://res.cloudinary.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
 </head>
 <body class="bg-white border-t-4 border-fitz flex flex-col min-h-screen">
     <div class="container flex-grow pt-6 md:pt-16">
