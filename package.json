@@ -8,7 +8,7 @@
         "production": "mix --production"
     },
     "devDependencies": {
-        "@tailwindcss/forms": "^0.2.1",
+        "@tailwindcss/forms": "^0.3.2",
         "@tailwindcss/typography": "^0.4.0",
         "braces": "^3.0.2",
         "browser-sync": "^2.26.13",
