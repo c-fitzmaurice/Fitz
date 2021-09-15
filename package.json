@@ -18,8 +18,8 @@
         "hasbin": "^1.2.3",
         "highlight.js": "^11.1.0",
         "laravel-mix": "^6.0.5",
-        "laravel-mix-jigsaw": "^1.4.0",
-        "node-cmd": "^4.0.0",
+        "laravel-mix-jigsaw": "^2.0.0",
+        "node-cmd": "^5.0.0",
         "on-build-webpack": "^0.1.0",
         "sass": "^1.28.0",
         "sass-loader": "12.1",
@@ -28,7 +28,7 @@
         "tailwindcss": "^2.0.4",
         "tailwindcss-children": "^2.1.0",
         "vue-template-compiler": "^2.6.12",
-        "webpack-watch": "^0.1.1",
+        "webpack-watch": "^0.2.0",
         "yargs": "^17.0.1"
     }
 }
