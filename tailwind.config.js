@@ -1,40 +1,32 @@
 module.exports = {
-  purge: {
-    content: [
-      'source/**/*.html',
-      'source/**/*.md',
-      'source/**/*.js',
-      'source/**/*.php',
-      'source/**/*.vue',
-    ],
-    options: {
-      whitelist: [/language/, /hljs/, /mce/],
-    },
-  },
-  darkMode: false, // or 'media' or 'class'
+  content: [
+    "source/**/*.html",
+    "source/**/*.md",
+    "source/**/*.js",
+    "source/**/*.php",
+    "source/**/*.vue",
+  ],
   theme: {
     container: {
       center: true,
-      padding: '1rem',
+      padding: "1rem",
     },
     extend: {
       colors: {
-        fitz: '#465058',
-        transparent: 'transparent',
-        black: '#000',
-        white: '#fff',
+        fitz: "#465058",
+        transparent: "transparent",
+        black: "#000",
+        white: "#fff",
       },
       fontFamily: {
-        sans: ['Open Sans', 'sans-serif'],
-        serif: ['Constantia', 'serif'],
+        sans: ["Open Sans", "sans-serif"],
+        serif: ["Constantia", "serif"],
       },
     },
   },
-  variants: {},
-  plugins: [],
   plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/typography'),
-    require('tailwindcss-children'),
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/typography"),
+    require("tailwindcss-children"),
   ],
 };
