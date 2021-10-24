@@ -22,7 +22,7 @@
         "node-cmd": "^5.0.0",
         "on-build-webpack": "^0.1.0",
         "sass": "^1.28.0",
-        "sass-loader": "12.1",
+        "sass-loader": "^12.2.0",
         "serialize-javascript": "^6.0.0",
         "sharer.js": "^0.4.1",
         "tailwindcss": "^2.0.4",
